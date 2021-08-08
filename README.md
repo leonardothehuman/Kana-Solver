@@ -1,3 +1,3 @@
 # Kana-Solver
 
-Romanize japanese utau
+Romanize Japanese utau
