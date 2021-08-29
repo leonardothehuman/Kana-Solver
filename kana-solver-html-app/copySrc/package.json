@@ -2,7 +2,7 @@
 	"name": "Mukirana",
 	"main": "index.html",
 	"window": {
-		"toolbar": false,
+		"toolbar": true,
 		"frame": true,
 		"width": 800,
 		"height": 550,

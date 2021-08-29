@@ -1,19 +1,19 @@
-<script>
-    import {Page, List, ListItem, Navbar, theme, f7} from "framework7-svelte";
+<script lang="ts">
+    import {Page, List, ListItem, Navbar, theme, f7, Toolbar, Link, Icon} from "framework7-svelte";
+    import type { Router } from "framework7/types";
     import { onMount } from 'svelte';
 
-    export let f7router;
-
+    export let f7router: Router.Router;
     const onPageAfterIn = () => {
         if (!theme.aurora) return;
         if (f7.width >= 768) {
-            f7router.navigate('/extract/', { reloadDetail: true });
+            f7router.navigate('/extract/', { reloadAll: false });
         }
     };
     onMount(() => {
         if (theme.aurora) {
             const $el = f7.$('.page-home');
-            const routeChangeCallback = (route) => {
+            const routeChangeCallback = (route: Router.Route) => {
                 const url = route.url;
                 if (!$el) return;
                 const $linkEl = $el.find(`a[href="${url}"]`);
@@ -25,6 +25,8 @@
             return function(){
                 f7router.off('routeChange', routeChangeCallback);
             }
+        }else{
+            return function(){}
         }
     });
 </script>
@@ -35,6 +37,12 @@
             background-color: rgb(199, 199, 199);
         }
     }
+    .decorated-toolbar :global(.link){
+        color: #7d8b9c;
+    }
+    .decorated-toolbar :global(.item-selected){
+        color: #007Aff;
+    }
 </style>
 <Page class="page-home" {onPageAfterIn}>
     <Navbar title="Kana Solver v3" />
@@ -44,7 +52,12 @@
             <ListItem title="Conversion List Editor" link="/conversionEditor/" reloadDetail />
             <ListItem title="Convert UTAU" link="/utauConversor/" reloadDetail />
             <ListItem title="Convert ust file" link="/ustConversor/" reloadDetail />
-            <ListItem title="Settings" link="/settings/" reloadDetail />
         </List>
     </div>
+    
+    <Toolbar position='bottom'>
+        <span class="decorated-toolbar">
+            <Link reloadDetail href="/settings/" text="Settings" iconF7="gear_alt" />
+        </span>
+    </Toolbar>
 </Page>

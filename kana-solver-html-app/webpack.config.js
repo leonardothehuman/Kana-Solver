@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+//const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const config = {
   externals: {
@@ -23,7 +24,8 @@ const config = {
         test: /\.svelte$/,
         loader: 'svelte-loader',
         options: {
-          preprocess:  require('svelte-preprocess')({})
+          preprocess:  require('svelte-preprocess')({}),
+//          emitCss: true,
         }
       },
       {
@@ -37,9 +39,26 @@ const config = {
         test: /\.css$/,
         use: [
           'style-loader',
-          'css-loader'
+          {
+            loader: 'css-loader',
+            options: {
+              esModule: false
+            }
+          }
         ]
       },
+      // {
+      //   test: /\.css$/,
+      //   use: [
+      //     MiniCssExtractPlugin.loader,
+      //     {
+      //       loader: 'css-loader',
+      //       options: {
+      //         esModule: false
+      //       }
+      //     }
+      //   ]
+      // },
       {
         test: /\.ts(x)?$/,
         loader: 'ts-loader',
@@ -52,6 +71,15 @@ const config = {
           'css-loader',
           'less-loader'
         ]
+      },
+      {
+        test: /\.(woff|woff2|ttf)$/,
+        loader: 'file-loader',
+        options: {
+          // name: '[name].[ext]',
+          // outputPath: 'fonts/',
+          esModule: false
+        }
       }
     ]
   },
@@ -86,7 +114,8 @@ const config = {
           force: true
         }
       ],
-    })
+    }),
+    //new MiniCssExtractPlugin()
   ]
 };
 
