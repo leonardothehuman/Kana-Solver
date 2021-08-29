@@ -1,0 +1,14 @@
+{
+    "extends": "@tsconfig/svelte/tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "noImplicitReturns": true,
+        "noImplicitAny": true,
+        "module": "es6",
+        "allowJs": true,
+        "types": ["node", "svelte"]
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}

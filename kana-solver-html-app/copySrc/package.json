@@ -1,0 +1,20 @@
+{
+	"name": "Mukirana",
+	"main": "index.html",
+	"window": {
+		"toolbar": false,
+		"frame": true,
+		"width": 800,
+		"height": 550,
+		"position": "center",
+		"min_width": 400,
+		"min_height": 550,
+		"max_width": 800,
+		"max_height": 550
+	},
+	"dependencies": {
+		"iconv-lite": "^0.6.3",
+		"node-disk-info": "^1.3.0",
+		"yauzl": "^2.10.0"
+	}
+}

@@ -1,0 +1,4 @@
+.view-master-detail .navbar-master-detail-root .link.back,
+.view-master-detail .page-master-detail-root .navbar .link.back {
+  display: none;
+}
