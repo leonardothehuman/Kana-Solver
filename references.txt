@@ -1,7 +1,13 @@
 https://framework7.io/
 https://docs.nwjs.io/
+https://www.typescriptlang.org/docs/handbook/2/generics.html
 https://svelte.dev/tutorial/svelte-fragment
 https://nodejs.org/api/fs.html#fs_fspromises_opendir_path_options
 https://webpack.js.org/configuration/target/
 https://developer.mozilla.org/pt-BR/docs/Web/API/Storage
 https://www.php.net/manual/pt_BR/function.explode.php
+https://stackoverflow.com/questions/34133808/webpack-ots-parsing-error-loading-fonts/34133809#34133809
+https://lesscss.org/#importing
+
+Color theme generator:
+https://framework7.io/docs/color-themes.html#custom-color-theme

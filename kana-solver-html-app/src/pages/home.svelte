@@ -2,18 +2,35 @@
     import {Page, List, ListItem, Navbar, theme, f7, Toolbar, Link, Icon} from "framework7-svelte";
     import type { Router } from "framework7/types";
     import { onMount } from 'svelte';
+    import {LimitedStack} from '../modules/LimitedStack';
+    import {masterRoute, masterDetailBreakpoint, mainDetailPage} from '../config/config';
 
     export let f7router: Router.Router;
-    const onPageAfterIn = () => {
+    let routeStack: LimitedStack<string> = new LimitedStack(2, masterRoute);
+
+    function handleResize(){
         if (!theme.aurora) return;
-        if (f7.width >= 768) {
-            f7router.navigate('/extract/', { reloadAll: false });
+        if (f7.width < masterDetailBreakpoint) return;
+        if(
+            routeStack.get(1).trim() == masterRoute &&
+            routeStack.get(0).trim() == masterRoute
+        ){
+            f7router.navigate(mainDetailPage, { reloadAll: false });
+            return;
         }
+        if(f7router.currentRoute.url.trim() != masterRoute) return;
+        f7router.navigate(routeStack.get(1), { reloadAll: false });
+    }
+
+    const onPageAfterIn = () => {
+        handleResize();
     };
+    
     onMount(() => {
         if (theme.aurora) {
             const $el = f7.$('.page-home');
             const routeChangeCallback = (route: Router.Route) => {
+                routeStack.add(route.url);
                 const url = route.url;
                 if (!$el) return;
                 const $linkEl = $el.find(`a[href="${url}"]`);
@@ -32,18 +49,27 @@
 </script>
 
 <style lang="less">
-    @media (min-width: 768px){
+    @import '../config/config.less';
+
+    .decorated-toolbar :global(.link){
+        color: var(--f7-list-item-title-text-color);
+    }
+    @media (min-width: @masterDetailBreakpoint){
         .decorated-page-list :global(.item-selected){
-            background-color: rgb(199, 199, 199);
+            background-color: var(--f7-theme-color-tint);
+            :global(.item-title),
+            :global(.item-inner::before){
+                color: var(--f7-button-fill-text-color, #fff);
+            }
+        }
+        .decorated-toolbar :global(.item-selected){
+            color: var(--f7-theme-color-shade);
         }
     }
-    .decorated-toolbar :global(.link){
-        color: #7d8b9c;
-    }
-    .decorated-toolbar :global(.item-selected){
-        color: #007Aff;
-    }
 </style>
+
+<svelte:window on:resize={handleResize}/>
+
 <Page class="page-home" {onPageAfterIn}>
     <Navbar title="Kana Solver v3" />
     <div class="decorated-page-list">

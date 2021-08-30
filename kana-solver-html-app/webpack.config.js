@@ -39,12 +39,7 @@ const config = {
         test: /\.css$/,
         use: [
           'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              esModule: false
-            }
-          }
+          'css-loader'
         ]
       },
       // {
@@ -74,12 +69,7 @@ const config = {
       },
       {
         test: /\.(woff|woff2|ttf)$/,
-        loader: 'file-loader',
-        options: {
-          // name: '[name].[ext]',
-          // outputPath: 'fonts/',
-          esModule: false
-        }
+        type: 'asset/resource'
       }
     ]
   },

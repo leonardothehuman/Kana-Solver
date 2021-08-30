@@ -4,13 +4,11 @@
 	"window": {
 		"toolbar": true,
 		"frame": true,
-		"width": 800,
+		"width": 850,
 		"height": 550,
 		"position": "center",
-		"min_width": 400,
-		"min_height": 550,
-		"max_width": 800,
-		"max_height": 550
+		"min_width": 300,
+		"min_height": 550
 	},
 	"dependencies": {
 		"iconv-lite": "^0.6.3",
