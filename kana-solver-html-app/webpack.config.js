@@ -102,6 +102,16 @@ const config = {
             return relative;
           },
           force: true
+        },
+        {
+          from: 'generatedCopySrc/**/*',
+          //context: 'copySrc',
+          //to: "[path]/[name][ext]",
+          to({context, absoluteFilename}){
+            var relative = path.relative(path.join(context, 'generatedCopySrc'), absoluteFilename);
+            return relative;
+          },
+          force: true
         }
       ],
     }),

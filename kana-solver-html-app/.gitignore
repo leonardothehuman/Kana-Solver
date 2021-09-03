@@ -2,3 +2,5 @@
 /node_modules/
 /nwBinaries/
 /copySrc/node_modules/
+/src/generated/
+/generatedCopySrc/

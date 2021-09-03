@@ -5,12 +5,13 @@ import UtauConversor from './pages/utauConversor.svelte';
 import UstConversor from './pages/ustConversor.svelte';
 import Settings from './pages/settings.svelte';
 import FileFinder from './pages/fileFinder.svelte';
+import {masterRoute} from './generated/config/config';
+import type { Router } from 'framework7/types';
 
-export var Routes = [
+var Routes: Router.RouteParameters[] = [
     {
         path: '/',
-        component: Home,
-        master: true
+        component: Home
     },
     {
         path: '/extract/',
@@ -37,3 +38,11 @@ export var Routes = [
         component: FileFinder
     }
 ];
+
+for(let i = 0; i < Routes.length; i++){
+    if(Routes[i].path == masterRoute){
+        Routes[i]['master'] = true;
+    }
+}
+
+export {Routes};
