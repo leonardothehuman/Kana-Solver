@@ -1,10 +1,10 @@
-import Home from './pages/home.svelte';
-import Extract from './pages/extract.svelte';
-import ConversionEditor from './pages/conversionEditor.svelte';
-import UtauConversor from './pages/utauConversor.svelte';
-import UstConversor from './pages/ustConversor.svelte';
-import Settings from './pages/settings.svelte';
-import FileFinder from './pages/fileFinder.svelte';
+import Home from './views/pages/home.svelte';
+import Extract from './views/pages/extract.svelte';
+import ConversionEditor from './views/pages/conversionEditor.svelte';
+import UtauConversor from './views/pages/utauConversor.svelte';
+import UstConversor from './views/pages/ustConversor.svelte';
+import Settings from './views/pages/settings.svelte';
+import FileFinder from './views/pages/fileFinder.svelte';
 import {masterRoute} from './generated/config/config';
 import type { Router } from 'framework7/types';
 

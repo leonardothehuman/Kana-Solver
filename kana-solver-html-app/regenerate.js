@@ -14,7 +14,7 @@ toSave = "";
 toSave += `@masterDetailBreakpoint: ${mainAppConfig.masterDetailBreakpoint}px;`;
 fs.writeFileSync(path.join(process.cwd(), "src/generated/config/config.less"), toSave);
 
-//Generate nw's package.json and install runtime dependencies
+//Generate nw's package.json
 
 var projectPackageJSON = JSON.parse(
     fs.readFileSync(

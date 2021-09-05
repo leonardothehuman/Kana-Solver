@@ -6,8 +6,8 @@
     const fs = require("fs");
     const path = require("path");
     import {Page, Navbar, List, ListInput, Row, Col, Input, Button, ListItem} from "framework7-svelte";
-    import {readTextFile, extractUtau} from '../modules/extraction';
-    import {parseInstallTxt} from '../parsers/install_txt';
+    import {readTextFile, extractUtau} from '../../models/modules/extraction';
+    import {parseInstallTxt} from '../../models/parsers/install_txt';
 
     let utauVoicebank = '';
 

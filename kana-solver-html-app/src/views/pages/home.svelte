@@ -2,8 +2,8 @@
     import {Page, List, ListItem, Navbar, theme, f7, Toolbar, Link, Icon} from "framework7-svelte";
     import type { Router } from "framework7/types";
     import { onMount } from 'svelte';
-    import {LimitedStack} from '../modules/LimitedStack';
-    import {masterRoute, masterDetailBreakpoint, mainDetailPage} from '../generated/config/config';
+    import {LimitedStack} from '../../models/modules/LimitedStack';
+    import {masterRoute, masterDetailBreakpoint, mainDetailPage} from '../../generated/config/config';
 
     export let f7router: Router.Router;
     let routeStack: LimitedStack<string> = new LimitedStack(2, masterRoute);
@@ -49,7 +49,7 @@
 </script>
 
 <style lang="less">
-    @import '../generated/config/config.less';
+    @import '../../generated/config/config.less';
 
     .decorated-toolbar :global(.link){
         color: var(--f7-list-item-title-text-color);
