@@ -8,6 +8,7 @@
     import {Page, Navbar, List, ListInput, Row, Col, Input, Button, ListItem} from "framework7-svelte";
     import {readTextFile, extractUtau} from '../../models/modules/extraction';
     import {parseInstallTxt} from '../../models/parsers/install_txt';
+    import PathSelectField from "../components/PathSelectField.svelte";
 
     let utauVoicebank = '';
 
@@ -22,27 +23,11 @@
 <Page>
     <Navbar title="Extractor" backLink />
     <List noHairlinesMd>
-        <ListInput
-          label="Utauloid to install"
-          input={false}
-        >
-            <span slot="input">
-                <Row>
-                    <Col style="width: calc(100% - 115px)">
-                        <Input bind:value={utauVoicebank} type="text" />
-                    </Col>
-                    <Col style="width: 100px">
-                        <Button
-                            href="/findFile/" fill small
-                            routeProps={{
-                                selectCallback: (e) => {
-                                    utauVoicebank = e.directory
-                                }
-                            }}>Search</Button>
-                    </Col>
-                </Row>
-            </span>
-        </ListInput>
+        <PathSelectField
+            label="Utauloid to install"
+            extensionList={['*.zip', '*.rar']}
+            bind:selectedPath={utauVoicebank}
+            selectDirectory={false}></PathSelectField>
     </List>
     <Button on:click={readInstallTXT} fill small>Install</Button>
 

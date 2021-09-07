@@ -1,54 +1,81 @@
 <script lang="ts">
-    const fs = require("fs/promises");
-    const nodeDiskInfo = require('node-disk-info');
-    const path = require("path");
     import {Navbar, Page, List, ListItem, Link, Input} from 'framework7-svelte';
-    export let selectCallback: (e: any) => void = function(){};
+    import path from "path";
+    import {FileFinderPresenter} from "../../presenters/fileFinderPresenter";
+    import type {IFileFinderView, objectRepresentation } from "../../presenters/fileFinderPresenter";
+
+    export let extensionList:string[] = [];
+    export let selectDirectory:boolean = false;
+    export let initialDirectory: string = "";
     export let f7router: { back: () => void; };
-    let driveList: ArrayLike<any> = [];
-    let selectedDrive = 'C:';
+    export let selectCallback: (e: selectCallbackEvent) => void = function(){};
+    type selectCallbackEvent = {
+        selectedPath:string
+    }
 
-    (async()=>{
-        try {
-            driveList = await nodeDiskInfo.getDiskInfo();
-        } catch (err) {
-            console.error(err);
-        }
-    })();
+    //ONLY MODIFY VARIABLES THAT HAVE REACTIVE CODE TO CALL THE HELPERS ON THE PRESENTER
+    //OR THAT ARE NOT USED BY THE PRESENTER
+    //Visible lists
+    let selectableExtensionList: string[] = [...extensionList, "*.*"];
+    let selectableDriveList: string[] = [];
+    let currentDirectoryObjectsList: objectRepresentation[] = [];
 
-    let currentDirectory = '';
-    $: currentDirectory = selectedDrive+'\\';
-    let currentDirectoryList: Array<any> = [];
+    //Selected items
+    let currentDrive:string = '';
+    let currentDirectory:string = '';
+    let selectedExtention:string = selectableExtensionList[0];
 
-    async function setCurrentDirectory(cdir: string){
-        try {
-            const dir = await fs.readdir(cdir, {withFileTypes: true});
-            currentDirectoryList = [];
-            if(cdir != selectedDrive+'\\'){
-                currentDirectoryList.push({
-                    name: "..",
-                    isDirectory: true,
-                    isFile: false
-                });
-            }
-            for(let i = 0; i < dir.length; i++){
-                currentDirectoryList.push({
-                    name: dir[i].name,
-                    isDirectory: dir[i].isDirectory(),
-                    isFile: dir[i].isFile()
-                });
-            }
-            currentDirectoryList = [...currentDirectoryList];
-            console.log(dir);
-        } catch (err) {
-            console.error(err);
+    let externalInterface: IFileFinderView = {
+        setCurrentDirectoryObjectsList: (list: objectRepresentation[], onlyOnChange: boolean) => {
+            if(currentDirectoryObjectsList == list && onlyOnChange == true) return false;
+            currentDirectoryObjectsList = list;
+            return true;
+        },
+
+        getDriveList:() => {return selectableDriveList;},
+        setDriveList:(list: Array<string>, onlyOnChange: boolean) => {
+            if(selectableDriveList == list && onlyOnChange == true) return false;
+            selectableDriveList = list;
+            return true;
+        },
+
+        getCurrentDrive: () => {return currentDrive;},
+        setCurrentDrive: (drive: string, onlyOnChange: boolean) => {
+            if(currentDrive == drive && onlyOnChange == true) return false;
+            currentDrive = drive;
+            return true;
+        },
+        
+        getCurrentDirectory: () => {return currentDirectory;},
+        setCurrentDirectory: (d: string, onlyOnChange: boolean) => {
+            if(currentDirectory == d && onlyOnChange == true) return false;
+            currentDirectory = d;
+            return true;
+        },
+        
+        getCurrentExtention: () => {return selectedExtention;},
+        setCurrentExtention: (ext: string, onlyOnChange: boolean) => {
+            if(selectedExtention == ext && onlyOnChange == true) return false;
+            selectedExtention = ext;
+            return true;
         }
     }
 
-    $: setCurrentDirectory(currentDirectory);
+    let fileFinderPresenter:FileFinderPresenter = new FileFinderPresenter(externalInterface);
+    fileFinderPresenter.init(
+        initialDirectory
+    );
+    
+    let driveFirstLoad = true;
+    $: {
+        if(driveFirstLoad == false) fileFinderPresenter.setCurrentDrive(currentDrive, true, true);
+        driveFirstLoad = false;
+    }
 
-    function goToDirectory(dir: string){
-        currentDirectory = path.normalize(path.join(currentDirectory, dir));
+    let extFirstLoad = true;
+    $: {
+        if(extFirstLoad == false) fileFinderPresenter.setCurrentExtention(selectedExtention);
+        extFirstLoad = false;
     }
 </script>
 
@@ -57,38 +84,56 @@
     <Input
         label="Disk drive"
         type="select"
-        bind:value={selectedDrive}
+        bind:value={currentDrive}
         placeholder="Select a drive"
     >
-        {#each driveList as drive}
-            <option value={drive.mounted}>{drive.mounted}</option>
+        {#each selectableDriveList as drive}
+            <option value={drive}>{drive}</option>
+        {/each}
+    </Input>
+    <Input
+        label="Type"
+        type="select"
+        bind:value={selectedExtention}
+        placeholder="Type"
+    >
+        {#each selectableExtensionList as ext}
+            <option value={ext}>{ext}</option>
         {/each}
     </Input>
     
     <List>
-        {#each currentDirectoryList as dItem}
+        {#each currentDirectoryObjectsList as dItem}
             {#if dItem.isFile}
                 <ListItem on:click={() => {
+                    if(selectDirectory == true) return;
                     selectCallback({
-                        directory: path.normalize(path.join(currentDirectory, dItem.name))
+                        selectedPath: dItem.completePath
                     });
                     f7router.back();
                 }} title={dItem.name}></ListItem>
             {/if}
             {#if dItem.isDirectory}
-                <ListItem on:click={() => {goToDirectory(dItem.name)}} title={dItem.name}></ListItem>
+                <ListItem
+                    on:click={() => {
+                        fileFinderPresenter.setCurrentFullLocation(dItem.completePath);
+                    }} 
+                    title={dItem.name}>
+                </ListItem>
             {/if}
         {/each}
     </List>
 
-    <div>{currentDirectory}</div>
+    <div>{path.win32.join(currentDrive, currentDirectory)}</div>
 
-    <Link
-        on:click={() => {
-            selectCallback({
-                directory: currentDirectory
-            });
-            f7router.back();
-        }}
-    >Back</Link>
+    {#if selectDirectory}
+        <Link
+            on:click={() => {
+                selectCallback({
+                    selectedPath: path.win32.join(currentDrive, currentDirectory)
+                });
+                f7router.back();
+            }}
+        >Select Directory</Link>
+    {/if}
 </Page>

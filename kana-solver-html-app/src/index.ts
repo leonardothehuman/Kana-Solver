@@ -12,10 +12,7 @@ let tgt:HTMLElement|null = document.getElementById('app');
 var app = null;
 if(tgt != null){
 	app = new App({
-		target: tgt,
-		props: {
-			name: 'world'
-		}
+		target: tgt
 	});
 }
 

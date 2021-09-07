@@ -6,6 +6,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 const config = {
   externals: {
+    'os': 'commonjs2 os',
     'fs/promises': 'commonjs2 fs/promises',
     'fs': 'commonjs2 fs',
     'path': 'commonjs2 path',
