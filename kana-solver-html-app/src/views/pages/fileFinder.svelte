@@ -2,7 +2,7 @@
     import {Navbar, Page, List, ListItem, Link, Input} from 'framework7-svelte';
     import path from "path";
     import {FileFinderPresenter} from "../../presenters/fileFinderPresenter";
-    import type {IFileFinderView, objectRepresentation } from "../../presenters/fileFinderPresenter";
+    import type {IFileFinderView, objectRepresentation, breadCrumbItem } from "../../presenters/fileFinderPresenter";
 
     export let extensionList:string[] = [];
     export let selectDirectory:boolean = false;
@@ -19,6 +19,7 @@
     let selectableExtensionList: string[] = [...extensionList, "*.*"];
     let selectableDriveList: string[] = [];
     let currentDirectoryObjectsList: objectRepresentation[] = [];
+    let breadCrumb: breadCrumbItem[] = [];
 
     //Selected items
     let currentDrive:string = '';
@@ -29,6 +30,11 @@
         setCurrentDirectoryObjectsList: (list: objectRepresentation[], onlyOnChange: boolean) => {
             if(currentDirectoryObjectsList == list && onlyOnChange == true) return false;
             currentDirectoryObjectsList = list;
+            return true;
+        },
+        setBreadcrumb: (b: breadCrumbItem[], onlyOnChange: boolean) => {
+            if(breadCrumb  == b && onlyOnChange == true) return false;
+            breadCrumb = b;
             return true;
         },
 
@@ -81,37 +87,47 @@
 
 <Page>
     <Navbar title="Select directory" backLink />
-    <Input
-        label="Disk drive"
-        type="select"
-        bind:value={currentDrive}
-        placeholder="Select a drive"
-    >
-        {#each selectableDriveList as drive}
-            <option value={drive}>{drive}</option>
-        {/each}
-    </Input>
-    <Input
-        label="Type"
-        type="select"
-        bind:value={selectedExtention}
-        placeholder="Type"
-    >
-        {#each selectableExtensionList as ext}
-            <option value={ext}>{ext}</option>
-        {/each}
-    </Input>
+    <List>
+        <ListItem title="Drive" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
+            <select name="Drive" bind:value={currentDrive}>
+                {#each selectableDriveList as drive}
+                    <option value={drive}>{drive}</option>
+                {/each}
+            </select>
+            <span slot="after">{currentDrive}</span>
+        </ListItem>
+
+        <ListItem title="Extension" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
+            <select name="Extension" bind:value={selectedExtention}>
+                {#each selectableExtensionList as ext}
+                    <option value={ext}>{ext}</option>
+                {/each}
+            </select>
+            <span slot="after">{selectedExtention}</span>
+        </ListItem>
+    </List>
+
+    {#each breadCrumb as bc}
+        <Link
+            on:click={() => {
+                fileFinderPresenter.setCurrentFullLocation(bc.completePath);
+            }} 
+        >{bc.name}</Link><span>\</span>
+    {/each}
     
     <List>
         {#each currentDirectoryObjectsList as dItem}
             {#if dItem.isFile}
-                <ListItem on:click={() => {
-                    if(selectDirectory == true) return;
-                    selectCallback({
-                        selectedPath: dItem.completePath
-                    });
-                    f7router.back();
-                }} title={dItem.name}></ListItem>
+                <ListItem 
+                    on:click={() => {
+                        if(selectDirectory == true) return;
+                        selectCallback({
+                            selectedPath: dItem.completePath
+                        });
+                        f7router.back();
+                    }} title={dItem.name}>
+                    <i slot="media" class="f7-icons">archivebox</i>
+                </ListItem>
             {/if}
             {#if dItem.isDirectory}
                 <ListItem
@@ -119,6 +135,7 @@
                         fileFinderPresenter.setCurrentFullLocation(dItem.completePath);
                     }} 
                     title={dItem.name}>
+                    <i slot="media" class="f7-icons">folder</i>
                 </ListItem>
             {/if}
         {/each}

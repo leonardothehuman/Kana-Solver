@@ -10,8 +10,14 @@ export type objectRepresentation = {
     isFile: boolean
 }
 
+export type breadCrumbItem = {
+    name: string,
+    completePath: string
+}
+
 export interface IFileFinderView{
     setCurrentDirectoryObjectsList: (list: objectRepresentation[], onlyOnChange: boolean) => boolean;
+    setBreadcrumb: (b: breadCrumbItem[], onlyOnChange: boolean) => boolean;
 
     getDriveList:() => Array<string>;
     setDriveList:(list: Array<string>, onlyOnChange: boolean) => boolean;
@@ -26,13 +32,14 @@ export interface IFileFinderView{
     setCurrentExtention: (d: string, onlyOnChange: boolean) => boolean;
 }
 
+//Some getters and setters are only wrappers to modify the view
 export class FileFinderPresenter{
     //Initialization
     private _view: IFileFinderView;
     private _currentUnfilteredDirectoryObjectList: objectRepresentation[];
     constructor(view: IFileFinderView){
         this._view = view;
-        this._currentUnfilteredDirectoryObjectList = [];
+        this._currentUnfilteredDirectoryObjectList = [];//Unfiltered list of files on the current directory
     }
     //Must be called to initialize the state of the class and the view
     public async init(initialDirectory: string){
@@ -55,9 +62,6 @@ export class FileFinderPresenter{
     private get view(): IFileFinderView {
         return this._view;
     }
-    private setView(value: IFileFinderView) {
-        this._view = value;
-    }
     private get currentUnfilteredDirectoryObjectList(): objectRepresentation[] {
         return this._currentUnfilteredDirectoryObjectList;
     }
@@ -79,7 +83,7 @@ export class FileFinderPresenter{
     public async setCurrentDrive(drive: string, goToRoot: boolean, fromUi: boolean){
         try {
             if(!this.view.setCurrentDrive(drive, true) && fromUi == false) return;
-            if(goToRoot == true) {await this.setCurrentFullLocation(drive + "\\");}
+            if(goToRoot == true) {await this.setCurrentFullLocation(drive + path.win32.sep);}
         } catch (error) {
             console.log(error);
         }
@@ -93,7 +97,7 @@ export class FileFinderPresenter{
             let fullDestination = path.win32.join(this.currentDrive, location);
             const dir = await fsp.readdir(fullDestination, {withFileTypes: true});
             let directoryList: objectRepresentation[] = [];
-            if(location != '\\'){
+            if(location != path.win32.sep){
                 directoryList.push({
                     completePath: path.win32.normalize(path.win32.join(fullDestination, '..')),
                     name: "..",
@@ -110,6 +114,23 @@ export class FileFinderPresenter{
                 });
             }
             this.view.setCurrentDirectory(location, true);
+            let breadCrumb: breadCrumbItem[] = [];
+            breadCrumb.push({
+                name: this.currentDrive,
+                completePath: this.currentDrive + path.win32.sep
+            });
+            if(location != path.win32.sep){
+                let splitPath = path.win32.normalize(location).split(path.win32.sep).filter((val) => {
+                    return val.length > 0;
+                });
+                for(var i = 0; i < splitPath.length; i++){
+                    breadCrumb.push({
+                        name: splitPath[i],
+                        completePath: path.win32.join(this.currentDrive, ...splitPath.slice(0, i + 1))
+                    });
+                }
+            }
+            this.view.setBreadcrumb(breadCrumb, true);
             this.setcurrentUnfilteredDirectoryObjectList(directoryList);
         } catch (err) {
             console.error(err);
