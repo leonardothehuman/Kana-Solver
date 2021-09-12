@@ -1,3 +1,5 @@
+//This file is licensed under GNU GPL v3.0 only license
+
 import Home from './views/pages/home.svelte';
 import Extract from './views/pages/extract.svelte';
 import ConversionEditor from './views/pages/conversionEditor.svelte';

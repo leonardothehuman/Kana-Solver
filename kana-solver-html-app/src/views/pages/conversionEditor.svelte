@@ -1,4 +1,5 @@
 <script lang="ts">
+    //This file is licensed under GNU GPL v3.0 only license
     import {Page, Navbar, Row, Col, Input, Button, List, ListInput, ListItem} from "framework7-svelte";
     
     let ConversionFile: Array<{

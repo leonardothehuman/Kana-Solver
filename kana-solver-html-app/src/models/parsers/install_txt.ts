@@ -1,3 +1,5 @@
+//This file is licensed under GNU GPL v3.0 only license
+
 import {php_explode} from '../modules/helpers'
 
 export function parseInstallTxt(text:string){

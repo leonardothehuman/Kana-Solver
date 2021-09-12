@@ -1,4 +1,5 @@
 <script lang="ts">
+    //This file is licensed under MIT license
     import {Navbar, Page, List, ListItem, Link, Input} from 'framework7-svelte';
     import path from "path";
     import {FileFinderPresenter} from "../../presenters/fileFinderPresenter";

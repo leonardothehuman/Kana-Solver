@@ -1,6 +1,7 @@
 {
 	"name": "Mukirana",
 	"main": "index.html",
+	"license": "(GPL-3.0-only OR MIT)",
 	"window": {
 		"toolbar": true,
 		"frame": true,

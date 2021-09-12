@@ -1,5 +1,5 @@
 <script>
-    //C:\Users\Leonardo\AppData\Roaming\UTAU\voice\
+    //This file is licensed under GNU GPL v3.0 only license
     const yauzl = require("yauzl");
     var iconv = require('iconv-lite');
     const fsp = require("fs/promises");

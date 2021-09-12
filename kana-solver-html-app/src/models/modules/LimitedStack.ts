@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 export class LimitedStack<T>{
     private stack:T[] = []
     constructor(ammount:number, initialFill:T){

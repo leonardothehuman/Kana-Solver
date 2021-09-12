@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 const Downloader = require('nodejs-file-downloader');
 const yauzl = require("yauzl");
 const fs = require('fs');

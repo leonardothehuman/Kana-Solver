@@ -1,3 +1,5 @@
+//This file is licensed under GNU GPL v3.0 only license
+
 import Framework7 from 'framework7/lite-bundle';
 import Framework7Svelte from 'framework7-svelte';
 import App from './App.svelte';

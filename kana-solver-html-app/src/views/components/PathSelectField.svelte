@@ -1,4 +1,5 @@
 <script lang="ts">
+    //This file is licensed MIT license
     import {ListInput, Input, Button, Row, Col} from "framework7-svelte";
     import FileFinder from "../pages/fileFinder.svelte";
     export let label:string = "";

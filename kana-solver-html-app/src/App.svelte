@@ -1,4 +1,5 @@
 <script lang="ts">
+	//This file is licensed under GNU GPL v3.0 only license
 	import {App, View} from 'framework7-svelte';
 	import {Routes} from './routes';
 	import {masterRoute, masterDetailBreakpoint} from './generated/config/config';

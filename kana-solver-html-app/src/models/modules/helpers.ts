@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 export function php_explode(delimiter: string | boolean, string: string, limit: number): false | string[] {
     //  discuss at: https://locutus.io/php/explode/
     // original by: Kevin van Zonneveld (https://kvz.io)

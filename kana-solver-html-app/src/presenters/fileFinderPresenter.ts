@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 const nodeDiskInfo = require("node-disk-info");
 import fsp from "fs/promises";
 import path from "path";

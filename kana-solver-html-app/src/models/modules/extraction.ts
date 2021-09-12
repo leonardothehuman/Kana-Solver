@@ -1,3 +1,5 @@
+//This file is licensed under GNU GPL v3.0 only license
+
 import yauzl from 'yauzl';
 import iconv from 'iconv-lite';
 import path from 'path';

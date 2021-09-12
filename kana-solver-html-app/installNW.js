@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');

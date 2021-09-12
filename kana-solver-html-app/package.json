@@ -15,7 +15,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "MIT",
+  "license": "(GPL-3.0-only OR MIT)",
   "devDependencies": {
     "@tsconfig/svelte": "^2.0.1",
     "@types/yauzl": "^2.9.2",

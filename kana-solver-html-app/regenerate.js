@@ -1,8 +1,10 @@
+//This file is licensed under MIT license
+
 const fs = require('fs');
 const path = require('path');
 
 //Generate "src/generated/config.ts" and "src/generated/config.less" from mainAppConfig.js
-const mainAppConfig = require("./generatorData/mainAppConfig");
+const mainAppConfig = require("./generatorData/mainAppConfig");//This is not a gpl dependency, you could use any file for the generator (the author of both files ...)
 var toSave = "";
 toSave += `export const masterRoute: string = "${mainAppConfig.masterRoute}";\n` //Home page
 toSave += `export const mainDetailPage: string = "${mainAppConfig.mainDetailPage}";\n` //Prefered detail page when we don't have what to show

@@ -1,4 +1,5 @@
 <script lang="ts">
+    //This file is licensed under GNU GPL v3.0 only license
     import {Page, List, ListItem, Navbar, theme, f7, Toolbar, Link, Icon} from "framework7-svelte";
     import type { Router } from "framework7/types";
     import { onMount } from 'svelte';

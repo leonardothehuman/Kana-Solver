@@ -1,4 +1,4 @@
-const { NewLineKind } = require("typescript");
+//This file is licensed under MIT license
 
 console.log("");
 console.log("");
