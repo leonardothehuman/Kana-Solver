@@ -1,0 +1,3 @@
+Remove state responsabilities from viewas
+Always scroll to top
+go to file's directory

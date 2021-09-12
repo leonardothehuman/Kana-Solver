@@ -26,6 +26,10 @@
         <PathSelectField
             label="Utauloid to install"
             extensionList={['*.zip', '*.rar']}
+            extensionLabels={{
+                '*.zip': "ZIP files",
+                '*.rar': "rar file"
+            }}
             bind:selectedPath={utauVoicebank}
             selectDirectory={false}></PathSelectField>
     </List>

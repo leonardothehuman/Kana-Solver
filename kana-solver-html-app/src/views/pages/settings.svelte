@@ -12,7 +12,6 @@
     <List noHairlinesMd>
         <PathSelectField
             label="Utau installation directory"
-            extensionList={['*.zip', '*.rar']}
             bind:selectedPath={installationDirectory}
             selectDirectory={true}></PathSelectField>
     </List>

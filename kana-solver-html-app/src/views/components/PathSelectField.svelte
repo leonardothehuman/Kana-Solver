@@ -5,7 +5,12 @@
     export let label:string = "";
     export let selectedPath:string = "";
     export let extensionList:string[] = [];
+    export let extensionLabels: {[key:string]:string} = {};
     export let selectDirectory:boolean = false;
+
+    if(extensionLabels["*.*"] === undefined){
+        extensionLabels["*.*"] = "All files";
+    }
 
     let FileFinderProps = FileFinder.prototype.$$prop_def;
 
@@ -14,6 +19,7 @@
             selectedPath = e.selectedPath
         },
         extensionList: extensionList,
+        extensionLabels: extensionLabels,
         selectDirectory: selectDirectory,
         initialDirectory: selectedPath
     }

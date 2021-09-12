@@ -1,12 +1,13 @@
 <script lang="ts">
     //This file is licensed under MIT license
-    import {Navbar, Page, List, ListItem, Link, Input} from 'framework7-svelte';
+    import {Navbar, Page, List, ListItem, Link, Toolbar, Subnavbar, ListGroup} from 'framework7-svelte';
     import path from "path";
     import {FileFinderPresenter} from "../../presenters/fileFinderPresenter";
     import type {IFileFinderView, objectRepresentation, breadCrumbItem } from "../../presenters/fileFinderPresenter";
     import { f7 } from 'framework7-svelte';
 
     export let extensionList:string[] = [];
+    export let extensionLabels: {[key:string]:string} = {};
     export let selectDirectory:boolean = false;
     export let initialDirectory: string = "";
     export let f7router: { back: () => void; };
@@ -70,7 +71,7 @@
     }
 
     
-    let fileFinderPresenter:FileFinderPresenter = new FileFinderPresenter(externalInterface);
+    let fileFinderPresenter:FileFinderPresenter = new FileFinderPresenter(externalInterface, selectDirectory);
     f7.dialog.preloader("Loading ...");
     fileFinderPresenter.init(
         initialDirectory
@@ -111,82 +112,149 @@
             f7.dialog.alert(error, 'Failed to select a directory');
         }
     }
+
+    let navbarTitle = "Select a file";
+    let customtoolbarClass = "customtoolbar";
+    if(selectDirectory){
+        navbarTitle = "Select a directory";
+        customtoolbarClass = "";
+    }
+
+    let listArguments: any = {
+        ul: false
+    }
 </script>
 
+<style lang="less">
+    .breadcrumbs-container{
+        width: 100%;
+        height: 100%;
+        overflow-x: auto;
+        overflow-y: clip;
+        padding: 0px;
+        margin: 0px;
+    }
+    .breadcrumbs{
+        display: inline;
+        white-space: nowrap;
+    }
+    .breadcrumbs :global(.link),
+    .breadcrumbs :global(span){
+        display: inline;
+    }
+    .customtoolbar{
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    .customtoolbar :global(.list){
+        width: 100%;
+    }
+    .customtoolbar :global(.list .item-after){
+        color: var(--f7-text-color);
+    }
+    .content-container{
+        height: 100%;
+        overflow: auto;
+    }
+    .content-container :global(.list){
+        margin-top: -1px;
+    }
+</style>
+
 <Page>
-    {#if selectDirectory}
-        <Navbar title="Select a directory" backLink />
-    {:else}
-        <Navbar title="Select a file" backLink />
-    {/if}
-    
-    <List>
-        <ListItem title="Drive" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
-            <select name="Drive" bind:value={currentDrive}>
-                {#each selectableDriveList as drive}
-                    <option value={drive}>{drive}</option>
-                {/each}
-                {#if !selectableDriveList.includes(currentDrive)}
-                    <option value={currentDrive}>{currentDrive}</option>
-                {/if}
-            </select>
-            <span slot="after">{currentDrive}</span>
-        </ListItem>
+    <Navbar title={navbarTitle} backLink>
+        <Subnavbar>
+            <div class="breadcrumbs-container">
+                <span class="breadcrumbs">
+                    {#each breadCrumb as bc}
+                        <Link
+                            on:click={async() => {
+                                await goToDirectory(bc.completePath);
+                            }} 
+                        >{bc.name}</Link><span>\</span>
+                    {/each}
+                </span>
+            </div>
+        </Subnavbar>
+    </Navbar>
 
-        <ListItem title="Extension" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
-            <select name="Extension" bind:value={selectedExtention}>
-                {#each selectableExtensionList as ext}
-                    <option value={ext}>{ext}</option>
+    <div class="content-container">
+        <List {...listArguments}>
+            <ListGroup>
+                <ListItem groupTitle title="Disk drive"></ListItem>
+                <ListItem title="Drive" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
+                    <select name="Drive" bind:value={currentDrive}>
+                        {#each selectableDriveList as drive}
+                            <option value={drive}>{drive}</option>
+                        {/each}
+                        {#if !selectableDriveList.includes(currentDrive)}
+                            <option value={currentDrive}>{currentDrive}</option>
+                        {/if}
+                    </select>
+                    <span slot="after">{currentDrive}</span>
+                    <i slot="media" class="f7-icons">house</i>
+                </ListItem>
+            </ListGroup>
+            <ListGroup>
+                <ListItem groupTitle title="Files"></ListItem>
+                {#each currentDirectoryObjectsList as dItem}
+                    {#if dItem.isDirectory}
+                        <ListItem link="#"
+                            on:click={async() => {
+                                await goToDirectory(dItem.completePath);
+                            }} 
+                            title={dItem.name}>
+                            <i slot="media" class="f7-icons">folder</i>
+                        </ListItem>
+                    {/if}
                 {/each}
-            </select>
-            <span slot="after">{selectedExtention}</span>
-        </ListItem>
-    </List>
+                {#each currentDirectoryObjectsList as dItem}
+                    {#if dItem.isFile}
+                        <ListItem link="#"
+                            on:click={() => {
+                                if(selectDirectory == true) return;
+                                selectCallback({
+                                    selectedPath: dItem.completePath
+                                });
+                                f7router.back();
+                            }} title={dItem.name}>
+                            <i slot="media" class="f7-icons">archivebox</i>
+                        </ListItem>
+                    {/if}
+                {/each}
+            </ListGroup>
+        </List>
+    </div>
 
-    {#each breadCrumb as bc}
-        <Link
-            on:click={async() => {
-                await goToDirectory(bc.completePath);
-            }} 
-        >{bc.name}</Link><span>\</span>
-    {/each}
-    
-    <List>
-        {#each currentDirectoryObjectsList as dItem}
-            {#if dItem.isFile}
-                <ListItem 
+    <Toolbar position="bottom" inner={false}>
+        <div class="toolbar-inner {customtoolbarClass}">
+            <Link></Link>
+            {#if selectDirectory}
+                <Link
                     on:click={() => {
-                        if(selectDirectory == true) return;
                         selectCallback({
-                            selectedPath: dItem.completePath
+                            selectedPath: path.win32.join(currentDrive, currentDirectory)
                         });
                         f7router.back();
-                    }} title={dItem.name}>
-                    <i slot="media" class="f7-icons">archivebox</i>
-                </ListItem>
+                    }}
+                >Select Directory</Link>
+            {:else}
+                <List>
+                    <ListItem title="{extensionLabels[selectedExtention]}" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
+                        <select name="Extension" bind:value={selectedExtention}>
+                            {#each selectableExtensionList as ext}
+                                <option value={ext}>
+                                    {#if extensionLabels[ext]}
+                                        {extensionLabels[ext]} 
+                                    {/if}
+                                    ({ext})
+                                </option>
+                            {/each}
+                        </select>
+                        <span slot="after">{selectedExtention}</span>
+                    </ListItem>
+                </List>
             {/if}
-            {#if dItem.isDirectory}
-                <ListItem
-                    on:click={async() => {
-                        await goToDirectory(dItem.completePath);
-                    }} 
-                    title={dItem.name}>
-                    <i slot="media" class="f7-icons">folder</i>
-                </ListItem>
-            {/if}
-        {/each}
-    </List>
-
-    <div>{path.win32.join(currentDrive, currentDirectory)}</div>
-
-    {#if selectDirectory}
-        <Link
-            on:click={() => {
-                selectCallback({
-                    selectedPath: path.win32.join(currentDrive, currentDirectory)
-                });
-                f7router.back();
-            }}
-        >Select Directory</Link>
-    {/if}
+        </div>
+    </Toolbar>
 </Page>

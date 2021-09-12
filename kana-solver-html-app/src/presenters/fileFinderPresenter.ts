@@ -45,7 +45,9 @@ export class FileFinderPresenter{
     private _view: IFileFinderView;
     private _currentUnfilteredDirectoryObjectList: objectRepresentation[];
     private _currentDrive: string;
-    constructor(view: IFileFinderView){
+    private selectDirectory: boolean;
+    constructor(view: IFileFinderView, _selectDirectory: boolean){
+        this.selectDirectory = _selectDirectory;
         this._view = view;
         this._currentUnfilteredDirectoryObjectList = [];//Unfiltered list of files on the current directory
         this._currentDrive = "";
@@ -181,24 +183,30 @@ export class FileFinderPresenter{
         await this.setCurrentDirectory(location);
     }
 
-    //Updates the visible files list
-    private updateFileList(){
-        if(this.currentExtention == "*.*"){
-            this.view.setCurrentDirectoryObjectsList([...this.currentUnfilteredDirectoryObjectList], true);
-        }else{
-            let toSet:objectRepresentation[] = [];
+    private displayCurrenfFile(f: objectRepresentation): boolean{
+        if(this.currentExtention == "*.*" && !this.selectDirectory){
+            return true;
+        }else if(!this.selectDirectory){
             let extParts = this.currentExtention.split(".");
             let ext = '.' + extParts[extParts.length - 1];
-            for(let i = 0; i < this.currentUnfilteredDirectoryObjectList.length; i++){
-                if(
-                    path.win32.extname(this.currentUnfilteredDirectoryObjectList[i].completePath) == ext ||
-                    this.currentUnfilteredDirectoryObjectList[i].isDirectory
-                ){
-                    toSet.push(this.currentUnfilteredDirectoryObjectList[i]);
-                }
+            if(path.win32.extname(f.completePath).toUpperCase() == ext.toUpperCase() || f.isDirectory){
+                return true;
             }
-            this.view.setCurrentDirectoryObjectsList(toSet, true);
+        }else if(this.selectDirectory){
+            return f.isDirectory;
         }
+        return false;
+    }
+
+    //Updates the visible files list
+    private updateFileList(){
+        let toSet:objectRepresentation[] = [];
+        for(let i = 0; i < this.currentUnfilteredDirectoryObjectList.length; i++){
+            if(this.displayCurrenfFile(this.currentUnfilteredDirectoryObjectList[i])){
+                toSet.push(this.currentUnfilteredDirectoryObjectList[i]);
+            }
+        }
+        this.view.setCurrentDirectoryObjectsList(toSet, true);
     }
 
     //Data transformation
