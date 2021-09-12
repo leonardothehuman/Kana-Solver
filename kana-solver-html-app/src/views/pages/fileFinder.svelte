@@ -3,6 +3,7 @@
     import path from "path";
     import {FileFinderPresenter} from "../../presenters/fileFinderPresenter";
     import type {IFileFinderView, objectRepresentation, breadCrumbItem } from "../../presenters/fileFinderPresenter";
+    import { f7 } from 'framework7-svelte';
 
     export let extensionList:string[] = [];
     export let selectDirectory:boolean = false;
@@ -67,14 +68,29 @@
         }
     }
 
+    
     let fileFinderPresenter:FileFinderPresenter = new FileFinderPresenter(externalInterface);
+    f7.dialog.preloader("Loading ...");
     fileFinderPresenter.init(
         initialDirectory
-    );
+    ).then(() => {
+        f7.dialog.close();
+    }).catch((error) => {
+        f7.dialog.close();
+        f7.dialog.alert(error, 'Failed to load a directory');
+    });
     
     let driveFirstLoad = true;
     $: {
-        if(driveFirstLoad == false) fileFinderPresenter.setCurrentDrive(currentDrive, true, true);
+        if(driveFirstLoad == false){
+            f7.dialog.preloader("Loading ...");
+            fileFinderPresenter.setCurrentDrive(currentDrive, true).then(() => {
+                f7.dialog.close();
+            }).catch((error) => {
+                f7.dialog.close();
+                f7.dialog.alert(error, 'Failed to select a drive');
+            });
+        }
         driveFirstLoad = false;
     }
 
@@ -83,16 +99,35 @@
         if(extFirstLoad == false) fileFinderPresenter.setCurrentExtention(selectedExtention);
         extFirstLoad = false;
     }
+
+    async function goToDirectory(directory: string){
+        f7.dialog.preloader("Loading ...");
+        try {
+            await fileFinderPresenter.setCurrentFullLocation(directory);
+            f7.dialog.close();
+        } catch (error) {
+            f7.dialog.close();
+            f7.dialog.alert(error, 'Failed to select a directory');
+        }
+    }
 </script>
 
 <Page>
-    <Navbar title="Select directory" backLink />
+    {#if selectDirectory}
+        <Navbar title="Select a directory" backLink />
+    {:else}
+        <Navbar title="Select a file" backLink />
+    {/if}
+    
     <List>
         <ListItem title="Drive" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
             <select name="Drive" bind:value={currentDrive}>
                 {#each selectableDriveList as drive}
                     <option value={drive}>{drive}</option>
                 {/each}
+                {#if !selectableDriveList.includes(currentDrive)}
+                    <option value={currentDrive}>{currentDrive}</option>
+                {/if}
             </select>
             <span slot="after">{currentDrive}</span>
         </ListItem>
@@ -109,8 +144,8 @@
 
     {#each breadCrumb as bc}
         <Link
-            on:click={() => {
-                fileFinderPresenter.setCurrentFullLocation(bc.completePath);
+            on:click={async() => {
+                await goToDirectory(bc.completePath);
             }} 
         >{bc.name}</Link><span>\</span>
     {/each}
@@ -131,8 +166,8 @@
             {/if}
             {#if dItem.isDirectory}
                 <ListItem
-                    on:click={() => {
-                        fileFinderPresenter.setCurrentFullLocation(dItem.completePath);
+                    on:click={async() => {
+                        await goToDirectory(dItem.completePath);
                     }} 
                     title={dItem.name}>
                     <i slot="media" class="f7-icons">folder</i>
