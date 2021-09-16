@@ -1,14 +1,9 @@
 //This file is licensed under MIT license
 
-const nodeDiskInfo = require("node-disk-info");
-import fsp from "fs/promises";
-import path from "path";
-import os from "os";
-
 //Just for testing, must be removed ...
-function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+// function sleep(ms: number) {
+//     return new Promise(resolve => setTimeout(resolve, ms));
+// }
 
 export type objectRepresentation = {
     completePath: string,
@@ -20,6 +15,19 @@ export type objectRepresentation = {
 export type breadCrumbItem = {
     name: string,
     completePath: string
+}
+
+export interface IFileFinderModel{
+    getAvailableDriveList: () => Promise<string[]>;
+    getAllFilesOnDirectory: (d: string) => Promise<objectRepresentation[]>;
+    goToParentDirectory: (p: string) => string;
+    homeDirectory: () => string;
+    defaultPathSeparator: () => string;
+    pathToArray: (p: string) => string[];
+    joinPath: (...p: string[]) => string;
+    normalizePath:(p: string) => string;
+    extractExtention: (p: string) => string;
+    pathIsAbsolute:(p: string) => boolean;
 }
 
 export interface IFileFinderView{
@@ -43,36 +51,39 @@ export interface IFileFinderView{
 export class FileFinderPresenter{
     //Initialization
     private _view: IFileFinderView;
+    private _model: IFileFinderModel;
     private _currentUnfilteredDirectoryObjectList: objectRepresentation[];
     private _currentDrive: string;
     private selectDirectory: boolean;
-    constructor(view: IFileFinderView, _selectDirectory: boolean){
+    constructor(view: IFileFinderView, model: IFileFinderModel, _selectDirectory: boolean){
         this.selectDirectory = _selectDirectory;
         this._view = view;
         this._currentUnfilteredDirectoryObjectList = [];//Unfiltered list of files on the current directory
         this._currentDrive = "";
+        this._model = model;
     }
     
     //Must be called to initialize the state of the class and the view
     public async init(initialDirectory: string){
-        let _driveList = await nodeDiskInfo.getDiskInfo();
-        let driveList: Array<string> = [];
-        for(let i = 0; i < _driveList.length; i++){
-            if(_driveList[i].mounted)
-                driveList.push(_driveList[i].mounted);
-        }
+        let driveList = await this.model.getAvailableDriveList();
         try {
             //this.setCurrentExtention(initialExtention);
             this.setCurrentDriveList(driveList);
+            if(this.selectDirectory == false){
+                initialDirectory = this.model.goToParentDirectory(initialDirectory);
+            }
             await this.setCurrentFullLocation(initialDirectory);
         } catch (err) {
-            await this.setCurrentFullLocation(os.homedir());
+            await this.setCurrentFullLocation(this.model.homeDirectory());
         }
     }
 
     //Getters and setters
     private get view(): IFileFinderView {
         return this._view;
+    }
+    public get model(): IFileFinderModel {
+        return this._model;
     }
     private get currentUnfilteredDirectoryObjectList(): objectRepresentation[] {
         return this._currentUnfilteredDirectoryObjectList;
@@ -100,7 +111,7 @@ export class FileFinderPresenter{
         this._currentDrive = drive;
         if(goToRoot == true){
             try {
-                await this.setCurrentFullLocation(drive + path.win32.sep);
+                await this.setCurrentFullLocation(drive + this.model.defaultPathSeparator());
             } catch (error) {
                 this.setCurrentDrive(previousDrive, false);
                 throw error;
@@ -114,16 +125,14 @@ export class FileFinderPresenter{
         let breadCrumb: breadCrumbItem[] = [];
         breadCrumb.push({
             name: _drive,
-            completePath: _drive + path.win32.sep
+            completePath: _drive + this.model.defaultPathSeparator()
         });
-        if(_path != path.win32.sep){
-            let splitPath = path.win32.normalize(_path).split(path.win32.sep).filter((val) => {
-                return val.length > 0;
-            });
+        if(_path != this.model.defaultPathSeparator()){
+            let splitPath = this.model.pathToArray(_path);
             for(var i = 0; i < splitPath.length; i++){
                 breadCrumb.push({
                     name: splitPath[i],
-                    completePath: path.win32.join(_drive, ...splitPath.slice(0, i + 1))
+                    completePath: this.model.joinPath(_drive, ...splitPath.slice(0, i + 1))
                 });
             }
         }
@@ -131,24 +140,16 @@ export class FileFinderPresenter{
     }
     //Sets the current directory relative to the current drive
     private async setCurrentDirectory(location: string){
-        let fullDestination = path.win32.join(this.currentDrive, location);
-        const dir = await fsp.readdir(fullDestination, {withFileTypes: true});
-        let directoryList: objectRepresentation[] = [];
-        if(location != path.win32.sep){
-            directoryList.push({
-                completePath: path.win32.normalize(path.win32.join(fullDestination, '..')),
+        let fullDestination = this.model.joinPath(this.currentDrive, location);
+        let directoryList: objectRepresentation[] = await this.model.getAllFilesOnDirectory(fullDestination);
+        if(this.model.normalizePath(location) != this.model.defaultPathSeparator()){
+            let parent: objectRepresentation = {
+                completePath: this.model.normalizePath(this.model.joinPath(fullDestination, '..')),
                 name: "..",
                 isDirectory: true,
                 isFile: false
-            });
-        }
-        for(let i = 0; i < dir.length; i++){
-            directoryList.push({
-                completePath: path.win32.normalize(path.win32.join(fullDestination, dir[i].name)),
-                name: dir[i].name,
-                isDirectory: dir[i].isDirectory(),
-                isFile: dir[i].isFile()
-            });
+            };
+            directoryList = [parent, ...directoryList];
         }
         this.view.setCurrentDirectory(location, true);
         this.view.setBreadcrumb(this.processBreadCrumbs(this.currentDrive, location), true);
@@ -172,7 +173,7 @@ export class FileFinderPresenter{
             drive = this.getDriveFromPath(_location);
             location = this.getPathWithoutDrive(_location);
         } catch (error) {
-            _location = os.homedir();
+            _location = this.model.homeDirectory();
             drive = this.getDriveFromPath(_location);
             location = this.getPathWithoutDrive(_location);
         }
@@ -189,7 +190,7 @@ export class FileFinderPresenter{
         }else if(!this.selectDirectory){
             let extParts = this.currentExtention.split(".");
             let ext = '.' + extParts[extParts.length - 1];
-            if(path.win32.extname(f.completePath).toUpperCase() == ext.toUpperCase() || f.isDirectory){
+            if(this.model.extractExtention(f.completePath).toUpperCase() == ext.toUpperCase() || f.isDirectory){
                 return true;
             }
         }else if(this.selectDirectory){
@@ -216,7 +217,7 @@ export class FileFinderPresenter{
         if(
             driveSplit.length != 2 ||
             driveSplit[0].length != 1 ||
-            !path.win32.isAbsolute(p)
+            !this.model.pathIsAbsolute(p)
         ){
             throw new Error("The given path is not valid or does not contain a drive");
         }
@@ -228,7 +229,7 @@ export class FileFinderPresenter{
         if(
             driveSplit.length != 2 ||
             driveSplit[0].length != 1 ||
-            !path.win32.isAbsolute(p)
+            !this.model.pathIsAbsolute(p)
         ){
             throw new Error("The given path is not valid or does not contain a drive");
         }

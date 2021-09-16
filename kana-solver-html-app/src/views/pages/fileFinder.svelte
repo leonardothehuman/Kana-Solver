@@ -1,8 +1,11 @@
 <script lang="ts">
     //This file is licensed under MIT license
     import {Navbar, Page, List, ListItem, Link, Toolbar, Subnavbar, ListGroup} from 'framework7-svelte';
+    import {getContext} from 'svelte';
+    import keys from '../../keys';
     import path from "path";
     import {FileFinderPresenter} from "../../presenters/fileFinderPresenter";
+    import type Models from "../../models";
     import type {IFileFinderView, objectRepresentation, breadCrumbItem } from "../../presenters/fileFinderPresenter";
     import { f7 } from 'framework7-svelte';
 
@@ -15,6 +18,8 @@
     type selectCallbackEvent = {
         selectedPath:string
     }
+
+    let models:typeof Models = getContext(keys.kanaSolverAppModels);
 
     //ONLY MODIFY VARIABLES THAT HAVE REACTIVE CODE TO CALL THE HELPERS ON THE PRESENTER
     //OR THAT ARE NOT USED BY THE PRESENTER
@@ -71,7 +76,11 @@
     }
 
     
-    let fileFinderPresenter:FileFinderPresenter = new FileFinderPresenter(externalInterface, selectDirectory);
+    let fileFinderPresenter:FileFinderPresenter = new FileFinderPresenter(
+        externalInterface,
+        new models.FileFinderModel(),
+        selectDirectory
+    );
     f7.dialog.preloader("Loading ...");
     fileFinderPresenter.init(
         initialDirectory
@@ -102,11 +111,14 @@
         extFirstLoad = false;
     }
 
+    let mainContainer: HTMLDivElement;
+
     async function goToDirectory(directory: string){
         f7.dialog.preloader("Loading ...");
         try {
             await fileFinderPresenter.setCurrentFullLocation(directory);
             f7.dialog.close();
+            mainContainer.scrollTop = 0;
         } catch (error) {
             f7.dialog.close();
             f7.dialog.alert(error, 'Failed to select a directory');
@@ -178,7 +190,7 @@
         </Subnavbar>
     </Navbar>
 
-    <div class="content-container">
+    <div class="content-container" bind:this={mainContainer}>
         <List {...listArguments}>
             <ListGroup>
                 <ListItem groupTitle title="Disk drive"></ListItem>
