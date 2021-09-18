@@ -1,5 +1,15 @@
 /*This file is licensed under GNU GPL v3.0 only license*/
 
+body{
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+*, *::after, *::before {
+	-webkit-user-drag: none;
+	-webkit-app-region: no-drag;
+}
+
 .view-master-detail .navbar-master-detail-root .link.back,
 .view-master-detail .page-master-detail-root .navbar .link.back {
   display: none;

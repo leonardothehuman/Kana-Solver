@@ -101,6 +101,9 @@ export class FileFinderPresenter{
     public get currentDrive(): string {
         return this._currentDrive;
     }
+    public getCurrentFullPath(): string{
+        return this.model.joinPath(this.currentDrive, this.currentDirectory);
+    }
     //Sets the current drive, if you don't go to root the current directory will continue to be the same
     //on the diferent drive until the directory gets changed manually
     public async setCurrentDrive(drive: string, goToRoot: boolean){

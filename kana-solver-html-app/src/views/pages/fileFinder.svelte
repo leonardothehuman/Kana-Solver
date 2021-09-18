@@ -3,7 +3,6 @@
     import {Navbar, Page, List, ListItem, Link, Toolbar, Subnavbar, ListGroup} from 'framework7-svelte';
     import {getContext} from 'svelte';
     import keys from '../../keys';
-    import path from "path";
     import {FileFinderPresenter} from "../../presenters/fileFinderPresenter";
     import type Models from "../../models";
     import type {IFileFinderView, objectRepresentation, breadCrumbItem } from "../../presenters/fileFinderPresenter";
@@ -245,7 +244,7 @@
                 <Link
                     on:click={() => {
                         selectCallback({
-                            selectedPath: path.win32.join(currentDrive, currentDirectory)
+                            selectedPath: fileFinderPresenter.getCurrentFullPath()
                         });
                         f7router.back();
                     }}
