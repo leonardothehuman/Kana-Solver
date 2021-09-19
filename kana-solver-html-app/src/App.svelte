@@ -1,13 +1,13 @@
 <script lang="ts">
 	//This file is licensed under GNU GPL v3.0 only license
 	import {setContext} from 'svelte';
-	import Models from './models';
+	import ModelsAndHandlers from './modelsAndHandlers';
 	import keys from './keys';
 	import {App, View} from 'framework7-svelte';
 	import {Routes} from './routes';
 	import {masterRoute, masterDetailBreakpoint} from './generated/config/config';
 
-	setContext(keys.kanaSolverAppModels, Models);
+	setContext(keys.kanaSolverAppModelsAndHandlers, ModelsAndHandlers);
 </script>
 
 <App theme="aurora" name="Kana Solver" id="com.github.leonardothehuman.kanaSolver" routes={Routes}>

@@ -1,9 +1,17 @@
 <script lang="ts">
     //This file is licensed MIT license
     import {ListInput, Input, Button, Row, Col, ListItem, List} from "framework7-svelte";
-    import {tick} from "svelte";
+    import {tick, getContext} from "svelte";
     import FileFinder from "../pages/fileFinder.svelte";
     import { f7 } from 'framework7-svelte';
+
+    import {ManyItemsError} from "./pathSelectFieldT";
+    import type {IPathSelectFieldHandler} from "./pathSelectFieldT";
+    
+    import keys from '../../keys';
+    import type ModelsAndHandlers from "../../modelsAndHandlers";
+    let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
+    let ph: IPathSelectFieldHandler = new modelsAndHandlers.PathSelectFieldHandler();
 
     export let label:string = "";
     export let selectedPath:string = "";
@@ -36,31 +44,36 @@
         e.preventDefault();
         animationHandlerClass = "";
         animatedItemClass = "";
-        
-        if (!e.dataTransfer.items){
-            f7.dialog.alert("No files found", 'Error');
-            return;
-        }
-        if(e.dataTransfer.items.length != 1){
-            f7.dialog.alert("You must drop no more than ONE file", 'Error');
-            return;
-        }
-        for (var i = 0; i < e.dataTransfer.items.length; i++) {
-            let entry = e.dataTransfer.items[i].webkitGetAsEntry();
-            if(entry.isDirectory == true && selectDirectory == true){
-                selectedPath = e.dataTransfer.items[i].getAsFile().path;
-            }else if(entry.isDirectory == false && selectDirectory == true){
+
+        try {
+            let dropped = ph.extractFileFromDragEvent(e);
+            if(
+                (dropped.isDirectory == true && selectDirectory == true) ||
+                (dropped.isFile == true && selectDirectory == false)
+            ){
+                selectedPath = dropped.path;
+            }else if(dropped.isDirectory == false && selectDirectory == true){
                 f7.dialog.alert("You can only drop directories here", 'Error');
-            }else if(entry.isFile == true && selectDirectory == false){
-                selectedPath = e.dataTransfer.items[i].getAsFile().path;
-            }else if(entry.isFile == false && selectDirectory == false){
+            }else if(dropped.isFile == false && selectDirectory == false){
                 f7.dialog.alert("You can only drop files here", 'Error');
             }else{
-                f7.dialog.alert("You somehow droped something that is neither a file or a directory !!!", 'Error');
+                f7.dialog.alert("You somehow dropped something that is neither a file nor a directory !!!", 'Error');
             }
+        } catch (error) {
+            if(error instanceof ManyItemsError){
+                if(selectDirectory == true){
+                    f7.dialog.alert("You can drop only ONE directory here", 'Error');
+                }else{
+                    f7.dialog.alert("You can drop only ONE file here", 'Error');
+                }
+            }else if(error instanceof Error){
+                f7.dialog.alert(error.message, 'Error');
+            }else{
+                f7.dialog.alert("Error", 'Error');
+            }
+            console.log(error);
         }
     }
-
     
     async function dragHandler(e:DragEvent){
         e.preventDefault();
@@ -76,7 +89,7 @@
         animatedItemClass = "";
     }
 
-    function dragEndHandler(){
+    function animationEndHandler(){
         if(animatedItemClass != "") return;
         animationHandlerClass = "";
     }
@@ -163,7 +176,7 @@
 <ListItem>
     <div slot="root-start">
         <div class="drop-overlay {animationHandlerClass}">
-            <div class="animated-item {forbiddenItemClass} {animatedItemClass}" on:transitionend={dragEndHandler}>
+            <div class="animated-item {forbiddenItemClass} {animatedItemClass}" on:transitionend={animationEndHandler}>
                 <div class="centered-text">
                     <i class="f7-icons">{iconToDrop}</i> You can drop a {whatToDrop} here !!!
                 </div>
@@ -191,7 +204,7 @@
                         <Col style="width: 100px">
                             <Button
                                 href="/findFile/" fill small
-                                routeProps={routeProps}>Search</Button>
+                                routeProps={routeProps}>Search ...</Button>
                         </Col>
                     </Row>
                 </div>

@@ -8,7 +8,7 @@
     import {Page, Navbar, List, ListInput, Row, Col, Input, Button, ListItem} from "framework7-svelte";
     import {readTextFile, extractUtau} from '../../models/modules/extraction';
     import {parseInstallTxt} from '../../models/parsers/install_txt';
-    import PathSelectField from "../components/PathSelectField.svelte";
+    import PathSelectField from "../components/pathSelectField.svelte";
 
     let utauVoicebank = '';
 

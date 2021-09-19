@@ -4,7 +4,7 @@
     import {getContext} from 'svelte';
     import keys from '../../keys';
     import {FileFinderPresenter} from "../../presenters/fileFinderPresenter";
-    import type Models from "../../models";
+    import type ModelsAndHandlers from "../../modelsAndHandlers";
     import type {IFileFinderView, objectRepresentation, breadCrumbItem } from "../../presenters/fileFinderPresenter";
     import { f7 } from 'framework7-svelte';
 
@@ -18,7 +18,7 @@
         selectedPath:string
     }
 
-    let models:typeof Models = getContext(keys.kanaSolverAppModels);
+    let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
 
     //ONLY MODIFY VARIABLES THAT HAVE REACTIVE CODE TO CALL THE HELPERS ON THE PRESENTER
     //OR THAT ARE NOT USED BY THE PRESENTER
@@ -77,7 +77,7 @@
     
     let fileFinderPresenter:FileFinderPresenter = new FileFinderPresenter(
         externalInterface,
-        new models.FileFinderModel(),
+        new modelsAndHandlers.FileFinderModel(),
         selectDirectory
     );
     f7.dialog.preloader("Loading ...");
