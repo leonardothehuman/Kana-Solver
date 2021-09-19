@@ -3,7 +3,7 @@
     import {Page, List, ListItem, Navbar, theme, f7, Toolbar, Link, Icon} from "framework7-svelte";
     import type { Router } from "framework7/types";
     import { onMount } from 'svelte';
-    import {LimitedStack} from '../../models/modules/LimitedStack';
+    import {LimitedStack} from '../../minilibs/LimitedStack';
     import {masterRoute, masterDetailBreakpoint, mainDetailPage} from '../../generated/config/config';
 
     export let f7router: Router.Router;

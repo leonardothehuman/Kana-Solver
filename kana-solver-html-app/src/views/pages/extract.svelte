@@ -5,9 +5,9 @@
     const fsp = require("fs/promises");
     const fs = require("fs");
     const path = require("path");
-    import {Page, Navbar, List, ListInput, Row, Col, Input, Button, ListItem} from "framework7-svelte";
-    import {readTextFile, extractUtau} from '../../models/modules/extraction';
-    import {parseInstallTxt} from '../../models/parsers/install_txt';
+    import {Page, Navbar, List, Button, ListItem} from "framework7-svelte";
+    import {readTextFile, extractUtau} from '../../minilibs/extraction';
+    import {parseInstallTxt} from '../../minilibs/parsers/install_txt';
     import PathSelectField from "../components/pathSelectField.svelte";
 
     let utauVoicebank = '';
