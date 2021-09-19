@@ -14,6 +14,7 @@
             label="Utau installation directory"
             bind:selectedPath={installationDirectory}
             selectDirectory={true}></PathSelectField>
+        <!-- <ListItem title="Extract/Install UTAU" link="/extract/" reloadDetail />
         <ListItem title="Extract/Install UTAU" link="/extract/" reloadDetail />
         <ListItem title="Extract/Install UTAU" link="/extract/" reloadDetail />
         <ListItem title="Extract/Install UTAU" link="/extract/" reloadDetail />
@@ -25,7 +26,6 @@
         <ListItem title="Extract/Install UTAU" link="/extract/" reloadDetail />
         <ListItem title="Extract/Install UTAU" link="/extract/" reloadDetail />
         <ListItem title="Extract/Install UTAU" link="/extract/" reloadDetail />
-        <ListItem title="Extract/Install UTAU" link="/extract/" reloadDetail />
-        <ListItem title="Extract/Install UTAU" link="/extract/" reloadDetail />
+        <ListItem title="Extract/Install UTAU" link="/extract/" reloadDetail /> -->
     </List>
 </Page>

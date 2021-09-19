@@ -3,6 +3,8 @@
     import {ListInput, Input, Button, Row, Col, ListItem, List} from "framework7-svelte";
     import {tick} from "svelte";
     import FileFinder from "../pages/fileFinder.svelte";
+    import { f7 } from 'framework7-svelte';
+
     export let label:string = "";
     export let selectedPath:string = "";
     export let extensionList:string[] = [];
@@ -15,6 +17,7 @@
 
     let animationHandlerClass = "";
     let animatedItemClass = "";
+    let forbiddenItemClass = "";
     let FileFinderProps = FileFinder.prototype.$$prop_def;
 
     let routeProps:typeof FileFinderProps={
@@ -34,15 +37,26 @@
         animationHandlerClass = "";
         animatedItemClass = "";
         
-        if (!e.dataTransfer.items) return;
-        if(e.dataTransfer.items.length != 1) return;
+        if (!e.dataTransfer.items){
+            f7.dialog.alert("No files found", 'Error');
+            return;
+        }
+        if(e.dataTransfer.items.length != 1){
+            f7.dialog.alert("You must drop no more than ONE file", 'Error');
+            return;
+        }
         for (var i = 0; i < e.dataTransfer.items.length; i++) {
             let entry = e.dataTransfer.items[i].webkitGetAsEntry();
             if(entry.isDirectory == true && selectDirectory == true){
                 selectedPath = e.dataTransfer.items[i].getAsFile().path;
-            }
-            if(entry.isFile == true && selectDirectory == false){
+            }else if(entry.isDirectory == false && selectDirectory == true){
+                f7.dialog.alert("You can only drop directories here", 'Error');
+            }else if(entry.isFile == true && selectDirectory == false){
                 selectedPath = e.dataTransfer.items[i].getAsFile().path;
+            }else if(entry.isFile == false && selectDirectory == false){
+                f7.dialog.alert("You can only drop files here", 'Error');
+            }else{
+                f7.dialog.alert("You somehow droped something that is neither a file or a directory !!!", 'Error');
             }
         }
     }
@@ -65,6 +79,13 @@
     function dragEndHandler(){
         if(animatedItemClass != "") return;
         animationHandlerClass = "";
+    }
+
+    let whatToDrop = "file";
+    let iconToDrop = "doc_on_doc";
+    if(selectDirectory == true){
+        whatToDrop = "directory";
+        iconToDrop = "folder_badge_plus"
     }
 </script>
 
@@ -96,18 +117,33 @@
 
     .animated-item{
         box-sizing: border-box;
-        border: 2px solid blue;
+        border: 0px;
+        background: rgb(41,143,255);
+        background: linear-gradient(180deg, rgba(41,143,255,1) 0%, rgba(41,143,255,1) 51%, rgba(41,143,255,0.5186274338837098) 100%);
+        color: white;
+        text-align: center;
         position: absolute;
         width: 100%;
         height: 100%;
         z-index: 10;
         opacity: 0;
         top: -100%;
-        transition: opacity 1s, top 0.3s;
+        transition: opacity 0.5s, top 0.3s;
+    }
+    .animated-item:global(.forbidden-item){
+        background: rgb(255,41,41);
+        background: linear-gradient(180deg, rgba(255,41,41,1) 0%, rgba(255,41,41,1) 51%, rgba(255,41,41,0.5186274338837098) 100%);
     }
     .animated-item:global(.entering){
-        opacity: 0.9;
+        opacity: 1;
         top: 0%;
+    }
+    .centered-text{
+        position: absolute;
+        text-align: center;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
     }
 
     .drop-handler{
@@ -127,8 +163,10 @@
 <ListItem>
     <div slot="root-start">
         <div class="drop-overlay {animationHandlerClass}">
-            <div class="animated-item {animatedItemClass}" on:transitionend={dragEndHandler}>
-                <i class="f7-icons">doc_on_doc</i>
+            <div class="animated-item {forbiddenItemClass} {animatedItemClass}" on:transitionend={dragEndHandler}>
+                <div class="centered-text">
+                    <i class="f7-icons">{iconToDrop}</i> You can drop a {whatToDrop} here !!!
+                </div>
             </div>
         </div>
         <div 
