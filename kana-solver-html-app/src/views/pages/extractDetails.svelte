@@ -1,13 +1,17 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
     import {Page, Navbar, List, Button, ListItem, f7} from "framework7-svelte";
+    import {f7ConfirmPromisse} from "../../minilibs/f7extender";;
     import type ModelsAndHandlers from "../../modelsAndHandlers";
     import keys from '../../keys';
     import RadioManager from "../../minilibs/radioManager";
     import {getContext, onMount} from "svelte";
     import PathSelectField from "../components/pathSelectField.svelte";
-    import type { Dialog, Router } from "framework7/types";
-    import { ExtractDetailsPresenter, IExtractDetailsView, IProgressProcess, UtauDestinationType, UtauSourceType, UtauZipInfo } from "../../presenters/extractDetailsPresenter";
+    import type { Router } from "framework7/types";
+    import ProgressProcess from "../commonImplementations/progressProcess";
+    import { ExtractDetailsPresenter, IExtractDetailsView, UtauDestinationType, UtauSourceType } from "../../presenters/extractDetailsPresenter";
+    import type IPathStringHandler from "../../handlers/IPathStringshandler";
+    import type { UtauZipInfo } from "../../handlers/IZipHandler";
     
     export let fileToExtract: string;
     export let zipProperties: UtauZipInfo;
@@ -23,22 +27,6 @@
     let canInstallFromRoot: boolean;
     let canInstallFromCustom: boolean;
 
-    class ProgressProcess implements IProgressProcess{
-        private d: Dialog.Dialog;
-        constructor(d: Dialog.Dialog){
-            this.d = d;
-        }
-        public setText(text: string) {
-            this.d.setText(text);
-        };
-        public setProgress(progress: number){
-            this.d.setProgress(progress);
-        };
-        public close(){
-            this.d.close();
-        };
-    }
-
     let externalInterface: IExtractDetailsView = {
         emitAlert: (text: string, title: string) => {
             return new Promise((resolve, reject) => {
@@ -46,7 +34,7 @@
             });
         },
         askConfirmation: (text: string, title: string) => {
-            return f7ConfirmPromisse(text, title);
+            return f7ConfirmPromisse(f7, text, title);
         },
         createProgressProcess: (title: string, initialProgress: number) => {
             let dialog = f7.dialog.progress(title, initialProgress);
@@ -87,9 +75,14 @@
         },
     }
 
+    let pathStringHandler: IPathStringHandler = new modelsAndHandlers.PathStringHandler();
     let extractDetailsPresenter: ExtractDetailsPresenter = new ExtractDetailsPresenter(
         externalInterface,
-        new modelsAndHandlers.ExtractDetailsModel(),
+        new modelsAndHandlers.ExtractDetailsModel(
+            pathStringHandler,
+            new modelsAndHandlers.FileSytemHandler(pathStringHandler),
+            new modelsAndHandlers.ZipHandler(pathStringHandler),
+        ),
         zipProperties,
         fileToExtract
     );
@@ -122,15 +115,6 @@
         extractDetailsPresenter.emitMountAlerts();
     });
 
-
-    function f7ConfirmPromisse(text: string, title: string): Promise<boolean>{
-        return new Promise((resolve, reject) => {
-            f7.dialog.confirm(text, title, 
-                () => {resolve(true)},
-                () => {resolve(false)}
-            );
-        });
-    }
 </script>
 <style lang="less">
     @import "../less/globalMixins.less";

@@ -1,9 +1,12 @@
-import {getUtauZipInfo} from "../minilibs/zipHandler";
+import ZipHandler from "../handlers/ZipHandler";
+import PathStringHandler from "../handlers/PathStringsHandler";
 import iconv from 'iconv-lite';
 import fs from "fs";
 
+let zipHandler = new ZipHandler(new PathStringHandler);
+
 (async() => {
-    let info = await getUtauZipInfo(process.argv[2]);
+    let info = await zipHandler.getUtauZipInfo(process.argv[2]);
     console.log(info);
 })();
 

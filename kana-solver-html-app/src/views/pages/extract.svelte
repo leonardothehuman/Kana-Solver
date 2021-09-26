@@ -7,10 +7,14 @@
     // const path = require("path");
     import {Page, Navbar, List, Button, ListItem} from "framework7-svelte";
     import PathSelectField from "../components/pathSelectField.svelte";
-    import {getUtauZipInfo} from "../../minilibs/zipHandler";
     import { f7 } from 'framework7-svelte';
     import type { Router } from "framework7/types";
     import ExtractDetails from "./extractDetails.svelte";
+
+    import ZipHandler from "../../handlers/ZipHandler";
+    import PathStringsHandler from "../../handlers/PathStringsHandler";
+
+    let zipHandler =  new ZipHandler(new PathStringsHandler());
 
     export let f7router: Router.Router;
 
@@ -21,7 +25,7 @@
     async function readInstallTXT(){
         f7.dialog.preloader("Loading ...");
         try{
-            let zipInfo = await getUtauZipInfo(utauVoicebank);
+            let zipInfo = await zipHandler.getUtauZipInfo(utauVoicebank);
             let props: typeof extractDetailsProps = {
                 fileToExtract: utauVoicebank,
                 zipProperties: zipInfo

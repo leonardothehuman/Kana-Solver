@@ -5,9 +5,11 @@
     import keys from '../../keys';
     import {FileFinderPresenter} from "../../presenters/fileFinderPresenter";
     import type ModelsAndHandlers from "../../modelsAndHandlers";
-    import type {IFileFinderView, objectRepresentation, breadCrumbItem } from "../../presenters/fileFinderPresenter";
+    import type {IFileFinderView, breadCrumbItem } from "../../presenters/fileFinderPresenter";
     import { f7 } from 'framework7-svelte';
     import type { Router } from "framework7/types";
+    import type IPathStringHandler from '../../handlers/IPathStringshandler';
+    import type { objectRepresentation } from '../../handlers/IFileSystemHandler';
 
     export let extensionList:string[] = [];
     export let extensionLabels: {[key:string]:string} = {};
@@ -20,7 +22,7 @@
     }
 
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
-
+    
     //ONLY MODIFY VARIABLES THAT HAVE REACTIVE CODE TO CALL THE HELPERS ON THE PRESENTER
     //OR THAT ARE NOT USED BY THE PRESENTER
     //Visible lists
@@ -75,10 +77,13 @@
         }
     }
 
-    
+    let pathStringHandler: IPathStringHandler = new modelsAndHandlers.PathStringHandler();
     let fileFinderPresenter:FileFinderPresenter = new FileFinderPresenter(
         externalInterface,
-        new modelsAndHandlers.FileFinderModel(),
+        new modelsAndHandlers.FileFinderModel(
+            pathStringHandler,
+            new modelsAndHandlers.FileSytemHandler(pathStringHandler)
+        ),
         selectDirectory
     );
     f7.dialog.preloader("Loading ...");

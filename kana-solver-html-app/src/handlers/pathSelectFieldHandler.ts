@@ -2,6 +2,10 @@
 import {ManyItemsError} from "../views/components/pathSelectFieldT";
 import type {IPathSelectFieldHandler, ExtractedFile} from "../views/components/pathSelectFieldT";
 
+export type NwFile = {
+    path: string
+} & File;
+
 export default class PathSelectFieldHandler implements IPathSelectFieldHandler{
     public extractFileFromDragEvent(e: DragEvent): ExtractedFile{
         if (!e.dataTransfer.items){
@@ -13,7 +17,7 @@ export default class PathSelectFieldHandler implements IPathSelectFieldHandler{
         let toReturn: ExtractedFile;
         for (var i = 0; i < e.dataTransfer.items.length; i++) {
             let entry = e.dataTransfer.items[i].webkitGetAsEntry();
-            let gaf: any = e.dataTransfer.items[i].getAsFile();
+            let gaf: NwFile = e.dataTransfer.items[i].getAsFile() as NwFile;
             toReturn = {
                 isFile: entry.isFile,
                 isDirectory: entry.isDirectory,

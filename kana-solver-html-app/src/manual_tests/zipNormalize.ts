@@ -1,4 +1,6 @@
-import {zipNormalize} from "../minilibs/helpers";
+import PathStringsHandler from "../handlers/PathStringsHandler";
+let psh = new PathStringsHandler();
+let zipNormalize = psh.zipNormalize;
 
 console.log("\""+zipNormalize("/aaa/bb/cc\\dd\\")+"\"");
 
