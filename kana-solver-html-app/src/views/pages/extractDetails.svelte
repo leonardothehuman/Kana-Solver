@@ -1,16 +1,19 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
     import {Page, Navbar, List, Button, ListItem, f7} from "framework7-svelte";
-    import type { UtauZipInfo } from "../../minilibs/zipHandler";
+    import type ModelsAndHandlers from "../../modelsAndHandlers";
+    import keys from '../../keys';
     import RadioManager from "../../minilibs/radioManager";
-    import {onMount} from "svelte";
+    import {getContext, onMount} from "svelte";
     import PathSelectField from "../components/pathSelectField.svelte";
     import type { Dialog, Router } from "framework7/types";
-    import { ExtractDetailsPresenter, IExtractDetailsView, IProgressProcess, UtauDestinationType, UtauSourceType } from "../../presenters/extractDetailsPresenter";
+    import { ExtractDetailsPresenter, IExtractDetailsView, IProgressProcess, UtauDestinationType, UtauSourceType, UtauZipInfo } from "../../presenters/extractDetailsPresenter";
     
     export let fileToExtract: string;
     export let zipProperties: UtauZipInfo;
     export let f7router: Router.Router;
+
+    let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
 
     let radiomanager: RadioManager = new RadioManager();
     let destinationType: UtauDestinationType;
@@ -86,7 +89,7 @@
 
     let extractDetailsPresenter: ExtractDetailsPresenter = new ExtractDetailsPresenter(
         externalInterface,
-        null,
+        new modelsAndHandlers.ExtractDetailsModel(),
         zipProperties,
         fileToExtract
     );

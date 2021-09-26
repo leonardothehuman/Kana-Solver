@@ -8,12 +8,8 @@ import fsp from 'fs/promises';
 import fs from 'fs';
 import {InstallTxt} from './parsers/install_txt';
 import {normalizeSlash, zipNormalize} from "../minilibs/helpers";
+import type { UtauZipInfo, ZipExtractProgressCallback } from '../presenters/extractDetailsPresenter';
 
-export type UtauZipInfo = {
-    installTxt: null|InstallTxt,
-    sourceOnZip: string,
-    relativeDestination: string
-}
 export async function getUtauZipInfo(zipFile: string): Promise<UtauZipInfo>{
     let installTxt: null|string = null;
     await exploreZipFile(zipFile, (entry: any, decodedPath: string, isDirectory: boolean, z: ZipFile) => {
@@ -62,15 +58,6 @@ export async function getUtauZipInfo(zipFile: string): Promise<UtauZipInfo>{
 
     return toReturn;
 }
-
-export type ZipExtractProgressInfo = {
-    totalEntries: number,
-    currentEntry: number,
-    currentFileName: string,
-    currentZipPath: string
-}
-
-export type ZipExtractProgressCallback = (pr:ZipExtractProgressInfo) => void
 
 export async function extractUtau(
     zipFile: string,
@@ -142,6 +129,7 @@ export async function extractUtau(
                             resolve(true);
                         });
                         //TODO: verify crc32
+                        //TODO: Allow chosing encoding
                         readStream.on("error", function(e) {
                             ws.end();
                             reject(e);
