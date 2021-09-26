@@ -7,12 +7,13 @@
     import type ModelsAndHandlers from "../../modelsAndHandlers";
     import type {IFileFinderView, objectRepresentation, breadCrumbItem } from "../../presenters/fileFinderPresenter";
     import { f7 } from 'framework7-svelte';
+    import type { Router } from "framework7/types";
 
     export let extensionList:string[] = [];
     export let extensionLabels: {[key:string]:string} = {};
     export let selectDirectory:boolean = false;
     export let initialDirectory: string = "";
-    export let f7router: { back: () => void; };
+    export let f7router: Router.Router;
     export let selectCallback: (e: selectCallbackEvent) => void = function(){};
     type selectCallbackEvent = {
         selectedPath:string
@@ -137,6 +138,8 @@
 </script>
 
 <style lang="less">
+    @import "../less/globalMixins.less";
+
     .breadcrumbs-container{
         width: 100%;
         height: 100%;
@@ -164,8 +167,7 @@
         color: var(--f7-text-color);
     }
     .content-container{
-        height: 100%;
-        overflow: auto;
+        .m-container();
     }
     .content-container :global(.list){
         margin-top: -1px;

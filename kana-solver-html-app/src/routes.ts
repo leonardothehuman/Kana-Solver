@@ -7,6 +7,7 @@ import UtauConversor from './views/pages/utauConversor.svelte';
 import UstConversor from './views/pages/ustConversor.svelte';
 import Settings from './views/pages/settings.svelte';
 import FileFinder from './views/pages/fileFinder.svelte';
+import ExtractDetails from './views/pages/extractDetails.svelte';
 import {masterRoute} from './generated/config/config';
 import type { Router } from 'framework7/types';
 
@@ -18,6 +19,10 @@ var Routes: Router.RouteParameters[] = [
     {
         path: '/extract/',
         component: Extract
+    },
+    {
+        path: '/extract-details/',
+        component: ExtractDetails
     },
     {
         path: '/conversionEditor/',

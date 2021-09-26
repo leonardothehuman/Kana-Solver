@@ -1,0 +1,1 @@
+node --loader ts-node/esm --experimental-specifier-resolution=node .\src\manual_tests\install_txt_parser.ts .\src\manual_tests\install_txt_test_data\ritsu_namine.txt

@@ -1,23 +1,37 @@
-<script>
+<script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
-    const yauzl = require("yauzl");
-    var iconv = require('iconv-lite');
-    const fsp = require("fs/promises");
-    const fs = require("fs");
-    const path = require("path");
+    // const yauzl = require("yauzl");
+    // var iconv = require('iconv-lite');
+    // const fsp = require("fs/promises");
+    // const fs = require("fs");
+    // const path = require("path");
     import {Page, Navbar, List, Button, ListItem} from "framework7-svelte";
-    import {readTextFile, extractUtau} from '../../minilibs/extraction';
-    import {parseInstallTxt} from '../../minilibs/parsers/install_txt';
     import PathSelectField from "../components/pathSelectField.svelte";
+    import {getUtauZipInfo} from "../../minilibs/zipHandler";
+    import { f7 } from 'framework7-svelte';
+    import type { Router } from "framework7/types";
+    import ExtractDetails from "./extractDetails.svelte";
+
+    export let f7router: Router.Router;
 
     let utauVoicebank = '';
-
     let destination = "C:\\Users\\Leonardo\\Desktop\\extractTest";
+    let extractDetailsProps = ExtractDetails.prototype.$$prop_def;
 
     async function readInstallTXT(){
-        console.log(parseInstallTxt(await readTextFile(utauVoicebank, 'install.txt')));
-        const installTxt = parseInstallTxt(await readTextFile(utauVoicebank, 'install.txt'));
-        extractUtau(utauVoicebank, destination, installTxt.contentsdir, installTxt.folder);
+        f7.dialog.preloader("Loading ...");
+        try{
+            let zipInfo = await getUtauZipInfo(utauVoicebank);
+            let props: typeof extractDetailsProps = {
+                fileToExtract: utauVoicebank,
+                zipProperties: zipInfo
+            };
+            f7router.navigate("/extract-details/", {props: props});
+            f7.dialog.close();
+        }catch(error){
+            f7.dialog.close();
+            f7.dialog.alert(error.message, 'Failed to load utau file');
+        }
     }
 </script>
 <Page>

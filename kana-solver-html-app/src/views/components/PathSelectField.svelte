@@ -18,6 +18,7 @@
     export let extensionList:string[] = [];
     export let extensionLabels: {[key:string]:string} = {};
     export let selectDirectory:boolean = false;
+    export let disabled = false;
 
     if(extensionLabels["*.*"] === undefined){
         extensionLabels["*.*"] = "All files";
@@ -42,6 +43,7 @@
 
     function dropHandler(e:DragEvent){
         e.preventDefault();
+        if(disabled) return;
         animationHandlerClass = "";
         animatedItemClass = "";
 
@@ -77,6 +79,7 @@
     
     async function dragHandler(e:DragEvent){
         e.preventDefault();
+        if(disabled) return;
         animationHandlerClass = "display";
         await tick();
         setTimeout(() => {
@@ -112,6 +115,13 @@
         :global(ul), 
         :global(.item-content){
             padding: 0px;
+        }
+    }
+
+    .controllable-inner.disabled-inner{
+        :global(.item-label),
+        :global(input){
+            color: var(--f7-list-item-after-text-color);
         }
     }
 
@@ -190,7 +200,7 @@
         ></div>
     </div>
     
-    <div class="controllable-inner" on:dragover={dragHandler}>
+    <div class="controllable-inner {disabled ? 'disabled-inner' : ''}" on:dragover={dragHandler}>
         <List>
             <ListInput
                 bind:label={label}
@@ -199,10 +209,12 @@
                 <div slot="input">
                     <Row>
                         <Col style="width: calc(100% - 115px)">
-                            <Input bind:value={selectedPath} type="text" />
+                            <Input bind:value={selectedPath} disabled={disabled} type="text" />
                         </Col>
                         <Col style="width: 100px">
                             <Button
+                                color={disabled ? "gray" : ""}
+                                disabled={disabled}
                                 href="/findFile/" fill small
                                 routeProps={routeProps}>Search ...</Button>
                         </Col>
