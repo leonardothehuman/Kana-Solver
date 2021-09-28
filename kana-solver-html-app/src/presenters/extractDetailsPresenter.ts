@@ -103,7 +103,7 @@ export class ExtractDetailsPresenter{
     public get canInstallUtau(): boolean {
         return this._canInstallUtau;
     }
-    private set canInstallUtau(value: boolean) {
+    public set canInstallUtau(value: boolean) {
         this._canInstallUtau = value;
         this.view.setCanInstallUtau(this._canInstallUtau, true);
     }

@@ -1,6 +1,10 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
-    import {Page, Navbar, List, Button, ListItem, f7} from "framework7-svelte";
+    import {
+        Page, Navbar, List, Button, ListItem,
+        f7, BlockTitle, Block, BlockHeader,
+        Toolbar, Link
+    } from "framework7-svelte";
     import {f7ConfirmPromisse} from "../../minilibs/f7extender";;
     import type ModelsAndHandlers from "../../modelsAndHandlers";
     import keys from '../../keys';
@@ -125,12 +129,19 @@
             color: var(--f7-list-item-after-text-color);
         }
     }
+
+    .content-container :global(.list){
+        .m-no-border-list();
+    }
+    .content-container :global(.block){
+        .m-smaller-border-block();
+    }
 </style>
 <Page>
     <Navbar title="Install UTAU" backLink />
     <div class="content-container">
-        <div>{destinationType}</div>
-        <div>Destination directory:</div>
+        <BlockTitle>Destination</BlockTitle>
+        <BlockHeader>Where will the archive be installed / extracted</BlockHeader>
         <List>
             <ListItem
                 radio
@@ -165,8 +176,14 @@
                 selectDirectory={true}></PathSelectField>
         </List>
 
-        <div>Extract from:</div>
-        <div>{sourceType}</div>
+        <BlockTitle>Extraction source</BlockTitle>
+        <BlockHeader>Origin of the zip content</BlockHeader>
+        <Block>
+            <p>ZIP root: Extract everything without install</p>
+            {#if zipProperties.sourceOnZip.trim() != ""}
+                <p>{zipProperties.sourceOnZip}: Install following the manifest file</p>
+            {/if}
+        </Block>
         <List>
             <ListItem
                 radio
@@ -189,6 +206,9 @@
                 ></ListItem>
             {/if}
         </List>
-        <Button on:click={() => {extractDetailsPresenter.installUtau()}} fill small>Install</Button>
     </div>
+    <Toolbar position="bottom" >
+        <Link></Link>
+        <Link iconF7="square_arrow_down_on_square" on:click={() => {extractDetailsPresenter.installUtau()}} text="Install" />
+    </Toolbar>
 </Page>

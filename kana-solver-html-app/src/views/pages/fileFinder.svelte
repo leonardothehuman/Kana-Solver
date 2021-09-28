@@ -248,14 +248,15 @@
         <div class="toolbar-inner {customtoolbarClass}">
             <Link></Link>
             {#if selectDirectory}
-                <Link
+                <Link iconF7="square_arrow_right"
                     on:click={() => {
                         selectCallback({
                             selectedPath: fileFinderPresenter.getCurrentFullPath()
                         });
                         f7router.back();
                     }}
-                >Select Directory</Link>
+                    text="Select Directory"
+                />
             {:else}
                 <List>
                     <ListItem title="{extensionLabels[selectedExtention]}" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
