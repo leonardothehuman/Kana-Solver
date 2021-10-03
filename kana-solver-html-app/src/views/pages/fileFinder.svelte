@@ -82,7 +82,7 @@
         externalInterface,
         new modelsAndHandlers.FileFinderModel(
             pathStringHandler,
-            new modelsAndHandlers.FileSytemHandler(pathStringHandler)
+            new modelsAndHandlers.FileSystemHandler(pathStringHandler)
         ),
         selectDirectory
     );

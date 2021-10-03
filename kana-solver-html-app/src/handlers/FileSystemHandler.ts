@@ -5,6 +5,8 @@ import fsp from "fs/promises";
 import os from "os";
 import fs from "fs";
 import type IPathStringHandler from "./IPathStringshandler";
+import iconv from "iconv-lite";
+import rimraf from "rimraf";
 
 export default class FileSystemHandler implements IFileSystemHandler{
     private pathStringHandler: IPathStringHandler;
@@ -72,5 +74,23 @@ export default class FileSystemHandler implements IFileSystemHandler{
             return false;
         }
         return true;
+    }
+    public async readTextFile(_path: string, encoding: string): Promise<string>{
+        let fileBuffer = await fsp.readFile(_path);
+        return iconv.decode(fileBuffer, encoding);
+    }
+    public recursiveDelete(_path: string): Promise<void>{
+        return new Promise((resolve, reject) => {
+            if(!this.pathStringHandler.isCompleteWinPath(_path)){
+                reject(new Error("You must inform the complete path to use the function recursiveDelete !!!"));
+                return;
+            };
+            rimraf(_path, {disableGlob: true}, async function(err){
+                if(err){
+                    reject(err);
+                }
+                resolve();
+            });
+        });
     }
 }

@@ -45,7 +45,9 @@
             return new ProgressProcess(dialog);
         },
         informExtractionSuccess: () => {
-            f7router.back();
+            f7router.back(undefined, {
+                force: true
+            });
         },
         setDestinationType: (dt: UtauDestinationType, onlyOnChange: boolean) => {
             if(destinationType == dt && onlyOnChange == true) return false;
@@ -84,7 +86,7 @@
         externalInterface,
         new modelsAndHandlers.ExtractDetailsModel(
             pathStringHandler,
-            new modelsAndHandlers.FileSytemHandler(pathStringHandler),
+            new modelsAndHandlers.FileSystemHandler(pathStringHandler),
             new modelsAndHandlers.ZipHandler(pathStringHandler),
         ),
         zipProperties,

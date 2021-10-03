@@ -6,6 +6,7 @@ export default interface IPathStringHandler{
     pathToArray: (p:string) => string[];
     defaultPathSeparator: () => string;
     joinPath: (...p: string[]) => string;
+    posixJoinPath: (...p: string[]) => string;
     normalizePath: (p: string) => string;
     extractExtention: (p: string) => string;
     isCompleteWinPath: (_path: string) => boolean;

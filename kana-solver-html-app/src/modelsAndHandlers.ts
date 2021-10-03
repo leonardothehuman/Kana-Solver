@@ -5,14 +5,19 @@ import ExtractDetailsModel from "./models/extractDetailsModel";
 import PathStringHandler from "./handlers/PathStringsHandler";
 import FileSystemHandler from "./handlers/FileSystemHandler";
 import ZipHandler from "./handlers/ZipHandler";
+import InstalledUtauHandler from "./handlers/InstalledUtauHandler";
+import ExtractModel from "./models/extractModel";
 
 let toexport = {
     FileFinderModel: FileFinderModel,
-    PathSelectFieldHandler: PathSelectFieldHandler,
     ExtractDetailsModel: ExtractDetailsModel,
+    ExtractModel: ExtractModel,
+
+    PathSelectFieldHandler: PathSelectFieldHandler,
     PathStringHandler: PathStringHandler,
-    FileSytemHandler: FileSystemHandler,
+    FileSystemHandler: FileSystemHandler,
     ZipHandler: ZipHandler,
+    InstalledUtauHandler: InstalledUtauHandler,
 }
 
 export default toexport;

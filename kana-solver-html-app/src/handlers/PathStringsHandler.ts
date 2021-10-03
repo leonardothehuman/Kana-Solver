@@ -44,6 +44,12 @@ export default class PathStringHandler implements IPathStringHandler{
     public joinPath(...p: string[]): string{
         return path.win32.join(...p);
     }
+    public posixJoinPath(...p: string[]): string{
+        for(let i = 0; i < p.length; i++){
+            p[i] = this.normalizeSlash(p[i]);
+        }
+        return path.posix.join(...p);
+    }
     public normalizePath(p: string): string{
         return path.win32.normalize(p);
     }

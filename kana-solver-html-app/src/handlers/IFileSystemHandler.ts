@@ -12,4 +12,6 @@ export default interface IFileSystemHandler{
     isDirectoryEmpty(p: string): Promise<boolean>;
     existAndIsFile: (_path: string) => Promise<boolean>;
     existAndIsDirectory: (_path: string) => Promise<boolean>;
+    readTextFile: (_path: string, encoding: string) => Promise<string>;
+    recursiveDelete: (_path: string) => Promise<void>
 }

@@ -19,6 +19,7 @@
   "license": "(GPL-3.0-only OR MIT)",
   "devDependencies": {
     "@tsconfig/svelte": "^2.0.1",
+    "@types/rimraf": "^3.0.2",
     "@types/yauzl": "^2.9.2",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",

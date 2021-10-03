@@ -11,7 +11,9 @@ const config = {
     'path': 'commonjs2 path',
     'yauzl': 'commonjs2 yauzl',
     'iconv-lite': 'commonjs2 iconv-lite',
-    'node-disk-info': 'commonjs2 node-disk-info'
+    'node-disk-info': 'commonjs2 node-disk-info',
+    'util': 'commonjs2 util',
+    'assert': 'commonjs2 assert',
   },
   entry: './src/index.ts',
   output: {

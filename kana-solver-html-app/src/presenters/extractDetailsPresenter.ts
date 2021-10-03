@@ -166,7 +166,7 @@ export class ExtractDetailsPresenter{
         if(this.destinationType == "utau"){
             try {
                 if(!this.model.psh.isCompleteWinPath(localStorage.getItem("UTAUInstallationDirectory"))){
-                    this.view.emitAlert("The configured utau directory is not valid", "Error");
+                    this.view.emitAlert("The configured utau installation directory is not valid", "Error");
                     return;
                 }
                 if(!await this.model.fsh.existAndIsFile(this.model.psh.joinPath(localStorage.getItem("UTAUInstallationDirectory"), "utau.exe"))){

@@ -40,9 +40,9 @@ export class InstallTxt{
     public get description(): string{
         return this._parsedData.description;
     }
-    private _rawFields: { [key: string]: string; };
-    public get rawFields(): { [key: string]: string; } {
-        let toReturn: { [key: string]: string; } = {};
+    private _rawFields: Record<string, string>;
+    public get rawFields(): Record<string, string> {
+        let toReturn: Record<string, string> = {};
         for(let i in this._rawFields){
             toReturn[i] = this._rawFields[i];
         }
