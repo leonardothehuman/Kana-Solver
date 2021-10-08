@@ -184,6 +184,7 @@
         <Subnavbar>
             <div class="breadcrumbs-container">
                 <span class="breadcrumbs">
+                    <!-- TODO: add key to each -->
                     {#each breadCrumb as bc}
                         <Link
                             on:click={async() => {
@@ -202,6 +203,7 @@
                 <ListItem groupTitle title="Disk drive"></ListItem>
                 <ListItem title="Drive" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
                     <select name="Drive" bind:value={currentDrive}>
+                        <!-- TODO: add key to each -->
                         {#each selectableDriveList as drive}
                             <option value={drive}>{drive}</option>
                         {/each}
@@ -215,6 +217,7 @@
             </ListGroup>
             <ListGroup>
                 <ListItem groupTitle title="Files"></ListItem>
+                <!-- TODO: add key to each -->
                 {#each currentDirectoryObjectsList as dItem}
                     {#if dItem.isDirectory}
                         <ListItem link="#"
@@ -226,6 +229,7 @@
                         </ListItem>
                     {/if}
                 {/each}
+                <!-- TODO: add key to each -->
                 {#each currentDirectoryObjectsList as dItem}
                     {#if dItem.isFile}
                         <ListItem link="#"
@@ -261,6 +265,7 @@
                 <List>
                     <ListItem title="{extensionLabels[selectedExtention]}" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
                         <select name="Extension" bind:value={selectedExtention}>
+                            <!-- TODO: add key to each -->
                             {#each selectableExtensionList as ext}
                                 <option value={ext}>
                                     {#if extensionLabels[ext]}

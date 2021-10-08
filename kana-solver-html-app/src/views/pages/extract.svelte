@@ -132,6 +132,7 @@
     {:else}
         <BlockTitle>Installed UTAU</BlockTitle>
         <List {...listArguments}>
+            <!-- TODO: add key to each -->
             {#if userUtauList.length > 0}
                 <ListGroup>
                     <ListItem groupTitle title="On user directory"></ListItem>
@@ -144,6 +145,7 @@
                 </ListGroup>
             {/if}
             {#if systemUtauList.length > 0}
+            <!-- TODO: add key to each -->
                 <ListGroup>
                     <ListItem groupTitle title="On system directory (may require administrator privileges to uninstall)"></ListItem>
                     {#each systemUtauList as utau}

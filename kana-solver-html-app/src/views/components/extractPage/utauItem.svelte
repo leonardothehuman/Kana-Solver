@@ -34,6 +34,7 @@
     </div>
     
     <div slot="text">
+        <!-- TODO: add key to each -->
         {#each utau.description as line}
             <p>{line}</p>
         {/each}
