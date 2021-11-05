@@ -1,5 +1,6 @@
 <script lang="ts">
     //This file is licensed under MIT license
+    //TODO: Benefits from using store
     import {Navbar, Page, List, ListItem, Link, Toolbar, Subnavbar, ListGroup} from 'framework7-svelte';
     import {getContext} from 'svelte';
     import keys from '../../keys';

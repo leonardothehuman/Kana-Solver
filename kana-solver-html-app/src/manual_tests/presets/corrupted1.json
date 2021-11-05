@@ -1,0 +1,13 @@
+{
+	"head": {
+		"author": "Leonardo The Human",
+		"description": "The default conversion table for Kana Solver v3"
+	},
+	"conversionData":{
+		"あ" : "a",
+		"い" : "i",
+		"う" : "u",
+		"え" : "e",
+		"お" : "o"
+	}
+}

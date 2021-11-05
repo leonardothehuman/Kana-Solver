@@ -1,5 +1,19 @@
 //This file is licensed under MIT license
 
+export function isString(s: any){
+  if (typeof s === 'string' || s instanceof String) return true;
+  return false;
+}
+
+export function isNumber(s: any){
+  if (typeof s === 'number' || s instanceof Number) return true;
+  return false;
+}
+
+export function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export function returnDefaultIfUndefined<T>(test: T|undefined, def: T){
   let toReturn: T;
   if(test !== undefined)

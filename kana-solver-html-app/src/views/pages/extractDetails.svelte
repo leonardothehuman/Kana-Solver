@@ -1,5 +1,6 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
+    //TODO: Benefits from using store
     import {
         Page, Navbar, List, Button, ListItem,
         f7, BlockTitle, Block, BlockHeader,

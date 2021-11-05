@@ -7,11 +7,13 @@ import FileSystemHandler from "./handlers/FileSystemHandler";
 import ZipHandler from "./handlers/ZipHandler";
 import InstalledUtauHandler from "./handlers/InstalledUtauHandler";
 import ExtractModel from "./models/extractModel";
+import ConversionEditorModel from "./models/conversionEditorModel";
 
 let toexport = {
     FileFinderModel: FileFinderModel,
     ExtractDetailsModel: ExtractDetailsModel,
     ExtractModel: ExtractModel,
+    ConversionEditorModel: ConversionEditorModel,
 
     PathSelectFieldHandler: PathSelectFieldHandler,
     PathStringHandler: PathStringHandler,

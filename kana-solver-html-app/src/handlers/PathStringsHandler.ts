@@ -56,6 +56,9 @@ export default class PathStringHandler implements IPathStringHandler{
     public extractExtention(p: string): string{
         return path.win32.extname(p);
     }
+    public extractName(p: string): string{
+        return path.win32.parse(p).name;
+    }
     public extractFileName(name: string, ext: string): string{
         return path.win32.basename(name, ext);
     }
@@ -112,5 +115,19 @@ export default class PathStringHandler implements IPathStringHandler{
         if(toReturn.charAt(0) == "/") toReturn = toReturn.substr(1, toReturn.length);
         if(toReturn.charAt(toReturn.length-1) == "/") toReturn = toReturn.substr(0, toReturn.length-1);
         return toReturn;
+    }
+    public hasWin32ForbiddenChars(f: string): boolean{
+        for(let i = 0; i < f.length; i++){
+            if(f.charAt(i) == '\\') return true;
+            if(f.charAt(i) == '/') return true;
+            if(f.charAt(i) == ':') return true;
+            if(f.charAt(i) == '*') return true;
+            if(f.charAt(i) == '?') return true;
+            if(f.charAt(i) == '"') return true;
+            if(f.charAt(i) == '<') return true;
+            if(f.charAt(i) == '>') return true;
+            if(f.charAt(i) == '|') return true;
+        }
+        return false;
     }
 }

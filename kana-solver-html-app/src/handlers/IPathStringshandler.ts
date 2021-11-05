@@ -9,8 +9,10 @@ export default interface IPathStringHandler{
     posixJoinPath: (...p: string[]) => string;
     normalizePath: (p: string) => string;
     extractExtention: (p: string) => string;
+    extractName: (p: string) => string;
     isCompleteWinPath: (_path: string) => boolean;
     normalizeSlash: (t: string) => string;
     zipNormalize: (t: string) => string;
     extractFileName: (name: string, ext: string) => string;
+    hasWin32ForbiddenChars: (f: string) => boolean;
 }

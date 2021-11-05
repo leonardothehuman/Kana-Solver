@@ -1,5 +1,6 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
+    //TODO: Benefits from using store
     import {Page, Navbar, List, Button, ListButton, ListItem, BlockTitle, BlockHeader, ListGroup} from "framework7-svelte";
     import PathSelectField from "../components/pathSelectField.svelte";
     import { f7 } from 'framework7-svelte';
@@ -12,7 +13,7 @@
     import type { IInstalledUtau } from "../../handlers/IInstalledUtauHandler";
     import { ExtractPresenter, IExtractView } from "../../presenters/extractPresenter";
     import UtauItem from "../components/extractPage/utauItem.svelte";
-    import {f7ConfirmPromisse} from "../../minilibs/f7extender";;
+    import {f7ConfirmPromisse} from "../../minilibs/f7extender";
 
     export let f7router: Router.Router;
 
@@ -69,6 +70,7 @@
     let extractPresenter = new ExtractPresenter(externalInterface, extractModel);
 
     onMount(async () => {
+		//TODO: verify what happens if the utau installed location was never configured
         await extractPresenter.loadUtauList();
     });
 
