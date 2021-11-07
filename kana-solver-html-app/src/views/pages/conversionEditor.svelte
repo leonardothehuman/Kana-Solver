@@ -19,6 +19,45 @@
     import {f7ConfirmPromisse, f7ConfirmYNPromisse} from "../../minilibs/f7extender";
     import type AsyncStoreInterceptor from "../../minilibs/AsyncStoreInterceptor";
     import { sleep } from "../../minilibs/helpers";
+    import type {PageLeaveConfirmators} from "../../routes";
+    var nw = require('nw.gui');
+    var win = nw.Window.get();
+
+    let pageLeaveConfirmators:typeof PageLeaveConfirmators = getContext(keys.pageLeaveConfirmators);
+    let leaveConfirmators: Set<() => Promise<boolean>> = new Set();
+    pageLeaveConfirmators.conversionEditor = async function ({ resolve, reject }:{resolve: Function, reject: Function}) {
+        let hasFalse = false;
+        for (let cb of leaveConfirmators.values()){
+            if(await cb() == false){
+                hasFalse = true;
+            }
+        }
+        if(hasFalse){
+            reject();
+        }else{
+            resolve();
+        }   
+    }
+
+    let closeConfirmators: Set<() => Promise<boolean>> = new Set();
+    let closeCallback = async function () {
+        let hasFalse = false;
+        for (let cb of leaveConfirmators.values()){
+            if(await cb() == false){
+                hasFalse = true;
+            }
+        }
+        if(!hasFalse){
+            this.close(true);
+        }
+    }
+    onMount(() => {
+        win.on('close', closeCallback);
+    });
+
+    onDestroy(() => {
+        win.removeListener('close', closeCallback);
+    });
     
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let installedConversionFiles: conversionFileRepresentation[] = [];
@@ -28,6 +67,12 @@
             if(installedConversionFiles == icf && onlyOnChange == true) return false;
             installedConversionFiles = icf;
             return true;
+        },
+        registerLeaveConfirmationCallback: (f: () => Promise<boolean>) => {
+            leaveConfirmators.add(f);
+        },
+        registerCloseConfirmationCallback: (f: () => Promise<boolean>) => {
+            closeConfirmators.add(f);
         },
         showSpinner: async(title: string) => {
             let dialog = f7.dialog.preloader(title);

@@ -14,7 +14,8 @@ const config = {
     'node-disk-info': 'commonjs2 node-disk-info',
     'util': 'commonjs2 util',
     'assert': 'commonjs2 assert',
-    'child_process': 'commonjs2 child_process'
+    'child_process': 'commonjs2 child_process',
+    'nw.gui': 'commonjs2 nw.gui'
   },
   entry: './src/index.ts',
   output: {

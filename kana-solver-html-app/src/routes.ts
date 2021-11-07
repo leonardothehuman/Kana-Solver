@@ -11,6 +11,10 @@ import ExtractDetails from './views/pages/extractDetails.svelte';
 import {masterRoute} from './generated/config/config';
 import type { Router } from 'framework7/types';
 
+var PageLeaveConfirmators = {
+    conversionEditor: function({ resolve, reject }:{resolve: Function, reject: Function}){}
+}
+
 var Routes: Router.RouteParameters[] = [
     {
         path: '/',
@@ -26,7 +30,14 @@ var Routes: Router.RouteParameters[] = [
     },
     {
         path: '/conversionEditor/',
-        component: ConversionEditor
+        component: ConversionEditor,
+        beforeLeave: function ({ resolve, reject }) {
+            var _resolve: Function = function(){
+                PageLeaveConfirmators.conversionEditor = function({ resolve, reject }:{resolve: Function, reject: Function}){};
+                resolve();
+            }
+            PageLeaveConfirmators.conversionEditor({resolve: _resolve, reject});
+        }
     },
     {
         path: '/utauConversor/',
@@ -52,4 +63,4 @@ for(let i = 0; i < Routes.length; i++){
     }
 }
 
-export {Routes};
+export {Routes, PageLeaveConfirmators};

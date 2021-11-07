@@ -24,6 +24,8 @@ export interface IConversionEditorModel{
 
 export interface IConversionEditorView{
     setInstalledConversionFiles: (icf: conversionFileRepresentation[], onlyOnChange: boolean) => boolean;
+    registerLeaveConfirmationCallback: (f: () => Promise<boolean>) => void;
+    registerCloseConfirmationCallback: (f: () => Promise<boolean>) => void;
     showSpinner: (text: string) => Promise<ISpinnerManipulator>;
     emitAlert: (text: string, title: string) => Promise<void>;
     askConfirmation: (text: string, title: string) => Promise<boolean>;
@@ -114,6 +116,24 @@ export class ConversionEditorPresenter{
             wasModifiedUnsubscriber();
             if(v == null) return;
             wasModifiedUnsubscriber = v.wasModified.subscribe(this.checkIfCurentFileCanBeSaved);
+        });
+        this.view.registerLeaveConfirmationCallback(async() => {
+            if(this.currentConversionFile.get().wasModified.get() == true){
+                return await this.view.askConfirmationYN(
+                    "Are you sure you want to leave this page ? , all your current changes will be lost forever ...",
+                    "Confirmation"
+                );
+            }
+            return true;
+        });
+        this.view.registerCloseConfirmationCallback(async() => {
+            if(this.currentConversionFile.get().wasModified.get() == true){
+                return await this.view.askConfirmationYN(
+                    "Are you sure you want to leave Kana Solver v3 ? , all your current changes will be lost forever ...",
+                    "Confirmation"
+                );
+            }
+            return true;
         });
     }
     public async init(): Promise<boolean>{

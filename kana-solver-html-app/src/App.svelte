@@ -4,10 +4,11 @@
 	import ModelsAndHandlers from './modelsAndHandlers';
 	import keys from './keys';
 	import {App, View} from 'framework7-svelte';
-	import {Routes} from './routes';
+	import {Routes, PageLeaveConfirmators} from './routes';
 	import {masterRoute, masterDetailBreakpoint} from './generated/config/config';
 
 	setContext(keys.kanaSolverAppModelsAndHandlers, ModelsAndHandlers);
+	setContext(keys.pageLeaveConfirmators, PageLeaveConfirmators);
 </script>
 
 <App theme="aurora" name="Kana Solver" id="com.github.leonardothehuman.kanaSolver" routes={Routes}>
