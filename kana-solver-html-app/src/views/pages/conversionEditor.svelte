@@ -1,7 +1,7 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
     import {
-        Page, Navbar, Row, Col, Input, Button, List, NavRight, Link, Panel, Block, ListItemRow,
+        Page, Navbar, Row, Col, Input, Button, List, NavRight, Link, Panel, BlockTitle, BlockHeader,
         ListInput, ListItem, Fab, Icon, FabButtons, FabButton} from "framework7-svelte";
     import ColorListItem from "../components/conversionEditor/colorListItem.svelte";
     import Retick from '../components/retick.svelte';
@@ -233,6 +233,7 @@
 
     <Panel right id="page-menu">
         <Page>
+            <Navbar title="Conversion Editor"></Navbar>
             <List>
                 <ListItem title="New file" link="#" on:click={async() => {
                     presenter.createNewFile();
@@ -323,22 +324,28 @@
                 <i slot="media" class="f7-icons">archivebox</i>
             </ListItem>
         </List>
+        <BlockTitle>Author</BlockTitle>
+        <BlockHeader>Who created this conversion file ?</BlockHeader>
         <List>
             <ListInput
                 label="Author"
                 type="text"
                 placeholder="Author"
                 bind:value={$currentAuthor}
-                clearButton
             />
             <ListInput
                 label="Description"
                 type="textarea"
                 placeholder="Description"
                 bind:value={$currentDescription}
-                clearButton
             />
         </List>
+
+        <BlockTitle>Rules</BlockTitle>
+        <BlockHeader>
+            Characters on Kana column will become characters on Romaji column <br />
+            Red rows means duplicated rows
+        </BlockHeader>
         <List class="no-bottom-margin">
             <ListInput input={false} >
                 <span slot="input">
