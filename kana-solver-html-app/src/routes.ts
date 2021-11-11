@@ -11,56 +11,73 @@ import ExtractDetails from './views/pages/extractDetails.svelte';
 import {masterRoute} from './generated/config/config';
 import type { Router } from 'framework7/types';
 
-var PageLeaveConfirmators = {
-    conversionEditor: function({ resolve, reject }:{resolve: Function, reject: Function}){}
+export type leaveConfirmators = {
+    conversionEditor: ({ resolve, reject }:{resolve: Function, reject: Function}) => void
 }
 
-var Routes: Router.RouteParameters[] = [
-    {
-        path: '/',
-        component: Home
-    },
-    {
-        path: '/extract/',
-        component: Extract
-    },
-    {
-        path: '/extract-details/',
-        component: ExtractDetails
-    },
-    {
-        path: '/conversionEditor/',
-        component: ConversionEditor,
-        beforeLeave: function ({ resolve, reject }) {
-            var _resolve: Function = function(){
-                PageLeaveConfirmators.conversionEditor = function({ resolve, reject }:{resolve: Function, reject: Function}){};
-                resolve();
+//This function is here because we need a callback that will change as you enter or leaves 
+//Pages that needs exit confirmation ...
+function generateRoutes(){
+    var PageLeaveConfirmators: leaveConfirmators = {
+        conversionEditor: function({ resolve, reject }:{resolve: Function, reject: Function}){}
+    }
+    
+    var Routes: Router.RouteParameters[] = [
+        {
+            path: '/',
+            component: Home
+        },
+        {
+            path: '/extract/',
+            component: Extract
+        },
+        {
+            path: '/extract-details/',
+            component: ExtractDetails
+        },
+        {
+            path: '/conversionEditor/',
+            component: ConversionEditor,
+            beforeLeave: function ({ resolve, reject }) {
+                var _resolve: Function = function(){
+                    PageLeaveConfirmators.conversionEditor = function({ resolve, reject }:{resolve: Function, reject: Function}){};
+                    resolve();
+                }
+                PageLeaveConfirmators.conversionEditor({resolve: _resolve, reject});
             }
-            PageLeaveConfirmators.conversionEditor({resolve: _resolve, reject});
+        },
+        {
+            path: '/utauConversor/',
+            component: UtauConversor
+        },
+        {
+            path: '/ustConversor/',
+            component: UstConversor
+        },
+        {
+            path: '/settings/',
+            component: Settings
+        },
+        {
+            path: '/findFile/',
+            component: FileFinder
         }
-    },
-    {
-        path: '/utauConversor/',
-        component: UtauConversor
-    },
-    {
-        path: '/ustConversor/',
-        component: UstConversor
-    },
-    {
-        path: '/settings/',
-        component: Settings
-    },
-    {
-        path: '/findFile/',
-        component: FileFinder
+    ];
+    
+    for(let i = 0; i < Routes.length; i++){
+        if(Routes[i].path == masterRoute){
+            Routes[i]['master'] = true;
+        }
     }
-];
 
-for(let i = 0; i < Routes.length; i++){
-    if(Routes[i].path == masterRoute){
-        Routes[i]['master'] = true;
+    return {
+        getPageLeaveConfirmators: function(){
+            return PageLeaveConfirmators
+        },
+        getRoutes: function(){
+            return Routes
+        }
     }
 }
 
-export {Routes, PageLeaveConfirmators};
+export {generateRoutes};

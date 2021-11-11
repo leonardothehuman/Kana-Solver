@@ -19,11 +19,11 @@
     import {f7ConfirmPromisse, f7ConfirmYNPromisse} from "../../minilibs/f7extender";
     import type AsyncStoreInterceptor from "../../minilibs/AsyncStoreInterceptor";
     import { sleep } from "../../minilibs/helpers";
-    import type {PageLeaveConfirmators} from "../../routes";
+    import type {leaveConfirmators} from "../../routes";
     var nw = require('nw.gui');
     var win = nw.Window.get();
 
-    let pageLeaveConfirmators:typeof PageLeaveConfirmators = getContext(keys.pageLeaveConfirmators);
+    let pageLeaveConfirmators:leaveConfirmators = getContext(keys.pageLeaveConfirmators);
     let leaveConfirmators: Set<() => Promise<boolean>> = new Set();
     pageLeaveConfirmators.conversionEditor = async function ({ resolve, reject }:{resolve: Function, reject: Function}) {
         let hasFalse = false;

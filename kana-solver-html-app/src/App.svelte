@@ -4,14 +4,16 @@
 	import ModelsAndHandlers from './modelsAndHandlers';
 	import keys from './keys';
 	import {App, View} from 'framework7-svelte';
-	import {Routes, PageLeaveConfirmators} from './routes';
+	import {generateRoutes} from './routes';
 	import {masterRoute, masterDetailBreakpoint} from './generated/config/config';
 
+	var routeCollection = generateRoutes();
+
 	setContext(keys.kanaSolverAppModelsAndHandlers, ModelsAndHandlers);
-	setContext(keys.pageLeaveConfirmators, PageLeaveConfirmators);
+	setContext(keys.pageLeaveConfirmators, routeCollection.getPageLeaveConfirmators());
 </script>
 
-<App theme="aurora" name="Kana Solver" id="com.github.leonardothehuman.kanaSolver" routes={Routes}>
+<App theme="aurora" name="Kana Solver" id="com.github.leonardothehuman.kanaSolver" routes={routeCollection.getRoutes()}>
 	<!-- <span class="theme-dark"> -->
 		<View main url={masterRoute} class="safe-areas" masterDetailBreakpoint={masterDetailBreakpoint} />
 	<!-- </span> -->
