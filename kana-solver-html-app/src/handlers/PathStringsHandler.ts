@@ -130,4 +130,7 @@ export default class PathStringHandler implements IPathStringHandler{
         }
         return false;
     }
+    public getRelativePath(source: string, destination:string): string{
+        return path.relative(source, destination);
+    }
 }

@@ -1,6 +1,10 @@
 //This file is licensed under GNU GPL v3.0 only license
 
+import type IFileSystemHandler from '../../handlers/IFileSystemHandler';
+import type IPathStringHandler from '../../handlers/IPathStringshandler';
 import {php_explode, returnDefaultIfUndefined} from '../helpers'
+import type { ConversionFile } from './conversion_file';
+import type ITransformableParser from './ITransformableParser';
 
 export type ParsedInstallTxtObject = {
     type: string,
@@ -10,7 +14,7 @@ export type ParsedInstallTxtObject = {
     [key: string]: string
 }
 
-export class InstallTxt{
+export class InstallTxt implements ITransformableParser{
     private _parsedData: ParsedInstallTxtObject;
     public get parsedData(): ParsedInstallTxtObject {
         let toReturn: ParsedInstallTxtObject = {
@@ -74,5 +78,16 @@ export class InstallTxt{
             if(i == "description") continue;
             this._parsedData[i.toLowerCase()] = this._rawFields[i];
         }
+    }
+
+    //This 3 functions will not be implemented because we will convert nothing on install.txt
+    public transformFileNames(rules: ConversionFile, psh: IPathStringHandler){
+        throw new Error("Not implemented ...");
+    }
+    public transformAlias(rules: ConversionFile, deduplicate: boolean){
+        throw new Error("Not implemented ...");
+    };
+    public async save(_path: string, fsh: IFileSystemHandler){
+        throw new Error("Not implemented ...");
     }
 }

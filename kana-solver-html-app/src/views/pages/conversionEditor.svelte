@@ -1,8 +1,8 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
     import {
-        Page, Navbar, Row, Col, Input, Button, List, NavRight, Link, Panel, BlockTitle, BlockHeader,
-        ListInput, ListItem, Fab, Icon, FabButtons, FabButton} from "framework7-svelte";
+        Page, Navbar, Row, Col, List, NavRight, Link, Panel,
+        BlockTitle, BlockHeader, ListInput, ListItem, Fab, Icon} from "framework7-svelte";
     import ColorListItem from "../components/conversionEditor/colorListItem.svelte";
     import Retick from '../components/retick.svelte';
     import { getContext, onDestroy, onMount, tick } from "svelte";
@@ -20,6 +20,9 @@
     import type AsyncStoreInterceptor from "../../minilibs/AsyncStoreInterceptor";
     import { sleep } from "../../minilibs/helpers";
     import type {leaveConfirmators} from "../../routes";
+    import ConversionFileSelector from "../components/conversionFileSelector.svelte";
+    import type { ConversionItem, selectChangeInterceptedEventArgs } from "../../presenters/conversionFileSelectorPresenter";
+    
     var nw = require('nw.gui');
     var win = nw.Window.get();
 
@@ -175,7 +178,6 @@
     let currentDescription: IStore<string>;
     let conversionData: ConversionUnitCollection;
     let currentConversionFile: IReadOnlyStore<ConversionFile | null> = presenter.currentConversionFile;
-    let selectedConversionFileIndex: AsyncStoreInterceptor<number> = presenter.selectedConversionFileIndex;
     function updateConversionFile(f: ConversionFile | null){
         if(f == null){
             currentAuthor = new LockedStore("");
@@ -185,7 +187,6 @@
             currentAuthor = f.conversionRecipe.head.author;
             currentDescription = f.conversionRecipe.head.description;
             conversionData = f.conversionRecipe.conversionData;
-            //conversionData = f.conversionRecipe.conversionData;
         }
     }
     let u = currentConversionFile.subscribe((nv) => {
@@ -206,6 +207,15 @@
         if(inited.inited == true){
             updateVList($conversionData);
         }
+    }
+
+    function selectChangeIntercepted(e: CustomEvent<selectChangeInterceptedEventArgs>){
+        if(e.detail.result.valid == true) mainContainer.scrollTo(0, 0);
+    }
+
+    let conversionItem: ConversionItem | null = null;
+    $: {
+        presenter.setCurrentConversionItem(conversionItem);
     }
 </script>
 <style lang="less">
@@ -289,41 +299,13 @@
         <Icon ios="f7:plus" aurora="f7:plus" md="f7:plus"></Icon>
     </Fab>
     <div class="content-container" bind:this={mainContainer}>
-        <List>
-            <!-- bind:this={fileListRef} -->
-            <ListItem
-                title="Conversion file" smartSelect
-                smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false }}
-            >
-                <select name="conversionLists" bind:value={$selectedConversionFileIndex}>
-                    {#each installedConversionFiles as cfile, i (cfile)}
-                        {#if cfile.isNew == true}
-                            <option value={i}>{cfile.nameWithoutExtension}</option>
-                        {/if}
-                    {/each}
-                    <optgroup label="Built-in">
-                        {#each installedConversionFiles as cfile, i}
-                            {#if cfile.isBuiltIn == true && cfile.isNew != true}
-                                <option value={i}>{cfile.nameWithoutExtension}</option>
-                            {/if}
-                        {/each}
-                    </optgroup>
-                    <optgroup label="Installed">
-                        {#each installedConversionFiles as cfile, i}
-                            {#if cfile.isBuiltIn != true}
-                                <option value={i}>{cfile.nameWithoutExtension}</option>
-                            {/if}
-                        {/each}
-                    </optgroup>
-                </select>
-                <span slot="after">
-                    {#if installedConversionFiles[$selectedConversionFileIndex] != undefined}
-                        {installedConversionFiles[$selectedConversionFileIndex].nameWithoutExtension}
-                    {/if}
-                </span>
-                <i slot="media" class="f7-icons">archivebox</i>
-            </ListItem>
-        </List>
+        <ConversionFileSelector
+            on:selectChangeIntercepted={selectChangeIntercepted}
+            bind:conversionItem={conversionItem}
+            informSaveAs={presenter.fileSavedAs}
+            informDelete={presenter.fileDeleted}
+            informCreate={presenter.fileCreated}
+            ></ConversionFileSelector>
         <BlockTitle>Author</BlockTitle>
         <BlockHeader>Who created this conversion file ?</BlockHeader>
         <List>

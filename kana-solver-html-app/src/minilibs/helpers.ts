@@ -10,8 +10,17 @@ export function isNumber(s: any){
   return false;
 }
 
+export function isBoolean(s: any){
+  if(typeof s === 'boolean' || s instanceof Boolean) return true;
+  return false;
+}
+
 export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export function htmlEntities(str: string) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 export function returnDefaultIfUndefined<T>(test: T|undefined, def: T){

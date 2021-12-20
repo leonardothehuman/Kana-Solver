@@ -4,6 +4,11 @@ import type IFileSystemHandler from '../../handlers/IFileSystemHandler';
 import type IReadOnlyStore from '../IReadOnlyStore';
 import type IStore from '../IStore';
 import type { unsubscriber } from '../IReadOnlyStore';
+import type IPathStringHandler from '../../handlers/IPathStringshandler';
+
+type aliasConversionMode = "prefix"|"suffix"|"center"|"all";
+
+type SeparatedNameAndExtension = {name: string, ext: string};
 
 //We dont want to change the store, only the contents of the store
 export type ConversionUnit = {
@@ -37,7 +42,32 @@ type ConversionRecipe = {
     }>
 }
 
+export type ChangedAliasInfo = {
+    originalKana: string,
+    originalRomaji: string,
+    solvedKana: string,
+    solvedRomaji: string
+}
+
 export class ConversionFile{
+    private fileHistory: Record<string, string>;
+    private aliasHistory: Record<string, string>;
+    private _changedAlias: Record<string, ChangedAliasInfo>;
+    private prefixList: Array<string>;
+    private suffixList: Array<string>;
+    public get changedAlias(): Record<string, ChangedAliasInfo> {
+        let toReturn: Record<string, ChangedAliasInfo> = {}
+        let e = Object.entries(this._changedAlias);
+        for(let i = 0; i < e.length; i++){
+            toReturn[e[i][0]] = {
+                ...e[i][1]
+            }
+        }
+        return toReturn;
+    }
+    private set changedAlias(value: Record<string, ChangedAliasInfo>) {
+        this._changedAlias = value;
+    }
     public readonly conversionRecipe: ObservableConversionRecipe;
     private readonly _wasModified: IStore<boolean>;
     public get wasModified(): IReadOnlyStore<boolean> {
@@ -133,6 +163,11 @@ export class ConversionFile{
     // }
 
     constructor(text: string|null){
+        this.fileHistory = {};
+        this.aliasHistory = {};
+        this.changedAlias = {};
+        this.prefixList = [];
+        this.suffixList = [];
         this.wasModifiedEventHandler = this._wasModifiedEventHandler.bind(this);
         this.verifyDuplicatedKana = this._verifyDuplicatedKana.bind(this);
         this.verifyDuplicatedRomaji = this._verifyDuplicatedRomaji.bind(this);
@@ -218,5 +253,177 @@ export class ConversionFile{
         });
         await fsh.saveTextFile(fileName, 'utf8', JSON.stringify(toSave, null, '\t'));
         this.getWasModifiedRW().set(stillModified);
+    }
+    //TODO: Manage this on a different class
+    public resetFileHistory(){
+        this.fileHistory = {};
+    }
+    public resetAliasHistory(){
+        this.aliasHistory = {};
+        this.changedAlias = {};
+        this.prefixList = [];
+        this.suffixList = [];
+    }
+    private separateNameFromExtension(fname: string):SeparatedNameAndExtension {
+        let stopAt = fname.lastIndexOf('.');
+        var name = fname;
+        var extension = "";
+        if(stopAt > 0){
+            name = fname.substr(0, stopAt);
+            extension = fname.substr(stopAt);
+        }
+        if(extension.toLowerCase() == '.frq'){
+            stopAt = fname.lastIndexOf('_');
+            if(stopAt >= 0){
+                name = fname.substr(0, stopAt);
+                extension = fname.substr(stopAt);
+            }
+        }
+        return{
+            name: name,
+            ext: extension
+        }
+    }
+    public generateReplacedFilePath(toReplace: string, psh: IPathStringHandler): string{
+        let toReplaceArray = psh.pathToArray(toReplace);
+        for(let i = 0; i < toReplaceArray.length - 1; i++){
+            toReplaceArray[i] = this.generateReplacedFileName(toReplaceArray[i], false);
+        }
+        toReplaceArray[toReplaceArray.length - 1] =
+            this.generateReplacedFileName(toReplaceArray[toReplaceArray.length - 1], true);
+
+        return psh.joinPath(...toReplaceArray);
+    }
+    public generateReplacedFileName(toReplace: string, separateExtension: boolean = true){
+        if(toReplace == "") return "";
+        let elements: SeparatedNameAndExtension = {
+            name: toReplace,
+            ext: ""
+        }
+        if(separateExtension == true){
+            elements = this.separateNameFromExtension(toReplace);
+        }
+        let replaced = "";
+        let nextAttachement = "";
+        while(true){
+            replaced = this.generateReplacedString(elements.name) + nextAttachement;
+            
+            if(this.fileHistory[replaced.toLowerCase()] == elements.name) break;
+            if(this.fileHistory[replaced.toLowerCase()] == undefined) break;
+            
+            if(nextAttachement == ""){
+                nextAttachement = "2";
+            }else{
+                nextAttachement = (parseInt(nextAttachement) + 1).toFixed(0);
+            }
+        }
+        this.fileHistory[replaced.toLowerCase()] = elements.name;
+        return replaced + elements.ext;
+    }
+    private separateAliasElements(toSeparate: string){
+        let prefix: string = "";
+        let center: string = toSeparate;
+        let suffix: string = "";
+        for(let i = 0; i < this.prefixList.length; i++){
+            let currentPrefix = this.prefixList[i];
+            if(currentPrefix.length >= center.length) continue;
+            if(center.substr(0, currentPrefix.length) == currentPrefix){
+                prefix = center.substr(0, currentPrefix.length);
+                center = center.substr(currentPrefix.length);
+                break;
+            }
+        }
+        for(let i = 0; i < this.suffixList.length; i++){
+            let currentSuffix = this.suffixList[i];
+            if(currentSuffix.length >= center.length) continue;
+            if(center.substr(center.length - currentSuffix.length) == currentSuffix){
+                suffix = center.substr(center.length - currentSuffix.length);
+                center = center.substr(0, center.length - currentSuffix.length);
+                break;
+            }
+        }
+        return {
+            prefix: prefix,
+            center: center,
+            suffix: suffix
+        }
+    }
+    public generateReplacedAlias(toReplace: string, mode: aliasConversionMode, deduplicate: boolean): string{
+        if(toReplace == "") return "";
+        if(mode == "all"){
+            let elements = this.separateAliasElements(toReplace);
+            return  this.generateReplacedAlias(elements.prefix, "prefix", deduplicate) + 
+                    this.generateReplacedAlias(elements.center, "center", deduplicate) + 
+                    this.generateReplacedAlias(elements.suffix, "suffix", deduplicate)
+        }
+        if(mode == "prefix" && this.prefixList.indexOf(toReplace) < 0){
+            this.prefixList.push(toReplace);
+        }
+        if(mode == "suffix" && this.suffixList.indexOf(toReplace) < 0){
+            this.suffixList.push(toReplace);
+        }
+        let replaced = "";
+        let toReturn = "";
+        let nextAttachement = "";
+        let putOnChanged = false;
+        let originalKana = "";
+        let originalRomaji = "";
+        let wasReplaced = false;
+        while(true){
+            replaced = this.generateReplacedString(toReplace) + nextAttachement;
+            if(deduplicate == true || wasReplaced == false){
+                toReturn = replaced;
+                wasReplaced = true;
+            }
+            
+            if(this.aliasHistory[replaced] == toReplace) break;
+            if(this.aliasHistory[replaced] == undefined) break;
+            if(putOnChanged == false){
+                originalKana = this.aliasHistory[replaced];
+                originalRomaji = replaced;
+            }
+            putOnChanged = true;
+            
+            if(nextAttachement == ""){
+                nextAttachement = "2";
+            }else{
+                nextAttachement = (parseInt(nextAttachement) + 1).toFixed(0);
+            }
+        }
+        this.aliasHistory[replaced] = toReplace;
+        if(putOnChanged == true){
+            this._changedAlias[toReplace] = {
+                originalKana: originalKana,
+                originalRomaji: originalRomaji,
+                solvedKana: toReplace,
+                solvedRomaji: replaced
+            }
+        }
+        return toReturn;
+    }
+    public generateReplacedString(toReplace: string): string{
+        var toReturn = '';
+        let i = 0 ;
+        let units = this.conversionRecipe.conversionData.get();
+        while(i < toReplace.length){
+            let replaced = toReplace.charAt(i);
+            let skipCount = 1;
+            for(let j = 0; j < units.length; j++){
+                let cUnit = units[j];
+                let cKana = cUnit.kana.get();
+                let replacement = cUnit.romaji.get();
+                if(cKana.length <= 0) continue;
+                if(replacement.length <= 0) continue;
+                //let replacementCount = replacement.length;
+                let original = toReplace.substr(i, cKana.length);
+                if(original == cKana && cKana.length >= skipCount){
+                    skipCount = cKana.length;
+                    replaced = replacement;
+                }
+            }
+            toReturn = toReturn + replaced;
+            i = i + skipCount;
+        }
+        return toReturn;
     }
 }

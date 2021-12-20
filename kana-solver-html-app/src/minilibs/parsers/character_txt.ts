@@ -1,6 +1,10 @@
+import type IFileSystemHandler from '../../handlers/IFileSystemHandler';
+import type IPathStringHandler from '../../handlers/IPathStringshandler';
 import {php_explode, returnDefaultIfUndefined} from '../helpers'
+import type { ConversionFile } from './conversion_file';
+import type ITransformableParser from './ITransformableParser';
 
-export class CharacterTxt{
+export class CharacterTxt implements ITransformableParser{
     private _rawFields: {
         optionFields: Record<string, string>,
         lineEntries: string[]
@@ -19,14 +23,15 @@ export class CharacterTxt{
                 this._rawFields.lineEntries.push(value[0].replace("\r", ""));
                 return;
             }
-            this._rawFields.optionFields[value[0].trim()] = value[1].trim();
+            this._rawFields.optionFields[value[0].trim().toLowerCase()] = value[1].trim();
         });
-        // console.log(this._rawFields);
-        //console.log(text);
     }
 
     public get name(): string|null{
         return returnDefaultIfUndefined(this._rawFields.optionFields["name"], null);
+    }
+    public set name(v: string){
+        this._rawFields.optionFields["name"] = v;
     }
     public get image(): string|null{
         return returnDefaultIfUndefined(this._rawFields.optionFields["image"], null);
@@ -43,5 +48,26 @@ export class CharacterTxt{
     }
     public getField(field: string): string|null{
         return returnDefaultIfUndefined(this._rawFields.optionFields[field], null);
+    }
+    
+    public transformFileNames(rules: ConversionFile, psh: IPathStringHandler){
+        console.log(JSON.parse(JSON.stringify(this._rawFields)));
+        Object.entries(this._rawFields.optionFields).forEach((v) => {
+            if(v[0] == "image") this._rawFields.optionFields["image"] = rules.generateReplacedFilePath(this.image, psh);
+            if(v[0] == "sample") this._rawFields.optionFields["sample"] = rules.generateReplacedFilePath(this.sample, psh);
+        });
+    }
+
+    public transformAlias(rules: ConversionFile, deduplicate: boolean){};
+
+    public async save(_path: string, fsh: IFileSystemHandler){
+        let toSave: Array<string> = [];
+        Object.entries(this._rawFields.optionFields).forEach((v) => {
+            toSave.push(v[0] + '=' + v[1]);
+        });
+        for(let i = 0; i < this._rawFields.lineEntries.length; i++){
+            toSave.push(this._rawFields.lineEntries[i]);
+        }
+        await fsh.saveTextFile(_path, "SHIFT_JIS", toSave.join('\r\n'));
     }
 }

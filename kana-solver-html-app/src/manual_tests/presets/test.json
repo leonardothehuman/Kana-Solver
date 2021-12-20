@@ -1,0 +1,33 @@
+{
+	"head": {
+		"author": "LeonardoTheHuman",
+		"description": "test",
+		"fileVersion": 1
+	},
+	"conversionData": [
+		{
+			"kana": "a",
+			"romaji": "A"
+		},
+		{
+			"kana": "ab",
+			"romaji": "BA"
+		},
+		{
+			"kana": "ac",
+			"romaji": "BAC"
+		},
+		{
+			"kana": "b",
+			"romaji": "B"
+		},
+		{
+			"kana": "l",
+			"romaji": ""
+		},
+		{
+			"kana": "",
+			"romaji": "cute"
+		}
+	]
+}

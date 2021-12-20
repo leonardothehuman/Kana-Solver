@@ -8,6 +8,7 @@ import UstConversor from './views/pages/ustConversor.svelte';
 import Settings from './views/pages/settings.svelte';
 import FileFinder from './views/pages/fileFinder.svelte';
 import ExtractDetails from './views/pages/extractDetails.svelte';
+import UtauConversorDetails from './views/pages/utauConversorDetails.svelte';
 import {masterRoute} from './generated/config/config';
 import type { Router } from 'framework7/types';
 
@@ -61,6 +62,10 @@ function generateRoutes(){
         {
             path: '/findFile/',
             component: FileFinder
+        },
+        {
+            path: '/utau-conversor-details/',
+            component: UtauConversorDetails
         }
     ];
     

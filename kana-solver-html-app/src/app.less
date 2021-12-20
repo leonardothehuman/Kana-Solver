@@ -1,8 +1,23 @@
 /*This file is licensed under GNU GPL v3.0 only license*/
 
+@import "./views/less/globalMixins.less";
+
 body{
   -webkit-user-select: none;
   user-select: none;
+}
+
+.allow-select{
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.temp-view-container{
+  .m-container();
+}
+
+.warning-messages{
+  padding: 0px 15px;
 }
 
 *, *::after, *::before {

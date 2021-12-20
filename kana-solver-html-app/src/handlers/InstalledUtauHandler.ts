@@ -52,6 +52,14 @@ export class InstalledUtau implements IInstalledUtau{
         this._uninstalled = value;
     }
 
+    private _isConverted: boolean;
+    public get isConverted(): boolean {
+        return this._isConverted;
+    }
+    private set isConverted(value: boolean) {
+        this._isConverted = value;
+    }
+
     private psh: IPathStringHandler;
     private fsh: IFileSystemHandler;
 
@@ -90,6 +98,11 @@ export class InstalledUtau implements IInstalledUtau{
         if(this.completeRootPath == "") return;
         await this.fsh.recursiveDelete(this.completeRootPath);
     }
+    public async init(): Promise<void>{
+        this.isConverted = await this.fsh.existAndIsDirectory(
+            this.psh.joinPath(this.completeRootPath, '.rollback')
+        )
+    }
 }
 
 export default class InstalledUtauHandler implements IInstalledUtauHandler{
@@ -127,7 +140,9 @@ export default class InstalledUtauHandler implements IInstalledUtauHandler{
             if(toPush.characterTxt !== null && toPush.characterTxt.name != null){
                 toPush.name = toPush.characterTxt.name;
             }
-            utauList.push(new InstalledUtau(this.psh, this.fsh, toPush));
+            let toPush2 = new InstalledUtau(this.psh, this.fsh, toPush);
+            await toPush2.init();
+            utauList.push(toPush2);
         }
         return utauList;
     }

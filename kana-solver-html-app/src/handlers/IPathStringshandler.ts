@@ -15,4 +15,5 @@ export default interface IPathStringHandler{
     zipNormalize: (t: string) => string;
     extractFileName: (name: string, ext: string) => string;
     hasWin32ForbiddenChars: (f: string) => boolean;
+    getRelativePath: (source: string, destination:string) => string;
 }

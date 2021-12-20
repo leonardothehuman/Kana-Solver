@@ -106,7 +106,7 @@
     <List>
         <PathSelectField
             label="Utauloid to install"
-            extensionList={['*.zip', '*.rar']}
+            extensionList={['*.zip', '*.uar']}
             extensionLabels={{
                 '*.zip': "ZIP files",
                 '*.uar': "UTAU archive"
@@ -128,32 +128,33 @@
         </ListButton>
     </List>
 
+    <!-- TODO: Centralize this -->
     {#if userUtauList.length <= 0 && systemUtauList.length <= 0}
         <BlockTitle>No utau has been found</BlockTitle>
         <BlockHeader>Install a new utau or configure the correct installation path</BlockHeader>
     {:else}
         <BlockTitle>Installed UTAU</BlockTitle>
         <List {...listArguments}>
-            <!-- TODO: add key to each -->
             {#if userUtauList.length > 0}
                 <ListGroup>
                     <ListItem groupTitle title="On user directory"></ListItem>
-                    {#each userUtauList as utau}
+                    {#each userUtauList as utau (utau)}
                         <UtauItem
                             utau={utau}
-                            uninstallCallback={() => {extractPresenter.uninstallUtau(utau)}}
+                            actionText="Uninstall"
+                            actionCallback={() => {extractPresenter.uninstallUtau(utau)}}
                         ></UtauItem>
                     {/each}
                 </ListGroup>
             {/if}
             {#if systemUtauList.length > 0}
-            <!-- TODO: add key to each -->
                 <ListGroup>
                     <ListItem groupTitle title="On system directory (may require administrator privileges to uninstall)"></ListItem>
-                    {#each systemUtauList as utau}
+                    {#each systemUtauList as utau (utau)}
                         <UtauItem
                             utau={utau}
-                            uninstallCallback={() => {extractPresenter.uninstallUtau(utau)}}
+                            actionText="Uninstall"
+                            actionCallback={() => {extractPresenter.uninstallUtau(utau)}}
                         ></UtauItem>
                     {/each}
                 </ListGroup>

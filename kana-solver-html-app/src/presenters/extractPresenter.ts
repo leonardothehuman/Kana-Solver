@@ -71,6 +71,7 @@ export class ExtractPresenter{
         this.view.setSelectedVoicebank(this._selectedVoicBank, true);
     }
     
+    //TODO: join with similar functions
     public async loadUtauList(): Promise<void>{
         let spinner = await this.view.showSpinner("Loading ...");
         try {
@@ -78,13 +79,14 @@ export class ExtractPresenter{
                 this.model.psh.joinPath(process.env.APPDATA, "UTAU\\voice")
             );
         } catch (error) {
+            //TODO: let user see this error
             console.log(error);
             this.usersUtau = [];
         }
 
         if(!this.model.psh.isCompleteWinPath(localStorage.getItem("UTAUInstallationDirectory"))){
             spinner.close();
-            this.view.emitAlert("The configured utau installation directory is not valid", "Error");
+            this.view.emitAlert("The configured utau installation directory is not valid", "Warning");
             return;
         }
 
@@ -93,6 +95,7 @@ export class ExtractPresenter{
                 this.model.psh.joinPath(localStorage.getItem("UTAUInstallationDirectory"), "voice")
             );
         } catch (error) {
+            //TODO: let user see this error
             console.log(error);
             this.systemUtau = [];
         }

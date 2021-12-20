@@ -8,12 +8,19 @@ import ZipHandler from "./handlers/ZipHandler";
 import InstalledUtauHandler from "./handlers/InstalledUtauHandler";
 import ExtractModel from "./models/extractModel";
 import ConversionEditorModel from "./models/conversionEditorModel";
+import UtauConversorModel from "./models/utauConversorModel";
+import ConversionFileSelectorModel from "./models/conversionFileSelectorModel";
+
+import UtauConversorDetailsModel from "./models/utauConversorDetailsModel";
 
 let toexport = {
     FileFinderModel: FileFinderModel,
     ExtractDetailsModel: ExtractDetailsModel,
     ExtractModel: ExtractModel,
     ConversionEditorModel: ConversionEditorModel,
+    UtauConversorModel: UtauConversorModel,
+    UtauConversorDetailsModel: UtauConversorDetailsModel,
+    ConversionFileSelectorModel: ConversionFileSelectorModel,
 
     PathSelectFieldHandler: PathSelectFieldHandler,
     PathStringHandler: PathStringHandler,

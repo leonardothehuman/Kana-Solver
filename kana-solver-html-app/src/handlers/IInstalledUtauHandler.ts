@@ -9,6 +9,8 @@ export interface IInstalledUtau{
     readonly description: string[];
     readonly imageUri: string;
     readonly sampleUri: string;
+    readonly isConverted: boolean;
+    init: () => Promise<void>;
     uninstallUtau: () => Promise<void>;
 }
 
