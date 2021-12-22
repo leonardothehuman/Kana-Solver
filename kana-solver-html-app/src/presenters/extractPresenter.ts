@@ -84,6 +84,11 @@ export class ExtractPresenter{
             this.usersUtau = [];
         }
 
+        //TODO: improve this
+        if(localStorage.getItem("UTAUInstallationDirectory") == null){
+            localStorage.setItem("UTAUInstallationDirectory", "");
+        }
+
         if(!this.model.psh.isCompleteWinPath(localStorage.getItem("UTAUInstallationDirectory"))){
             spinner.close();
             this.view.emitAlert("The configured utau installation directory is not valid", "Warning");
