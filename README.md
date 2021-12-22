@@ -39,6 +39,6 @@
 6. Return to the "kana-solver-html-app" directory and run `npm run run-nw`
 
 ## License
-This project is licensed under GNU GPL v3, some files that may be used in other projects are licensed under MIT license refer th the file header to know it's specific license ...
+This project is licensed under GNU GPL v3, some files that may be used in other projects are licensed under MIT license, please refeer to the file header to know it's specific license ...
 
 If the file don't have a header, just wait a little OK, I will add a header on all files soon :-)
