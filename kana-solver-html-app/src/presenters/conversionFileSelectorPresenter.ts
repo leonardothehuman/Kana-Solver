@@ -171,7 +171,7 @@ export class ConversionFileSelectorPresenter{
         }
 
         if(await this.model.fsh.existAndIsDirectory(conversionFileDirectory) == false){
-            this.model.fsh.createDirectory(conversionFileDirectory);
+            await this.model.fsh.createDirectory(conversionFileDirectory);
         }
 
         let userConversionFiles: objectRepresentation[] =
