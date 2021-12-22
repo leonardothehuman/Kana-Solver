@@ -3,7 +3,7 @@
 ## Romanize Japanese utau
 
 ### Features:
-- Extract and install japanese encoded utau zip files without changing the locale
+- Extract and install japanese encoded utau zip files without changing the system locale
 - Create your own rules to convert japanese characters to a romanized version
 - Convert UST file from - to CV <-> VCV (Not implemented yet)
 - Convert Japanese file from - to romaji (Not implemented yet)
