@@ -33,6 +33,9 @@
     .title-container :global(a){
         text-decoration: underline;
     }
+    .text-content :global(p){
+        margin: 5px 0px;
+    }
 </style>
 <ListItem 
     after=""
@@ -54,10 +57,15 @@
     </div>
     
     <div slot="text">
-        <!-- TODO: add key to each -->
-        {#each utau.description as line}
-            <p>{line}</p>
-        {/each}
+        <div class="text-content">
+            <!-- TODO: add key to each -->
+            {#each utau.nonStandardFields as line, i}
+                <p>{line[0]}: {line[1]}</p>
+            {/each}
+            {#each utau.description as line}
+                <p>{line}</p>
+            {/each}
+        </div>
     </div>
     <!-- after-end -->
     <div slot="inner-start" class="buttons-container">

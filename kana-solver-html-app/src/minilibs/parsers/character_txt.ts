@@ -49,6 +49,18 @@ export class CharacterTxt implements ITransformableParser{
     public getField(field: string): string|null{
         return returnDefaultIfUndefined(this._rawFields.optionFields[field], null);
     }
+
+    public get nonStandardFields(): Record<string, string>{
+        let toReturn: Record<string, string> = {};
+        let toIterate = Object.entries(this._rawFields.optionFields);
+        for(let i = 0; i < toIterate.length;i++){
+            if(toIterate[i][0] == "name") continue;
+            if(toIterate[i][0] == "image") continue;
+            if(toIterate[i][0] == "sample") continue;
+            toReturn[toIterate[i][0]] = toIterate[i][1];
+        }
+        return toReturn;
+    }
     
     public transformFileNames(rules: ConversionFile, psh: IPathStringHandler){
         console.log(JSON.parse(JSON.stringify(this._rawFields)));

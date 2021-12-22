@@ -77,6 +77,21 @@ export class OtoIni implements ITransformableParser{
         }
     };
 
+    public truncateDecimals(){
+        for(let i = 0; i < this._otoEntries.length; i++){
+            let currentOto = this._otoEntries[i];
+            if(currentOto.complete == false) continue;
+            let toJoin: string[] = [];
+            let otherParamsArray = currentOto.otherParams.split(",");
+            for(let j = 0; j < otherParamsArray.length; j++){
+                let splitOnDots = otherParamsArray[j].split(".");
+                toJoin.push(splitOnDots[0]);
+            }
+            currentOto.otherParams = toJoin.join(",");
+            currentOto.rawLine = currentOto.wavFile + "=" + currentOto.alias + ',' + currentOto.otherParams;
+        }
+    }
+
     public async save(_path: string, fsh: IFileSystemHandler){
         let toSave: Array<string> = [];
         for(let i = 0; i < this._otoEntries.length; i++){

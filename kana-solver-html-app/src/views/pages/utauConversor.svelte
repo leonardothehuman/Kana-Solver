@@ -95,6 +95,10 @@
     .content-container{
         .m-container();
     }
+    .content-container :global(.item-text){
+        display: block;
+        max-height: fit-content;
+    }
     .content-container :global(.list-group ul){
         padding-left: 0px;
     }

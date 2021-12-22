@@ -117,6 +117,7 @@
 
     let renameFiles: IStore<boolean> = new LockedStore(false);
     let renameAliases: IStore<boolean> = new LockedStore(false);
+    let truncateDecimals: IStore<boolean> = new LockedStore(false);
     let conversionItem: IStore<ConversionItem | null> = new LockedStore(null);
     let deduplicateAlias: IStore<deduplicateOptions> = new LockedStore("false");
 
@@ -129,6 +130,7 @@
         renameFiles = presenter.renameFiles;
         conversionItem = presenter.conversionItem;
         deduplicateAlias = presenter.deduplicateAlias;
+        truncateDecimals = presenter.truncateDecimals;
     });
 
     let rootNameInput:HTMLInputElement;
@@ -228,6 +230,7 @@
         <List inlineLabels>
             <ListItem checkbox title="Rename File Names" name="conversion-options" bind:checked={$renameFiles}></ListItem>
             <ListItem checkbox title="Rename Aliases" name="conversion-options" bind:checked={$renameAliases}></ListItem>
+            <ListItem checkbox title="Truncate Decimal Timings" name="conversion-options" bind:checked={$truncateDecimals}></ListItem>
             <ListButton
                 on:click={() => {presenter.convert()}}
                 title="Convert !!!" color="deeppurple" >

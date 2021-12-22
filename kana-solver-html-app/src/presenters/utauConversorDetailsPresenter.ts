@@ -65,6 +65,11 @@ export class UtauConversorDetailsPresenter {
         return this._renameAliases;
     }
 
+    private _truncateDecimals: Store<boolean>;
+    public get truncateDecimals(): Store<boolean> {
+        return this._truncateDecimals;
+    }
+
     private _conversionItem: Store<ConversionItem | null>;
     public get conversionItem(): Store<ConversionItem | null> {
         return this._conversionItem;
@@ -97,6 +102,7 @@ export class UtauConversorDetailsPresenter {
         });
         this._renameAliases = new Store(true);
         this._renameFiles = new Store(true);
+        this._truncateDecimals = new Store(true);
     }
     public async init() {
     }
@@ -116,7 +122,8 @@ export class UtauConversorDetailsPresenter {
                 newUtauName: this.utauName.get(),
                 renameAliases: this.renameAliases.get(),
                 renameFiles: this.renameFiles.get(),
-                deduplicateAlias: dda
+                deduplicateAlias: dda,
+                truncateDecimals: this.truncateDecimals.get()
             });
             let dEntries = Object.entries(duplicated);
             if(dEntries.length > 0){

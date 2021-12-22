@@ -77,6 +77,10 @@ export class InstalledUtau implements IInstalledUtau{
         if(this.characterTxt == null) return [];
         return this.characterTxt.textLines;
     }
+    public get nonStandardFields(): [string, string][]{
+        if(this.characterTxt == null) return [];
+        return Object.entries(this.characterTxt.nonStandardFields);
+    }
     public get imageUri(): string{
         if(this.characterTxt == null) return "";
         if(this.characterTxt.image == null) return "";

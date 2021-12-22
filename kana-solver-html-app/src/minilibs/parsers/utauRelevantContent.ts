@@ -19,7 +19,8 @@ export type conversionOptions = {
     newUtauName: string,
     renameAliases: boolean,
     renameFiles: boolean,
-    deduplicateAlias: boolean
+    deduplicateAlias: boolean,
+    truncateDecimals: boolean
 }
 
 //TODO: move this class to installedUtauHandler and remove this class
@@ -171,6 +172,11 @@ export class UtauRelevantContent{
         await this.backupTransformCollection(this.prefixMaps, originalPath);
 
         await this.transformFiles(this.prefixMaps, rules, options);
+        if(options.truncateDecimals == true){
+            for(let i = 0; i < this.otoInis.length; i++){
+                this.otoInis[i].obj.truncateDecimals();
+            }
+        }
         await this.transformFiles(this.otoInis, rules, options);
         
         let deleteCharacterTxt = false;
