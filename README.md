@@ -10,12 +10,12 @@
 
 ### Screenshots
 
-[![File Browser](screenshots\1-FileBrowser.png)]()
-[![Conversion Rules Editor](screenshots\2-ConversionEditor.png)]()
-[![Utau Picker](screenshots\3-UtauPicker.png)]()
-[![Conversion Options](screenshots\4-ConversionOptions.png)]()
-[![Extractor](screenshots\5-Extractor.png)]()
-[![Uninstaller](screenshots\6-Uninstall.png)]()
+[![File Browser](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/1-FileBrowser.png)]()
+[![Conversion Rules Editor](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/2-ConversionEditor.png)]()
+[![Utau Picker](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/3-UtauPicker.png)]()
+[![Conversion Options](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/4-ConversionOptions.png)]()
+[![Extractor](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/5-Extractor.png)]()
+[![Uninstaller](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/6-Uninstall.png)]()
 
 ## Useful links
 [Utau Official Page](http://utau2008.xrea.jp/)
