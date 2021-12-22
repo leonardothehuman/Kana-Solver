@@ -57,6 +57,7 @@ export class UtauConversorPresenter{
     public async init(){
         let spinner = await this.view.showSpinner("Loading ...");
         try {
+            //TODO: Create a function that sets the required directories
             this._usersUtau.set(
                 await this.model.iuh.getUtauListFromDirectory(
                     this.model.psh.joinPath(process.env.APPDATA, "UTAU\\voice")
@@ -64,7 +65,8 @@ export class UtauConversorPresenter{
             );
         } catch (error) {
             spinner.close();
-            await this.view.emitAlert(error.message, "Error");
+            //TODO: let user see this error
+            //await this.view.emitAlert(error.message, "Error");
             this._usersUtau.set([]);
             spinner = await this.view.showSpinner("Loading ...");
         }

@@ -160,12 +160,23 @@ export class ConversionFileSelectorPresenter{
                 )
             );
 
+        let conversionFileDirectory: string = this.model.psh.joinPath(
+            this.model.fsh.homeDirectory(),
+            "kanasolver_files\\conversion_files"
+        );
+
+        //TODO: Verify the entire path
+        if(await this.model.fsh.existAndIsFile(conversionFileDirectory) == true){
+            throw new Error(`"${conversionFileDirectory}" is a file, but it's supposed to be a directory ...`);
+        }
+
+        if(await this.model.fsh.existAndIsDirectory(conversionFileDirectory) == false){
+            this.model.fsh.createDirectory(conversionFileDirectory);
+        }
+
         let userConversionFiles: objectRepresentation[] =
             await this.model.fsh.getAllFilesOnDirectory(
-                this.model.psh.joinPath(
-                    this.model.fsh.homeDirectory(),
-                    "kanasolver_files\\conversion_files"
-                )
+                conversionFileDirectory
             );
 
         for(var i = 0; i < builtInConversionFiles.length; i++){

@@ -326,7 +326,7 @@
         <BlockTitle>Rules</BlockTitle>
         <BlockHeader>
             Characters on Kana column will become characters on Romaji column <br />
-            Red rows means duplicated rows
+            Red rows means duplicated kanas
         </BlockHeader>
         <List class="no-bottom-margin">
             <ListInput input={false} >

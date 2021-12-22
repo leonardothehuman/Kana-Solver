@@ -8,7 +8,7 @@ const rimraf = promisify(require('rimraf'));
 const {
     drawProgressbar, downloadFile,
     verifyHash, extractZip
-} = require('./devInstallHelpers.js');
+} = require('./devInstallHelpers.cjs');
 
 const outputDir = path.join(process.cwd(), "nwBinaries");
 const distDir = path.join(process.cwd(), "dist");

@@ -102,7 +102,7 @@
     <Navbar title="Extractor" backLink />
     <div class="content-container">
     <BlockTitle>Install UTAU</BlockTitle>
-    <BlockHeader>Select a new Utauloid to install</BlockHeader>
+    <BlockHeader>Select a new Utauloid to install (You can drag a file here)</BlockHeader>
     <List>
         <PathSelectField
             label="Utauloid to install"

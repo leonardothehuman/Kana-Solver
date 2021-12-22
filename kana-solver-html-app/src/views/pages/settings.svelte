@@ -1,6 +1,6 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
-    import {Page, Navbar, List, ListItem} from "framework7-svelte";
+    import {Page, Navbar, List, ListItem, BlockTitle, BlockHeader} from "framework7-svelte";
     import PathSelectField from "../components/pathSelectField.svelte";
 
     let installationDirectory = localStorage.getItem("UTAUInstallationDirectory");
@@ -9,6 +9,8 @@
 </script>
 <Page>
     <Navbar title="Settings" backLink />
+    <BlockTitle>UTAU installation directory</BlockTitle>
+    <BlockHeader>Select the UTAU installation directory (Not the "voice" directory, You can drag a directory here)</BlockHeader>
     <List noHairlinesMd>
         <PathSelectField
             label="Utau installation directory"
