@@ -426,4 +426,30 @@ export class ConversionFile{
         }
         return toReturn;
     }
+    public generateReplacedStringReverse(toReplace: string): string{
+        var toReturn = '';
+        let i = 0 ;
+        let units = this.conversionRecipe.conversionData.get();
+        while(i < toReplace.length){
+            let replaced = toReplace.charAt(i);
+            let skipCount = 0;
+            for(let j = 0; j < units.length; j++){
+                let cUnit = units[j];
+                let cRomaji = cUnit.romaji.get();
+                let replacement = cUnit.kana.get();
+                if(cRomaji.length <= 0) continue;
+                if(replacement.length <= 0) continue;
+                //let replacementCount = replacement.length;
+                let original = toReplace.substr(i, cRomaji.length);
+                if(original == cRomaji && cRomaji.length > skipCount){
+                    skipCount = cRomaji.length;
+                    replaced = replacement;
+                }
+            }
+            if(skipCount <= 0) skipCount = 1;
+            toReturn = toReturn + replaced;
+            i = i + skipCount;
+        }
+        return toReturn;
+    }
 }

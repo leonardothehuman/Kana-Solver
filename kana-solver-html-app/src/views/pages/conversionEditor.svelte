@@ -299,6 +299,8 @@
         <Icon ios="f7:plus" aurora="f7:plus" md="f7:plus"></Icon>
     </Fab>
     <div class="content-container" bind:this={mainContainer}>
+        <BlockTitle>Conversion File</BlockTitle>
+        <BlockHeader>Select an existing file or create a new file</BlockHeader>
         <ConversionFileSelector
             on:selectChangeIntercepted={selectChangeIntercepted}
             bind:conversionItem={conversionItem}

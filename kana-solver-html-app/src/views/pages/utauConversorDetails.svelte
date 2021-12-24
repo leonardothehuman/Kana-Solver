@@ -172,6 +172,8 @@
 <Page>
     <Navbar title="Convert this file" backLink />
     <div class="content-container">
+        <BlockTitle>Conversion File</BlockTitle>
+        <BlockHeader>Select the rule to be used on this conversion</BlockHeader>
         <ConversionFileSelector
             listEmpty={false}
             bind:conversionItem={$conversionItem}

@@ -10,6 +10,7 @@ import ExtractModel from "./models/extractModel";
 import ConversionEditorModel from "./models/conversionEditorModel";
 import UtauConversorModel from "./models/utauConversorModel";
 import ConversionFileSelectorModel from "./models/conversionFileSelectorModel";
+import UstConversorModel from "./models/ustConversorModel";
 
 import UtauConversorDetailsModel from "./models/utauConversorDetailsModel";
 
@@ -21,6 +22,7 @@ let toexport = {
     UtauConversorModel: UtauConversorModel,
     UtauConversorDetailsModel: UtauConversorDetailsModel,
     ConversionFileSelectorModel: ConversionFileSelectorModel,
+    UstConversorModel: UstConversorModel,
 
     PathSelectFieldHandler: PathSelectFieldHandler,
     PathStringHandler: PathStringHandler,

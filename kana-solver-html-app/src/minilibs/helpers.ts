@@ -15,6 +15,10 @@ export function isBoolean(s: any){
   return false;
 }
 
+export function isNumeric(val: string) {
+  return /^-?\d+$/.test(val);
+}
+
 export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }

@@ -29,4 +29,5 @@ export default interface IFileSystemHandler{
     copyFile: (source: string, destination: string) => Promise<void>;
     renameFile: (source: string, destination: string) => Promise<void>;
     hide: (path: string) => void;
+    renameFileAsBackup: (f: string) => Promise<void>;
 }

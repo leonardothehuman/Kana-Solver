@@ -208,4 +208,22 @@ export default class FileSystemHandler implements IFileSystemHandler{
         if(result.stderr.trim() == "")return;
         throw new Error(result.stderr);
     }
+    public async renameFileAsBackup(f: string){
+        if(f.trim() == ''){
+            throw new Error("The specified file path is empty");
+        }
+        if(!await this.exist(f)){
+            throw new Error(`Failed to open "${f}"`);
+        }
+        let originalPath = this.pathStringHandler.pathToArray(f);
+        let originalName = originalPath[originalPath.length -1];
+        let counter = 1;
+        do{
+            originalPath[originalPath.length -1] =
+            this.pathStringHandler.extractName(originalName) + "_old" + counter + this.pathStringHandler.extractExtention(originalName);
+            counter++;
+        }while(await this.exist(this.pathStringHandler.joinPath(...originalPath)));
+
+        await this.renameFile(f, this.pathStringHandler.joinPath(...originalPath));
+    }
 }

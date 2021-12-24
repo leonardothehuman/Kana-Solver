@@ -78,7 +78,7 @@
             <ListItem title="Extract/Install UTAU" link="/extract/" reloadDetail />
             <ListItem title="Conversion List Editor" link="/conversionEditor/" reloadDetail />
             <ListItem title="Convert UTAU" link="/utauConversor/" reloadDetail />
-            <ListItem title="Convert ust file" link="/ustConversor/" reloadDetail />
+            <ListItem title="Convert UST file" link="/ustConversor/" reloadDetail />
         </List>
     </div>
     

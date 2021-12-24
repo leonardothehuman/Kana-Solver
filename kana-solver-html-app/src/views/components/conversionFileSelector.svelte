@@ -142,6 +142,9 @@
             position: relative;
             top: -2px;
         }
+        :global(.list){
+            margin: 0px;
+        }
     }
 </style>
 <div class="element-style">
