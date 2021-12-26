@@ -3,9 +3,14 @@
 import type IFileSystemHandler from "../handlers/IFileSystemHandler";
 import type IInstalledUtauHandler from "../handlers/IInstalledUtauHandler";
 import type IPathStringHandler from "../handlers/IPathStringshandler";
+import type ISettingsHandler from "../handlers/ISettingsHandler";
 import type { IUtauConversorModel } from "../presenters/utauConversorPresenter";
 
 export default class UtauConversorModel implements IUtauConversorModel{
+    private _sth: ISettingsHandler;
+    public get sth(): ISettingsHandler {
+        return this._sth;
+    }
     private _psh: IPathStringHandler;
     public get psh(): IPathStringHandler {
         return this._psh;
@@ -18,9 +23,10 @@ export default class UtauConversorModel implements IUtauConversorModel{
     public get iuh(): IInstalledUtauHandler {
         return this._iuh;
     }
-    constructor(psh: IPathStringHandler, fsh: IFileSystemHandler, iuh: IInstalledUtauHandler){
+    constructor(psh: IPathStringHandler, fsh: IFileSystemHandler, iuh: IInstalledUtauHandler, sth: ISettingsHandler){
         this._psh = psh;
         this._fsh = fsh;
         this._iuh = iuh;
+        this._sth = sth;
     }
 }

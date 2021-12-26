@@ -4,7 +4,6 @@ import type { colorSchemeOptions } from "./ISettingsHandler";
 import type ISettingsHandler from "./ISettingsHandler";
 
 
-//TODO: Put this class everywhere that uses the localstorage
 export default class SettingsHandler implements ISettingsHandler{
     public UTAUInstallationDirectory: Store<string>;
     public ColorScheme: Store<colorSchemeOptions>;

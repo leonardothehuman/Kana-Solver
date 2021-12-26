@@ -13,11 +13,13 @@ import type IInstalledUtauHandler from "../handlers/IInstalledUtauHandler";
 import type { IInstalledUtau } from "../handlers/IInstalledUtauHandler";
 import type { UtauConversorDetailsProps } from "../views/pages/utauConversorDetails";
 import { UtauRelevantContent } from "../minilibs/parsers/utauRelevantContent";
+import type ISettingsHandler from "../handlers/ISettingsHandler";
 
 export interface IUtauConversorModel{
     readonly psh: IPathStringHandler;
     readonly fsh: IFileSystemHandler;
     readonly iuh: IInstalledUtauHandler;
+    readonly sth: ISettingsHandler;
 }
 
 export interface IUtauConversorView{
@@ -71,7 +73,7 @@ export class UtauConversorPresenter{
             spinner = await this.view.showSpinner("Loading ...");
         }
 
-        if(!this.model.psh.isCompleteWinPath(localStorage.getItem("UTAUInstallationDirectory"))){
+        if(!this.model.psh.isCompleteWinPath(this.model.sth.UTAUInstallationDirectory.get())){
             spinner.close();
             this.view.emitAlert("The configured utau installation directory is not valid", "Warning");
             return;
@@ -80,7 +82,7 @@ export class UtauConversorPresenter{
         try {
             this._systemUtau.set(
                 await this.model.iuh.getUtauListFromDirectory(
-                    this.model.psh.joinPath(localStorage.getItem("UTAUInstallationDirectory"), "voice")
+                    this.model.psh.joinPath(this.model.sth.UTAUInstallationDirectory.get(), "voice")
                 )
             );
         } catch (error) {

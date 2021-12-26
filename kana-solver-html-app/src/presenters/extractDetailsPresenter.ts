@@ -2,6 +2,7 @@
 
 import type IFileSystemHandler from "../handlers/IFileSystemHandler";
 import type IPathStringHandler from "../handlers/IPathStringshandler";
+import type ISettingsHandler from "../handlers/ISettingsHandler";
 import type { UtauZipInfo } from "../handlers/IZipHandler";
 import type IZipHandler from "../handlers/IZipHandler";
 import type IProgressProcess from "./commonInterfaces/IProgressProcess";
@@ -10,6 +11,7 @@ export interface IExtractDetailsModel{
     readonly psh: IPathStringHandler;
     readonly fsh: IFileSystemHandler;
     readonly zh: IZipHandler;
+    readonly sth: ISettingsHandler;
 }
 
 export interface IExtractDetailsView{
@@ -157,7 +159,7 @@ export class ExtractDetailsPresenter{
             destDir = this.model.psh.joinPath(process.env.APPDATA, "UTAU\\voice")
         }
         if(this.destinationType == "utau"){
-            destDir = this.model.psh.joinPath(localStorage.getItem("UTAUInstallationDirectory"), "voice");
+            destDir = this.model.psh.joinPath(this.model.sth.UTAUInstallationDirectory.get(), "voice");
         }
         
         let destinationOnInstallDir = this.sourceType == "custom" ? this.zipProperties.relativeDestination : "";
@@ -165,11 +167,11 @@ export class ExtractDetailsPresenter{
 
         if(this.destinationType == "utau"){
             try {
-                if(!this.model.psh.isCompleteWinPath(localStorage.getItem("UTAUInstallationDirectory"))){
+                if(!this.model.psh.isCompleteWinPath(this.model.sth.UTAUInstallationDirectory.get())){
                     this.view.emitAlert("The configured utau installation directory is not valid", "Error");
                     return;
                 }
-                if(!await this.model.fsh.existAndIsFile(this.model.psh.joinPath(localStorage.getItem("UTAUInstallationDirectory"), "utau.exe"))){
+                if(!await this.model.fsh.existAndIsFile(this.model.psh.joinPath(this.model.sth.UTAUInstallationDirectory.get(), "utau.exe"))){
                     this.view.emitAlert("UTAU was not found on the configured directory", "Error");
                     return;
                 }

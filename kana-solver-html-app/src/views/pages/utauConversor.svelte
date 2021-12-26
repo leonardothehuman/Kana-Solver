@@ -15,10 +15,12 @@
     import UtauItem from "../components/extractPage/utauItem.svelte";
     import type { UtauConversorDetailsProps } from "./utauConversorDetails";
     import type { Router } from "framework7/types";
+    import type ISettingsHandler from "../../handlers/ISettingsHandler";
 
     export let f7router: Router.Router;
 
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
+    let settingsHandler: ISettingsHandler = getContext(keys.settingsHandler);
 
     let externalInterface: IUtauConversorView = {
         goToConversionPage: (props: UtauConversorDetailsProps) => {
@@ -73,7 +75,8 @@
         new modelsAndHandlers.UtauConversorModel(
             pathStringHandler,
             fileSystemHandler,
-            new modelsAndHandlers.InstalledUtauHandler(fileSystemHandler, pathStringHandler)
+            new modelsAndHandlers.InstalledUtauHandler(fileSystemHandler, pathStringHandler),
+            settingsHandler
         )
     );
     

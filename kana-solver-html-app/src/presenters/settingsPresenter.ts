@@ -5,7 +5,7 @@ import type ISettingsHandler from "../handlers/ISettingsHandler";
 import type { colorSchemeOptions } from "../handlers/ISettingsHandler";
 
 export interface ISettingsModel{
-    sth: ISettingsHandler;
+    readonly sth: ISettingsHandler;
 }
 
 export interface ISettingsView{

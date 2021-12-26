@@ -14,6 +14,7 @@
     import { ExtractPresenter, IExtractView } from "../../presenters/extractPresenter";
     import UtauItem from "../components/extractPage/utauItem.svelte";
     import {f7ConfirmPromisse} from "../../minilibs/f7extender";
+    import type ISettingsHandler from "../../handlers/ISettingsHandler";
 
     export let f7router: Router.Router;
 
@@ -22,6 +23,7 @@
     let selectedUtauVoicebank = '';
 
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
+    let settingsHandler: ISettingsHandler = getContext(keys.settingsHandler);
 
     let externalInterface: IExtractView = {
         emitAlert: (text: string, title: string) => {
@@ -65,7 +67,8 @@
         pathStringHandler,
         installedUtauHandler,
         fileSystemHandler,
-        zipHandler
+        zipHandler,
+        settingsHandler
     );
     let extractPresenter = new ExtractPresenter(externalInterface, extractModel);
 

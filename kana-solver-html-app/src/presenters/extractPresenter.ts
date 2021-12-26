@@ -6,6 +6,7 @@ import type IZipHandler from "../handlers/IZipHandler";
 import type IFileSystemHandler from "../handlers/IFileSystemHandler";
 import type ISpinnerManipulator from "./commonInterfaces/ISpinnerManipulator";
 import type {ExtractDetailsProps} from "../views/pages/extractDetails";
+import type ISettingsHandler from "../handlers/ISettingsHandler";
 
 export interface IExtractView{
     emitAlert: (text: string, title: string) => Promise<void>;
@@ -23,6 +24,7 @@ export interface IExtractModel{
     readonly iuh: IInstalledUtauHandler;
     readonly zh: IZipHandler;
     readonly fsh: IFileSystemHandler;
+    readonly sth: ISettingsHandler;
 }
 
 //Some getters and setters are only wrappers to modify the view
@@ -84,12 +86,7 @@ export class ExtractPresenter{
             this.usersUtau = [];
         }
 
-        //TODO: improve this
-        if(localStorage.getItem("UTAUInstallationDirectory") == null){
-            localStorage.setItem("UTAUInstallationDirectory", "");
-        }
-
-        if(!this.model.psh.isCompleteWinPath(localStorage.getItem("UTAUInstallationDirectory"))){
+        if(!this.model.psh.isCompleteWinPath(this.model.sth.UTAUInstallationDirectory.get())){
             spinner.close();
             this.view.emitAlert("The configured utau installation directory is not valid", "Warning");
             return;
@@ -97,7 +94,7 @@ export class ExtractPresenter{
 
         try {
             this.systemUtau = await this.model.iuh.getUtauListFromDirectory(
-                this.model.psh.joinPath(localStorage.getItem("UTAUInstallationDirectory"), "voice")
+                this.model.psh.joinPath(this.model.sth.UTAUInstallationDirectory.get(), "voice")
             );
         } catch (error) {
             //TODO: let user see this error

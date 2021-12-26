@@ -17,12 +17,14 @@
     import { ExtractDetailsPresenter, IExtractDetailsView, UtauDestinationType, UtauSourceType } from "../../presenters/extractDetailsPresenter";
     import type IPathStringHandler from "../../handlers/IPathStringshandler";
     import type { UtauZipInfo } from "../../handlers/IZipHandler";
+    import type ISettingsHandler from "../../handlers/ISettingsHandler";
     
     export let fileToExtract: string;
     export let zipProperties: UtauZipInfo;
     export let f7router: Router.Router;
 
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
+    let settingsHandler: ISettingsHandler = getContext(keys.settingsHandler);
 
     let radiomanager: RadioManager = new RadioManager();
     let destinationType: UtauDestinationType;
@@ -89,6 +91,7 @@
             pathStringHandler,
             new modelsAndHandlers.FileSystemHandler(pathStringHandler),
             new modelsAndHandlers.ZipHandler(pathStringHandler),
+            settingsHandler
         ),
         zipProperties,
         fileToExtract
