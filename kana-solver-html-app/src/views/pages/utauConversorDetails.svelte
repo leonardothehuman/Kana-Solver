@@ -17,6 +17,7 @@
     import type { IInstalledUtau } from "../../handlers/IInstalledUtauHandler";
     import RadioManager from "../../minilibs/radioManager";
     import type { Router } from "framework7/types";
+    import type { GlobalInterface } from "../../App";
 
     export let utauInfo: IInstalledUtau;
     export let f7router: Router.Router;
@@ -24,79 +25,20 @@
     let radiomanager: RadioManager = new RadioManager();
     
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
-
+    let globalInterface: GlobalInterface = getContext(keys.globalInterface);
+    
     let externalInterface: IUtauConversorDetailsView = {
         goBack: () => {
             f7router.back(undefined, {
                 force: true
             });
         },
-        showSpinner: async(title: string) => {
-            let dialog = f7.dialog.preloader(title);
-            await sleep(50);
-            return new SpinnerManipulator(dialog);
-        },
-        askConfirmation: (text: string, title: string) => {
-            return f7ConfirmPromisse(f7, text, title);
-        },
-        askConfirmationYN: (text: string, title: string) => {
-            return f7ConfirmYNPromisse(f7, text, title);
-        },
-        emitAlert: (text: string, title: string) => {
-            return new Promise((resolve, reject) => {
-                f7.dialog.alert(text, title, () => {resolve()});
-            });
-        },
-        popup: (text: string, title: string) => {
-            return new Promise((resolve, reject) => {
-                let popup = f7.popup.create({
-                    content: `<div class="popup">
-                        <div class="page">
-                        <div class="navbar">
-                            <div class="navbar-bg"></div>
-                            <div class="navbar-inner">
-                            <div class="title">${htmlEntities(title)}</div>
-                            <div class="right"><a href="#" class="link popup-close">Close</a></div>
-                            </div>
-                        </div>
-                        <div class="page-content">
-                            <div class="allow-select temp-view-container warning-messages">
-                                ${text}
-                            </div>
-                        </div>
-                        </div>
-                    </div>`
-                });
-                popup.open();
-                popup.once("close", () => {
-                    resolve();
-                });
-            });
-        },
-        prompt: (title: string, text: string, defaultValue: string): Promise<{
-            text: string,
-            ok: boolean
-        }> => {
-            return new Promise((resolve, reject) => {
-                f7.dialog.prompt(
-                    text,
-                    title,
-                    (t: string) => {
-                        resolve({
-                            text: t,
-                            ok: true
-                        })
-                    },
-                    (t: string) => {
-                        resolve({
-                            text: t,
-                            ok: false
-                        })
-                    },
-                    defaultValue
-                );
-            });
-        }
+        showSpinner: globalInterface.showSpinner,
+        emitAlert: globalInterface.emitAlert,
+        askConfirmation: globalInterface.askConfirmation,
+        askConfirmationYN: globalInterface.askConfirmationYN,
+        popup: globalInterface.popup,
+        prompt: globalInterface.prompt
     }
 
     let pathStringHandler = new modelsAndHandlers.PathStringHandler();

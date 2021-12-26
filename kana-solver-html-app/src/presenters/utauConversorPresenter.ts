@@ -24,7 +24,6 @@ export interface IUtauConversorModel{
 
 export interface IUtauConversorView{
     goToConversionPage: (props: UtauConversorDetailsProps) => void;
-    //TODO: Centralize this mundane things
     showSpinner: (text: string) => Promise<ISpinnerManipulator>;
     emitAlert: (text: string, title: string) => Promise<void>;
     askConfirmation: (text: string, title: string) => Promise<boolean>;

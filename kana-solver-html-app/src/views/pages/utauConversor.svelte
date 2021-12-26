@@ -16,56 +16,23 @@
     import type { UtauConversorDetailsProps } from "./utauConversorDetails";
     import type { Router } from "framework7/types";
     import type ISettingsHandler from "../../handlers/ISettingsHandler";
+    import type { GlobalInterface } from "../../App";
 
     export let f7router: Router.Router;
 
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let settingsHandler: ISettingsHandler = getContext(keys.settingsHandler);
+    let globalInterface: GlobalInterface = getContext(keys.globalInterface);
 
     let externalInterface: IUtauConversorView = {
         goToConversionPage: (props: UtauConversorDetailsProps) => {
             f7router.navigate("/utau-conversor-details/", {props: props});
         },
-        showSpinner: async(title: string) => {
-            let dialog = f7.dialog.preloader(title);
-            await sleep(50);
-            return new SpinnerManipulator(dialog);
-        },
-        askConfirmation: (text: string, title: string) => {
-            return f7ConfirmPromisse(f7, text, title);
-        },
-        askConfirmationYN: (text: string, title: string) => {
-            return f7ConfirmYNPromisse(f7, text, title);
-        },
-        emitAlert: (text: string, title: string) => {
-            return new Promise((resolve, reject) => {
-                f7.dialog.alert(text, title, () => {resolve()});
-            });
-        },
-        prompt: (title: string, text: string, defaultValue: string): Promise<{
-            text: string,
-            ok: boolean
-        }> => {
-            return new Promise((resolve, reject) => {
-                f7.dialog.prompt(
-                    text,
-                    title,
-                    (t: string) => {
-                        resolve({
-                            text: t,
-                            ok: true
-                        })
-                    },
-                    (t: string) => {
-                        resolve({
-                            text: t,
-                            ok: false
-                        })
-                    },
-                    defaultValue
-                );
-            });
-        }
+        showSpinner: globalInterface.showSpinner,
+        emitAlert: globalInterface.emitAlert,
+        askConfirmation: globalInterface.askConfirmation,
+        askConfirmationYN: globalInterface.askConfirmationYN,
+        prompt: globalInterface.prompt
     }
 
     let pathStringHandler = new modelsAndHandlers.PathStringHandler();

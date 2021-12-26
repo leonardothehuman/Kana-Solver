@@ -22,6 +22,7 @@
     import type {leaveConfirmators} from "../../routes";
     import ConversionFileSelector from "../components/conversionFileSelector.svelte";
     import type { ConversionItem, selectChangeInterceptedEventArgs } from "../../presenters/conversionFileSelectorPresenter";
+import type { GlobalInterface } from "../../App";
     
     var nw = require('nw.gui');
     var win = nw.Window.get();
@@ -64,6 +65,7 @@
     
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let installedConversionFiles: conversionFileRepresentation[] = [];
+    let globalInterface: GlobalInterface = getContext(keys.globalInterface);
     
     let externalInterface: IConversionEditorView = {
         setInstalledConversionFiles: (icf: conversionFileRepresentation[], onlyOnChange: boolean) => {
@@ -77,49 +79,14 @@
         registerCloseConfirmationCallback: (f: () => Promise<boolean>) => {
             closeConfirmators.add(f);
         },
-        showSpinner: async(title: string) => {
-            let dialog = f7.dialog.preloader(title);
-            await sleep(50);
-            return new SpinnerManipulator(dialog);
-        },
-        askConfirmation: (text: string, title: string) => {
-            return f7ConfirmPromisse(f7, text, title);
-        },
-        askConfirmationYN: (text: string, title: string) => {
-            return f7ConfirmYNPromisse(f7, text, title);
-        },
-        emitAlert: (text: string, title: string) => {
-            return new Promise((resolve, reject) => {
-                f7.dialog.alert(text, title, () => {resolve()});
-            });
-        },
         scrollTo: (x: number, y: number) => {
             mainContainer.scrollTo(x, y);
         },
-        prompt: (title: string, text: string, defaultValue: string): Promise<{
-            text: string,
-            ok: boolean
-        }> => {
-            return new Promise((resolve, reject) => {
-                f7.dialog.prompt(
-                    text,
-                    title,
-                    (t: string) => {
-                        resolve({
-                            text: t,
-                            ok: true
-                        })
-                    },
-                    (t: string) => {
-                        resolve({
-                            text: t,
-                            ok: false
-                        })
-                    },
-                    defaultValue
-                );
-            });
-        }
+        showSpinner: globalInterface.showSpinner,
+        emitAlert: globalInterface.emitAlert,
+        askConfirmation: globalInterface.askConfirmation,
+        askConfirmationYN: globalInterface.askConfirmationYN,
+        prompt: globalInterface.prompt
     }
 
     let pathStringHandler = new modelsAndHandlers.PathStringHandler();

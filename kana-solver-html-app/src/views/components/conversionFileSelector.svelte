@@ -17,6 +17,7 @@
     import type AsyncEvent from "../../minilibs/AsyncEvent";
     import type { asyncEventSubscriber } from "../../minilibs/AsyncEvent";
     import type { eventSubscriber } from "../../minilibs/SyncEvent";
+    import type { GlobalInterface } from "../../App";
 
     export let listEmpty: boolean = true;
     export let conversionItemStore: IReadOnlyStore<ConversionItem | null>;
@@ -30,6 +31,8 @@
     
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let installedConversionFileRepresentations: conversionFileRepresentation[] = [];
+    let globalInterface: GlobalInterface = getContext(keys.globalInterface);
+    
     let externalInterface: IConversionFileSelectorView = {
         setInstalledConversionFileRepresentations: (icf: conversionFileRepresentation[], onlyOnChange: boolean) => {
             if(installedConversionFileRepresentations == icf && onlyOnChange == true) return false;
@@ -41,19 +44,9 @@
             conversionItemStore = cis;
             return true;
         },
-        showSpinner: async(title: string) => {
-            let dialog = f7.dialog.preloader(title);
-            await sleep(50);
-            return new SpinnerManipulator(dialog);
-        },
-        emitAlert: (text: string, title: string) => {
-            return new Promise((resolve, reject) => {
-                f7.dialog.alert(text, title, () => {resolve()});
-            });
-        },
-        askConfirmationYN: (text: string, title: string) => {
-            return f7ConfirmYNPromisse(f7, text, title);
-        }
+        showSpinner: globalInterface.showSpinner,
+        emitAlert: globalInterface.emitAlert,
+        askConfirmationYN: globalInterface.askConfirmationYN
     }
 
     let pathStringHandler = new modelsAndHandlers.PathStringHandler();

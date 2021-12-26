@@ -15,7 +15,6 @@ export interface IUstConversorModel{
 }
 
 export interface IUstConversorView{
-    //TODO: Centralize this mundane things
     showSpinner: (text: string) => Promise<ISpinnerManipulator>;
     emitAlert: (text: string, title: string) => Promise<void>;
     scrollTo: (x: number, y: number) => void;

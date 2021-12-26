@@ -18,6 +18,7 @@
     import type IPathStringHandler from "../../handlers/IPathStringshandler";
     import type { UtauZipInfo } from "../../handlers/IZipHandler";
     import type ISettingsHandler from "../../handlers/ISettingsHandler";
+    import type { GlobalInterface } from "../../App";
     
     export let fileToExtract: string;
     export let zipProperties: UtauZipInfo;
@@ -25,6 +26,7 @@
 
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let settingsHandler: ISettingsHandler = getContext(keys.settingsHandler);
+    let globalInterface: GlobalInterface = getContext(keys.globalInterface);
 
     let radiomanager: RadioManager = new RadioManager();
     let destinationType: UtauDestinationType;
@@ -35,18 +37,6 @@
     let canInstallFromCustom: boolean;
 
     let externalInterface: IExtractDetailsView = {
-        emitAlert: (text: string, title: string) => {
-            return new Promise((resolve, reject) => {
-                f7.dialog.alert(text, title, () => {resolve()});
-            });
-        },
-        askConfirmation: (text: string, title: string) => {
-            return f7ConfirmPromisse(f7, text, title);
-        },
-        createProgressProcess: (title: string, initialProgress: number) => {
-            let dialog = f7.dialog.progress(title, initialProgress);
-            return new ProgressProcess(dialog);
-        },
         informExtractionSuccess: () => {
             f7router.back(undefined, {
                 force: true
@@ -82,6 +72,10 @@
             canInstallFromCustom = c;
             return true;
         },
+
+        emitAlert: globalInterface.emitAlert,
+        askConfirmation: globalInterface.askConfirmation,
+        createProgressProcess: globalInterface.createProgressProcess,
     }
 
     let pathStringHandler: IPathStringHandler = new modelsAndHandlers.PathStringHandler();

@@ -152,7 +152,7 @@ export class UtauRelevantContent{
         pathArray[pathArray.length - 1] = rootName;
         let newPath = this.psh.joinPath(...pathArray);
         if(renameRoot == true && await this.fsh.exist(newPath)){
-            throw new Error("The specified root name will be duplicated");
+            throw new Error("The specified root name would be duplicated");
         }
 
         let originalPath =  this.psh.joinPath(reversionPath, 'original_content');

@@ -18,19 +18,6 @@
     let settingsHandler: ISettingsHandler = getContext(keys.settingsHandler);
 
     let externalInterface: ISettingsView = {
-        // scrollTo: (x: number, y: number) => {
-        //     mainContainer.scrollTo(x, y);
-        // },
-        // showSpinner: async(title: string) => {
-        //     let dialog = f7.dialog.preloader(title);
-        //     await sleep(50);
-        //     return new SpinnerManipulator(dialog);
-        // },
-        // emitAlert: (text: string, title: string) => {
-        //     return new Promise<void>((resolve, reject) => {
-        //         f7.dialog.alert(text, title, () => {resolve()});
-        //     });
-        // }
     }
 
     let presenter = new SettingsPresenter(

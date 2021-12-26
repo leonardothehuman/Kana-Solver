@@ -20,7 +20,6 @@ export interface IUtauConversorDetailsModel {
 }
 
 export interface IUtauConversorDetailsView {
-    //TODO: Centralize this mundane things
     showSpinner: (text: string) => Promise<ISpinnerManipulator>;
     emitAlert: (text: string, title: string) => Promise<void>;
     askConfirmation: (text: string, title: string) => Promise<boolean>;

@@ -15,6 +15,7 @@
     import UtauItem from "../components/extractPage/utauItem.svelte";
     import {f7ConfirmPromisse} from "../../minilibs/f7extender";
     import type ISettingsHandler from "../../handlers/ISettingsHandler";
+    import type { GlobalInterface } from "../../App";
 
     export let f7router: Router.Router;
 
@@ -24,24 +25,12 @@
 
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let settingsHandler: ISettingsHandler = getContext(keys.settingsHandler);
+    let globalInterface: GlobalInterface = getContext(keys.globalInterface);
 
     let externalInterface: IExtractView = {
-        emitAlert: (text: string, title: string) => {
-            return new Promise((resolve, reject) => {
-                f7.dialog.alert(text, title, () => {resolve()});
-            });
-        },
-        showSpinner: async(title: string) => {
-            let dialog = f7.dialog.preloader(title);
-            return new SpinnerManipulator(dialog);
-        },
         goToExtractPage: (props: ExtractDetailsProps) => {
             f7router.navigate("/extract-details/", {props: props});
         },
-        askConfirmation: (text: string, title: string) => {
-            return f7ConfirmPromisse(f7, text, title);
-        },
-
         setUsersUtau: (ul: IInstalledUtau[], onlyOnChange: boolean) => {
             if(userUtauList == ul && onlyOnChange == true) return false;
             userUtauList = ul;
@@ -56,7 +45,10 @@
             if(selectedUtauVoicebank == vb && onlyOnChange == true) return false;
             selectedUtauVoicebank = vb;
             return true;
-        }
+        },
+        emitAlert: globalInterface.emitAlert,
+        showSpinner: globalInterface.showSpinner,
+        askConfirmation: globalInterface.askConfirmation
     }
 
     let pathStringHandler = new modelsAndHandlers.PathStringHandler();

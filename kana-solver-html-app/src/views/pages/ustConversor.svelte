@@ -3,35 +3,25 @@
     import {Page, Navbar, List, ListButton, BlockTitle, BlockHeader} from "framework7-svelte";
     import PathSelectField from "../components/pathSelectField.svelte";
     import { getContext, onMount} from "svelte";
-    import { f7 } from 'framework7-svelte';
     import type ModelsAndHandlers from "../../modelsAndHandlers";
     import ConversionFileSelector from "../components/conversionFileSelector.svelte";
     import keys from "../../keys";
     import { IUstConversorView, UstConversorPresenter } from "../../presenters/ustConversorPresenter";
-    import type { Router } from "framework7/types";
     import type IStore from "../../minilibs/IStore";
     import LockedStore from "../../minilibs/LockedStore";
     import type { ConversionItem } from "../../presenters/conversionFileSelectorPresenter";
-    import SpinnerManipulator from "../commonImplementations/spinnerManipulator";
-    import { sleep } from "../../minilibs/helpers";
     import type IReadOnlyStore from "../../minilibs/IReadOnlyStore";
-
+    import type { GlobalInterface } from "../../App";
+    
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
+    let globalInterface: GlobalInterface = getContext(keys.globalInterface);
 
     let externalInterface: IUstConversorView = {
         scrollTo: (x: number, y: number) => {
             mainContainer.scrollTo(x, y);
         },
-        showSpinner: async(title: string) => {
-            let dialog = f7.dialog.preloader(title);
-            await sleep(50);
-            return new SpinnerManipulator(dialog);
-        },
-        emitAlert: (text: string, title: string) => {
-            return new Promise<void>((resolve, reject) => {
-                f7.dialog.alert(text, title, () => {resolve()});
-            });
-        }
+        showSpinner: globalInterface.showSpinner,
+        emitAlert: globalInterface.emitAlert
     }
 
     let pathStringHandler = new modelsAndHandlers.PathStringHandler();

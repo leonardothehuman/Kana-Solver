@@ -1,5 +1,4 @@
 //This file is licensed under GNU GPL v3.0 only license
-
 import type IFileSystemHandler from "../handlers/IFileSystemHandler";
 import type IPathStringHandler from "../handlers/IPathStringshandler";
 import type { objectRepresentation } from "../handlers/IFileSystemHandler";
