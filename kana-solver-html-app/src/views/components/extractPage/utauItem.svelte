@@ -58,11 +58,10 @@
     
     <div slot="text">
         <div class="text-content">
-            <!-- TODO: add key to each -->
-            {#each utau.nonStandardFields as line, i}
+            {#each utau.nonStandardFields as line, i (line)}
                 <p>{line[0]}: {line[1]}</p>
             {/each}
-            {#each utau.description as line}
+            {#each utau.description as line (line)}
                 <p>{line}</p>
             {/each}
         </div>
