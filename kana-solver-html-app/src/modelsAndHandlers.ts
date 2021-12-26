@@ -13,6 +13,7 @@ import ConversionFileSelectorModel from "./models/conversionFileSelectorModel";
 import UstConversorModel from "./models/ustConversorModel";
 
 import UtauConversorDetailsModel from "./models/utauConversorDetailsModel";
+import SettingsModel from "./models/settingsModel";
 
 let toexport = {
     FileFinderModel: FileFinderModel,
@@ -23,6 +24,7 @@ let toexport = {
     UtauConversorDetailsModel: UtauConversorDetailsModel,
     ConversionFileSelectorModel: ConversionFileSelectorModel,
     UstConversorModel: UstConversorModel,
+    SettingsModel: SettingsModel,
 
     PathSelectFieldHandler: PathSelectFieldHandler,
     PathStringHandler: PathStringHandler,

@@ -2,7 +2,8 @@
 
 let toexport = {
     kanaSolverAppModelsAndHandlers: {},
-    pageLeaveConfirmators: {}
+    pageLeaveConfirmators: {},
+    settingsHandler: {}
 }
 
 export default toexport;

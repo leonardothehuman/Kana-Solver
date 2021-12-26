@@ -64,7 +64,7 @@
             }
         }
         .decorated-toolbar :global(.item-selected){
-            color: var(--f7-theme-color-shade);
+            color: var(--kana-solver-selected-color, var(--f7-theme-color-shade));
         }
     }
 </style>
