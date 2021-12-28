@@ -7,16 +7,15 @@ import type IFileSystemHandler from "../handlers/IFileSystemHandler";
 import type ISpinnerManipulator from "./commonInterfaces/ISpinnerManipulator";
 import type {ExtractDetailsProps} from "../views/pages/extractDetails";
 import type ISettingsHandler from "../handlers/ISettingsHandler";
+import Store from "../minilibs/Store";
+import type IReadOnlyStore from "../minilibs/IReadOnlyStore";
+import type IStore from "../minilibs/IStore";
 
 export interface IExtractView{
     emitAlert: (text: string, title: string) => Promise<void>;
     showSpinner: (text: string) => Promise<ISpinnerManipulator>;
     goToExtractPage: (props: ExtractDetailsProps) => void;
     askConfirmation: (text: string, title: string) => Promise<boolean>;
-
-    setUsersUtau: (ul: IInstalledUtau[], onlyOnChange: boolean) => boolean;
-    setSystemUtau: (ul: IInstalledUtau[], onlyOnChange: boolean) => boolean;
-    setSelectedVoicebank: (vb: string, onlyOnChange: boolean) => boolean;
 }
 
 export interface IExtractModel{
@@ -32,16 +31,26 @@ export class ExtractPresenter{
     //Initialization
     private _view: IExtractView;
     private _model: IExtractModel;
-    private _usersUtau: IInstalledUtau[];
-    private _systemUtau: IInstalledUtau[];
-    private _selectedVoicBank: string;
+    
+    private _usersUtau: Store<IInstalledUtau[]>;
+    public get usersUtau(): IReadOnlyStore<IInstalledUtau[]> {
+        return this._usersUtau;
+    }
+    private _systemUtau: Store<IInstalledUtau[]>;
+    public get systemUtau(): IReadOnlyStore<IInstalledUtau[]> {
+        return this._systemUtau;
+    }
+    private _selectedVoicBank: Store<string>;
+    public get selectedVoicBank(): IStore<string> {
+        return this._selectedVoicBank;
+    }
     
     constructor(view: IExtractView, model: IExtractModel){
         this._view = view;
         this._model = model;
-        this.usersUtau = [];
-        this.systemUtau = [];
-        this.selectedVoicBank = "";
+        this._usersUtau = new Store([]);
+        this._systemUtau = new Store([]);
+        this._selectedVoicBank = new Store("");
     }
     
     //Getters and setters
@@ -51,39 +60,20 @@ export class ExtractPresenter{
     public get model(): IExtractModel {
         return this._model;
     }
-    private get usersUtau(): IInstalledUtau[] {
-        return this._usersUtau;
-    }
-    private set usersUtau(value: IInstalledUtau[]) {
-        this._usersUtau = value;
-        this.view.setUsersUtau(this._usersUtau, true);
-    }
-    private get systemUtau(): IInstalledUtau[] {
-        return this._systemUtau;
-    }
-    private set systemUtau(value: IInstalledUtau[]) {
-        this._systemUtau = value;
-        this.view.setSystemUtau(this._systemUtau, true);
-    }
-    public get selectedVoicBank(): string {
-        return this._selectedVoicBank;
-    }
-    public set selectedVoicBank(value: string) {
-        this._selectedVoicBank = value;
-        this.view.setSelectedVoicebank(this._selectedVoicBank, true);
-    }
     
     //TODO: join with similar functions
     public async loadUtauList(): Promise<void>{
         let spinner = await this.view.showSpinner("Loading ...");
         try {
-            this.usersUtau = await this.model.iuh.getUtauListFromDirectory(
-                this.model.psh.joinPath(process.env.APPDATA, "UTAU\\voice")
+            this._usersUtau.set(
+                await this.model.iuh.getUtauListFromDirectory(
+                    this.model.psh.joinPath(process.env.APPDATA, "UTAU\\voice")
+                )
             );
         } catch (error) {
             //TODO: let user see this error
             console.log(error);
-            this.usersUtau = [];
+            this._usersUtau.set([]);
         }
 
         if(!this.model.psh.isCompleteWinPath(this.model.sth.UTAUInstallationDirectory.get())){
@@ -93,28 +83,30 @@ export class ExtractPresenter{
         }
 
         try {
-            this.systemUtau = await this.model.iuh.getUtauListFromDirectory(
-                this.model.psh.joinPath(this.model.sth.UTAUInstallationDirectory.get(), "voice")
+            this._systemUtau.set(
+                await this.model.iuh.getUtauListFromDirectory(
+                    this.model.psh.joinPath(this.model.sth.UTAUInstallationDirectory.get(), "voice")
+                )
             );
         } catch (error) {
             //TODO: let user see this error
             console.log(error);
-            this.systemUtau = [];
+            this._systemUtau.set([]);
         }
         spinner.close();
     }
 
     public async loadUtauInstallationPage(){
-        if(!this.model.psh.isCompleteWinPath(this.selectedVoicBank)){
+        if(!this.model.psh.isCompleteWinPath(this.selectedVoicBank.get())){
             this.view.emitAlert("Invalid archive file path", 'Error');
             return;
         }
 
         let spinner = await this.view.showSpinner("Loading ...");
         try{
-            let zipInfo = await this.model.zh.getUtauZipInfo(this.selectedVoicBank);
+            let zipInfo = await this.model.zh.getUtauZipInfo(this.selectedVoicBank.get());
             let props: ExtractDetailsProps = {
-                fileToExtract: this.selectedVoicBank,
+                fileToExtract: this.selectedVoicBank.get(),
                 zipProperties: zipInfo
             };
             this.view.goToExtractPage(props);
@@ -135,8 +127,8 @@ export class ExtractPresenter{
         } catch (error) {
             this.view.emitAlert(error.message, 'Failed to uninstall UTAU voicebank');
         }
-        this.usersUtau = [];
-        this.systemUtau = [];
+        this._usersUtau.set([]);
+        this._systemUtau.set([]);
         spinner.close();
         await this.loadUtauList(); 
     }

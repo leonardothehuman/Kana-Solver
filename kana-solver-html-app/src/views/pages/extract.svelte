@@ -1,6 +1,5 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
-    //TODO: Benefits from using store
     import {Page, Navbar, List, Button, ListButton, ListItem, BlockTitle, BlockHeader, ListGroup} from "framework7-svelte";
     import PathSelectField from "../components/pathSelectField.svelte";
     import { f7 } from 'framework7-svelte';
@@ -16,12 +15,11 @@
     import {f7ConfirmPromisse} from "../../minilibs/f7extender";
     import type ISettingsHandler from "../../handlers/ISettingsHandler";
     import type { GlobalInterface } from "../../App";
+    import LockedStore from "../../minilibs/LockedStore";
+    import type IReadOnlyStore from "../../minilibs/IReadOnlyStore";
+    import type IStore from "../../minilibs/IStore";
 
     export let f7router: Router.Router;
-
-    let userUtauList: IInstalledUtau[] = [];
-    let systemUtauList: IInstalledUtau[] = [];
-    let selectedUtauVoicebank = '';
 
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let settingsHandler: ISettingsHandler = getContext(keys.settingsHandler);
@@ -30,21 +28,6 @@
     let externalInterface: IExtractView = {
         goToExtractPage: (props: ExtractDetailsProps) => {
             f7router.navigate("/extract-details/", {props: props});
-        },
-        setUsersUtau: (ul: IInstalledUtau[], onlyOnChange: boolean) => {
-            if(userUtauList == ul && onlyOnChange == true) return false;
-            userUtauList = ul;
-            return true;
-        },
-        setSystemUtau: (ul: IInstalledUtau[], onlyOnChange: boolean) => {
-            if(systemUtauList == ul && onlyOnChange == true) return false;
-            systemUtauList = ul;
-            return true;
-        },
-        setSelectedVoicebank: (vb: string, onlyOnChange: boolean) => {
-            if(selectedUtauVoicebank == vb && onlyOnChange == true) return false;
-            selectedUtauVoicebank = vb;
-            return true;
         },
         emitAlert: globalInterface.emitAlert,
         showSpinner: globalInterface.showSpinner,
@@ -64,12 +47,16 @@
     );
     let extractPresenter = new ExtractPresenter(externalInterface, extractModel);
 
+    let usersUtau: IReadOnlyStore<IInstalledUtau[]> = new LockedStore([]);
+    let systemUtau: IReadOnlyStore<IInstalledUtau[]> = new LockedStore([]);
+    let selectedVoicBank: IStore<string> = new LockedStore("");
     onMount(async () => {
 		//TODO: verify what happens if the utau installed location was never configured
         await extractPresenter.loadUtauList();
+        usersUtau = extractPresenter.usersUtau;
+        systemUtau = extractPresenter.systemUtau;
+        selectedVoicBank = extractPresenter.selectedVoicBank;
     });
-
-    $: extractPresenter.selectedVoicBank = selectedUtauVoicebank;
 
     let listArguments: any = {
         mediaList: true
@@ -106,7 +93,7 @@
                 '*.zip': "ZIP files",
                 '*.uar': "UTAU archive"
             }}
-            bind:selectedPath={selectedUtauVoicebank}
+            bind:selectedPath={$selectedVoicBank}
             selectDirectory={false}></PathSelectField>
         <!-- <ListItem
             title="Install"
@@ -124,16 +111,16 @@
     </List>
 
     <!-- TODO: Centralize this -->
-    {#if userUtauList.length <= 0 && systemUtauList.length <= 0}
+    {#if $usersUtau.length <= 0 && $systemUtau.length <= 0}
         <BlockTitle>No utau has been found</BlockTitle>
         <BlockHeader>Install a new utau or configure the correct installation path</BlockHeader>
     {:else}
         <BlockTitle>Installed UTAU</BlockTitle>
         <List {...listArguments}>
-            {#if userUtauList.length > 0}
+            {#if $usersUtau.length > 0}
                 <ListGroup>
                     <ListItem groupTitle title="On user directory"></ListItem>
-                    {#each userUtauList as utau (utau)}
+                    {#each $usersUtau as utau (utau)}
                         <UtauItem
                             utau={utau}
                             actionText="Uninstall"
@@ -142,10 +129,10 @@
                     {/each}
                 </ListGroup>
             {/if}
-            {#if systemUtauList.length > 0}
+            {#if $systemUtau.length > 0}
                 <ListGroup>
                     <ListItem groupTitle title="On system directory (may require administrator privileges to uninstall)"></ListItem>
-                    {#each systemUtauList as utau (utau)}
+                    {#each $systemUtau as utau (utau)}
                         <UtauItem
                             utau={utau}
                             actionText="Uninstall"

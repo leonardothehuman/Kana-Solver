@@ -1,24 +1,23 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
-    //TODO: Benefits from using store
     import {
         Page, Navbar, List, Button, ListItem,
         f7, BlockTitle, Block, BlockHeader,
         Toolbar, Link
     } from "framework7-svelte";
-    import {f7ConfirmPromisse} from "../../minilibs/f7extender";;
     import type ModelsAndHandlers from "../../modelsAndHandlers";
     import keys from '../../keys';
     import RadioManager from "../../minilibs/radioManager";
     import {getContext, onMount} from "svelte";
     import PathSelectField from "../components/pathSelectField.svelte";
     import type { Router } from "framework7/types";
-    import ProgressProcess from "../commonImplementations/progressProcess";
     import { ExtractDetailsPresenter, IExtractDetailsView, UtauDestinationType, UtauSourceType } from "../../presenters/extractDetailsPresenter";
     import type IPathStringHandler from "../../handlers/IPathStringshandler";
     import type { UtauZipInfo } from "../../handlers/IZipHandler";
     import type ISettingsHandler from "../../handlers/ISettingsHandler";
     import type { GlobalInterface } from "../../App";
+    import type IStore from "../../minilibs/IStore";
+    import LockedStore from "../../minilibs/LockedStore";
     
     export let fileToExtract: string;
     export let zipProperties: UtauZipInfo;
@@ -29,50 +28,13 @@
     let globalInterface: GlobalInterface = getContext(keys.globalInterface);
 
     let radiomanager: RadioManager = new RadioManager();
-    let destinationType: UtauDestinationType;
-    let sourceType: UtauSourceType;
-    let canInstallUtau: boolean;
-    let extractionDirectory: string;
-    let canInstallFromRoot: boolean;
-    let canInstallFromCustom: boolean;
-
+    
     let externalInterface: IExtractDetailsView = {
         informExtractionSuccess: () => {
             f7router.back(undefined, {
                 force: true
             });
         },
-        setDestinationType: (dt: UtauDestinationType, onlyOnChange: boolean) => {
-            if(destinationType == dt && onlyOnChange == true) return false;
-            destinationType = dt;
-            return true;
-        },
-        setSourceType: (st: UtauSourceType, onlyOnChange: boolean) => {
-            if(sourceType == st && onlyOnChange == true) return false;
-            sourceType = st;
-            return true;
-        },
-        setCanInstallUtau: (c: boolean, onlyOnChange: boolean) => {
-            if(canInstallUtau == c && onlyOnChange == true) return false;
-            canInstallUtau = c;
-            return true;
-        },
-        setExtractionDirectory: (e: string, onlyOnChange: boolean) => {
-            if(extractionDirectory == e && onlyOnChange == true) return false;
-            extractionDirectory = e;
-            return true;
-        },
-        setCanInstallFromRoot: (c: boolean, onlyOnChange: boolean) => {
-            if(canInstallFromRoot == c && onlyOnChange == true) return false;
-            canInstallFromRoot = c;
-            return true;
-        },
-        setCanInstallFromCustom: (c: boolean, onlyOnChange: boolean) => {
-            if(canInstallFromCustom == c && onlyOnChange == true) return false;
-            canInstallFromCustom = c;
-            return true;
-        },
-
         emitAlert: globalInterface.emitAlert,
         askConfirmation: globalInterface.askConfirmation,
         createProgressProcess: globalInterface.createProgressProcess,
@@ -91,34 +53,46 @@
         fileToExtract
     );
 
+    let destinationType: IStore<UtauDestinationType> = new LockedStore("users");
+    let sourceType: IStore<UtauSourceType> = new LockedStore("custom");
+    let canInstallUtau: IStore<boolean> = new LockedStore(true);
+    let extractionDirectory: IStore<string> = new LockedStore("");
+    let canInstallFromRoot: IStore<boolean> = new LockedStore(true);
+    let canInstallFromCustom: IStore<boolean> = new LockedStore(true);
+    onMount(async() => {
+        //await presenter.init();
+        extractDetailsPresenter.emitMountAlerts();
+        destinationType = extractDetailsPresenter.destinationType;
+        sourceType = extractDetailsPresenter.sourceType;
+        canInstallUtau = extractDetailsPresenter.canInstallUtau;
+        extractionDirectory = extractDetailsPresenter.extractionDirectory;
+        canInstallFromRoot = extractDetailsPresenter.canInstallFromRoot;
+        canInstallFromCustom = extractDetailsPresenter.canInstallFromCustom;
+    });
+
     //Boilerplate to manage radio
     radiomanager.addPopulatable("install-location", (v: string) => {
-        destinationType = v as UtauDestinationType;
+        $destinationType = v as UtauDestinationType;
     });
     onMount(() => {
-        radiomanager.populateRadio("install-location", destinationType);
+        radiomanager.populateRadio("install-location", $destinationType);
     });
     $: {
-        radiomanager.populateRadio("install-location", destinationType);
-        extractDetailsPresenter.destinationType = destinationType;
+        radiomanager.populateRadio("install-location", $destinationType);
+        //extractDetailsPresenter.destinationType = destinationType;
     }
     //--------
     radiomanager.addPopulatable("install-from", (v: string) => {
-        sourceType = v as UtauSourceType;
+        $sourceType = v as UtauSourceType;
     })
     onMount(() => {
-        radiomanager.populateRadio("install-from", sourceType);
+        radiomanager.populateRadio("install-from", $sourceType);
     });
     $: {
-        radiomanager.populateRadio("install-from", sourceType);
-        extractDetailsPresenter.sourceType = sourceType;
+        radiomanager.populateRadio("install-from", $sourceType);
+        //extractDetailsPresenter.sourceType = sourceType;
     }
     //Boilerplate end
-    $: {extractDetailsPresenter.extractionDirectory = extractionDirectory;}
-    onMount(() => {
-        extractDetailsPresenter.emitMountAlerts();
-    });
-
 </script>
 <style lang="less">
     @import "../less/globalMixins.less";
@@ -149,7 +123,7 @@
                 title="Users Directory"
                 value="users"
                 name="install-location"
-                disabled={!canInstallUtau}
+                disabled={!$canInstallUtau}
                 on:change={() => {radiomanager.populateVariable("install-location")}}
             ></ListItem>
             <ListItem
@@ -158,7 +132,7 @@
                 title="UTAU Directory (may require administrator privileges)"
                 value="utau"
                 name="install-location"
-                disabled={!canInstallUtau}
+                disabled={!$canInstallUtau}
                 on:change={() => {radiomanager.populateVariable("install-location")}}
             ></ListItem>
             <ListItem
@@ -171,8 +145,8 @@
             ></ListItem>
             <PathSelectField
                 label="Extract to:"
-                disabled={destinationType != "other"}
-                bind:selectedPath={extractionDirectory}
+                disabled={$destinationType != "other"}
+                bind:selectedPath={$extractionDirectory}
                 selectDirectory={true}></PathSelectField>
         </List>
 
@@ -191,7 +165,7 @@
                 title="ZIP root"
                 value="root"
                 name="install-from"
-                disabled={!canInstallFromRoot}
+                disabled={!$canInstallFromRoot}
                 on:change={() => {radiomanager.populateVariable("install-from")}}
             ></ListItem>
             {#if zipProperties.sourceOnZip.trim() != ""}
@@ -201,7 +175,7 @@
                     title={zipProperties.sourceOnZip}
                     value="custom"
                     name="install-from"
-                    disabled={!canInstallFromCustom}
+                    disabled={!$canInstallFromCustom}
                     on:change={() => {radiomanager.populateVariable("install-from")}}
                 ></ListItem>
             {/if}
