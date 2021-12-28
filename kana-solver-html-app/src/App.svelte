@@ -24,7 +24,7 @@
 	let globalInterface: GlobalInterface = {
 		showSpinner: async(title: string) => {
 			let dialog = f7.dialog.preloader(title);
-			await sleep(50);
+			await sleep(100);
 			return new SpinnerManipulator(dialog);
 		},
 		emitAlert: (text: string, title: string) => {

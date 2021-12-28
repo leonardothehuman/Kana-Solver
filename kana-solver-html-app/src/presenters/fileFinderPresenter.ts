@@ -3,11 +3,11 @@
 import type IFileSystemHandler from "../handlers/IFileSystemHandler";
 import type { objectRepresentation } from "../handlers/IFileSystemHandler";
 import type IPathStringHandler from "../handlers/IPathStringshandler";
-
-//Just for testing, must be removed ...
-// function sleep(ms: number) {
-//     return new Promise(resolve => setTimeout(resolve, ms));
-// }
+import AsyncStoreInterceptor from "../minilibs/AsyncStoreInterceptor";
+import type IReadOnlyStore from "../minilibs/IReadOnlyStore";
+import type IStore from "../minilibs/IStore";
+import Store from "../minilibs/Store";
+import type ISpinnerManipulator from "./commonInterfaces/ISpinnerManipulator";
 
 export type breadCrumbItem = {
     name: string,
@@ -20,20 +20,9 @@ export interface IFileFinderModel{
 }
 
 export interface IFileFinderView{
-    setCurrentDirectoryObjectsList: (list: objectRepresentation[], onlyOnChange: boolean) => boolean;
-    setBreadcrumb: (b: breadCrumbItem[], onlyOnChange: boolean) => boolean;
-
-    getDriveList:() => Array<string>;
-    setDriveList:(list: Array<string>, onlyOnChange: boolean) => boolean;
-
-    getCurrentDrive: () => string;
-    setCurrentDrive: (drive: string, onlyOnChange: boolean) => boolean;
-    
-    getCurrentDirectory: () => string;
-    setCurrentDirectory: (d: string, onlyOnChange: boolean) => boolean;
-    
-    getCurrentExtention: () => string;
-    setCurrentExtention: (d: string, onlyOnChange: boolean) => boolean;
+    showSpinner: (text: string) => Promise<ISpinnerManipulator>;
+    emitAlert: (text: string, title: string) => Promise<void>;
+    scrollTo: (x: number, y: number) => void;
 }
 
 //Some getters and setters are only wrappers to modify the view
@@ -42,29 +31,113 @@ export class FileFinderPresenter{
     private _view: IFileFinderView;
     private _model: IFileFinderModel;
     private _currentUnfilteredDirectoryObjectList: objectRepresentation[];
-    private _currentDrive: string;
     private selectDirectory: boolean;
+
+    private _currentDirectoryObjectsList: Store<objectRepresentation[]>;
+    public get currentDirectoryObjectsList(): IReadOnlyStore<objectRepresentation[]> {
+        return this._currentDirectoryObjectsList;
+    }
+    private _breadCrumb: Store<breadCrumbItem[]>;
+    public get breadCrumb(): IReadOnlyStore<breadCrumbItem[]> {
+        return this._breadCrumb;
+    }
+    private _driveList: Store<string[]>;
+    public get driveList(): IStore<string[]> {
+        return this._driveList;
+    }
+    private _currentExtenssion: Store<string>;
+    public get currentExtenssion(): IStore<string> {
+        return this._currentExtenssion;
+    }
+    private _currentDirectory: AsyncStoreInterceptor<string>;
+    public get currentDirectory(): IReadOnlyStore<string> {
+        return this._currentDirectory;
+    }
+    private _currentDrive: AsyncStoreInterceptor<string>;
+    public get currentDrive(): AsyncStoreInterceptor<string> {
+        return this._currentDrive;
+    }
+    //currentExtention
     
     constructor(view: IFileFinderView, model: IFileFinderModel, _selectDirectory: boolean){
         this.selectDirectory = _selectDirectory;
         this._view = view;
         this._currentUnfilteredDirectoryObjectList = [];//Unfiltered list of files on the current directory
-        this._currentDrive = "";
         this._model = model;
+
+        this._currentDirectoryObjectsList = new Store([]);
+        this._breadCrumb = new Store([]);
+        this._driveList = new Store([]);
+        this._currentExtenssion = new Store("");
+        this._currentDirectory = new AsyncStoreInterceptor("", true, async(ov: string, nv: string) => {
+            let fullDestination = this.model.psh.joinPath(this.currentDrive.get(), nv);
+            let directoryList: objectRepresentation[] = await this.model.fsh.getAllFilesOnDirectory(fullDestination);
+            if(this.model.psh.normalizePath(nv) != this.model.psh.defaultPathSeparator()){
+                let parent: objectRepresentation = {
+                    completePath: this.model.psh.normalizePath(this.model.psh.joinPath(fullDestination, '..')),
+                    name: "..",
+                    isDirectory: true,
+                    isFile: false
+                };
+                directoryList = [parent, ...directoryList];
+            }
+            this._breadCrumb.set(this.processBreadCrumbs(this.currentDrive.get(), nv));
+            this.setcurrentUnfilteredDirectoryObjectList(directoryList);
+            this.view.scrollTo(0, 0);
+            return {
+                valid: true,
+                newValue: nv
+            }
+        });
+        
+        this._currentDrive = new AsyncStoreInterceptor("", true, async(ov: string, nv: string) => {
+            let toReturn = {
+                valid: true,
+                newValue: nv
+            }
+            let previousDrive = ov.toUpperCase();
+            let drive = nv.toUpperCase();
+            if(drive == previousDrive) return toReturn;
+            let sp = await this.view.showSpinner("Loading ...");
+            //if(goToRoot == true){
+            try {
+                await this.setCurrentFullLocation(drive + this.model.psh.defaultPathSeparator());
+                sp.close();
+                return toReturn;
+            } catch (error) {
+                this._currentDrive.setWithoutExecuteLoader(previousDrive);
+                sp.close();
+                return {
+                    valid: false,
+                    newValue: ov
+                }
+            }
+        });
+        
+        this._currentExtenssion.subscribe((nv: string) => {
+            this.updateFileList();
+        });
     }
     
     //Must be called to initialize the state of the class and the view
     public async init(initialDirectory: string){
-        let driveList = await this.model.fsh.getAvailableDriveList();
+        let sp = await this.view.showSpinner("Loading ...");
         try {
-            //this.setCurrentExtention(initialExtention);
-            this.setCurrentDriveList(driveList);
-            if(this.selectDirectory == false){
-                initialDirectory = this.model.psh.goToParentDirectory(initialDirectory);
+            let driveList = await this.model.fsh.getAvailableDriveList();
+            try {
+                //this.setCurrentExtention(initialExtention);
+                this._driveList.set(driveList);
+                if(this.selectDirectory == false){
+                    initialDirectory = this.model.psh.goToParentDirectory(initialDirectory);
+                }
+                await this._setCurrentFullLocation(initialDirectory);
+            } catch (err) {
+                await this._setCurrentFullLocation(this.model.fsh.homeDirectory());
             }
-            await this.setCurrentFullLocation(initialDirectory);
-        } catch (err) {
-            await this.setCurrentFullLocation(this.model.fsh.homeDirectory());
+            sp.close();
+        } catch (error) {
+            sp.close();
+            this.view.emitAlert(error.message, 'Failed to load a directory')
         }
     }
 
@@ -82,37 +155,8 @@ export class FileFinderPresenter{
         this._currentUnfilteredDirectoryObjectList = value;
         this.updateFileList();
     }
-    private get currentDriveList(): string[] {
-        return this.view.getDriveList();
-    }
-    private setCurrentDriveList(value: string[]) {
-        this.view.setDriveList(value, true);
-    }
-    public get currentDrive(): string {
-        return this._currentDrive;
-    }
     public getCurrentFullPath(): string{
-        return this.model.psh.joinPath(this.currentDrive, this.currentDirectory);
-    }
-    //Sets the current drive, if you don't go to root the current directory will continue to be the same
-    //on the diferent drive until the directory gets changed manually
-    public async setCurrentDrive(drive: string, goToRoot: boolean){
-        let previousDrive = this.currentDrive;
-        drive = drive.toUpperCase();
-        if(drive == this.currentDrive) return;
-        this.view.setCurrentDrive(drive, true);
-        this._currentDrive = drive;
-        if(goToRoot == true){
-            try {
-                await this.setCurrentFullLocation(drive + this.model.psh.defaultPathSeparator());
-            } catch (error) {
-                this.setCurrentDrive(previousDrive, false);
-                throw error;
-            }
-        }
-    }
-    public get currentDirectory(): string{
-        return this.view.getCurrentDirectory();
+        return this.model.psh.joinPath(this.currentDrive.get(), this.currentDirectory.get());
     }
     private processBreadCrumbs(_drive: string, _path: string):breadCrumbItem[]{
         let breadCrumb: breadCrumbItem[] = [];
@@ -131,35 +175,19 @@ export class FileFinderPresenter{
         }
         return breadCrumb;
     }
-    //Sets the current directory relative to the current drive
-    private async setCurrentDirectory(location: string){
-        let fullDestination = this.model.psh.joinPath(this.currentDrive, location);
-        let directoryList: objectRepresentation[] = await this.model.fsh.getAllFilesOnDirectory(fullDestination);
-        if(this.model.psh.normalizePath(location) != this.model.psh.defaultPathSeparator()){
-            let parent: objectRepresentation = {
-                completePath: this.model.psh.normalizePath(this.model.psh.joinPath(fullDestination, '..')),
-                name: "..",
-                isDirectory: true,
-                isFile: false
-            };
-            directoryList = [parent, ...directoryList];
-        }
-        this.view.setCurrentDirectory(location, true);
-        this.view.setBreadcrumb(this.processBreadCrumbs(this.currentDrive, location), true);
-        this.setcurrentUnfilteredDirectoryObjectList(directoryList);
-    }
-    public get currentExtention(): string {
-        return this.view.getCurrentExtention();
-    }
-    //Set the extensions that will be displayed
-    public setCurrentExtention(value: string) {
-        this.view.setCurrentExtention(value, true);
-        this.updateFileList();
-    }
     
-    //Getters and setters helpers
-    //Sets the current location, including the drive
     public async setCurrentFullLocation(_location: string){
+        let sp = await this.view.showSpinner("Loading ...");
+        try {
+            await this._setCurrentFullLocation(_location);
+            sp.close();
+        } catch (error) {
+            sp.close();
+            this.view.emitAlert(error, 'Failed to select a directory');
+            throw error
+        }
+    }
+    private async _setCurrentFullLocation(_location: string){
         let drive = '';
         let location = '';
         try {
@@ -170,18 +198,17 @@ export class FileFinderPresenter{
             drive = this.model.psh.getDriveFromPath(_location);
             location = this.model.psh.getPathWithoutDrive(_location);
         }
-        if(this.currentDrive != drive){
-            await this.setCurrentDrive(drive, false);
+        if(this.currentDrive.get() != drive){
+            this._currentDrive.setWithoutExecuteLoader(drive);
         }
-        //console.log("setCurrentFulllocation: ", _location);
-        await this.setCurrentDirectory(location);
+        await this._currentDirectory.set(location);
     }
 
     private displayCurrenfFile(f: objectRepresentation): boolean{
-        if(this.currentExtention == "*.*" && !this.selectDirectory){
+        if(this.currentExtenssion.get() == "*.*" && !this.selectDirectory){
             return true;
         }else if(!this.selectDirectory){
-            let extParts = this.currentExtention.split(".");
+            let extParts = this.currentExtenssion.get().split(".");
             let ext = '.' + extParts[extParts.length - 1];
             if(this.model.psh.extractExtention(f.completePath).toUpperCase() == ext.toUpperCase() || f.isDirectory){
                 return true;
@@ -200,6 +227,6 @@ export class FileFinderPresenter{
                 toSet.push(this.currentUnfilteredDirectoryObjectList[i]);
             }
         }
-        this.view.setCurrentDirectoryObjectsList(toSet, true);
+        this._currentDirectoryObjectsList.set(toSet);
     }
 }

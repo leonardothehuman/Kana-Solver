@@ -1,8 +1,7 @@
 <script lang="ts">
     //This file is licensed under MIT license
-    //TODO: Benefits from using store
     import {Navbar, Page, List, ListItem, Link, Toolbar, Subnavbar, ListGroup} from 'framework7-svelte';
-    import {getContext} from 'svelte';
+    import {getContext, onMount} from 'svelte';
     import keys from '../../keys';
     import {FileFinderPresenter} from "../../presenters/fileFinderPresenter";
     import type ModelsAndHandlers from "../../modelsAndHandlers";
@@ -11,6 +10,10 @@
     import type { Router } from "framework7/types";
     import type IPathStringHandler from '../../handlers/IPathStringshandler';
     import type { objectRepresentation } from '../../handlers/IFileSystemHandler';
+    import type IReadOnlyStore from '../../minilibs/IReadOnlyStore';
+    import LockedStore from '../../minilibs/LockedStore';
+    import type IStore from '../../minilibs/IStore';
+    import type { GlobalInterface } from '../../App';
 
     export let extensionList:string[] = [];
     export let extensionLabels: {[key:string]:string} = {};
@@ -23,59 +26,20 @@
     }
 
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
+    let globalInterface: GlobalInterface = getContext(keys.globalInterface);
     
     //ONLY MODIFY VARIABLES THAT HAVE REACTIVE CODE TO CALL THE HELPERS ON THE PRESENTER
     //OR THAT ARE NOT USED BY THE PRESENTER
     //Visible lists
     let selectableExtensionList: string[] = [...extensionList, "*.*"];
-    let selectableDriveList: string[] = [];
-    let currentDirectoryObjectsList: objectRepresentation[] = [];
-    let breadCrumb: breadCrumbItem[] = [];
-
+    
     //Selected items
-    let currentDrive:string = '';
-    let currentDirectory:string = '';
-    let selectedExtention:string = selectableExtensionList[0];
-
     let externalInterface: IFileFinderView = {
-        setCurrentDirectoryObjectsList: (list: objectRepresentation[], onlyOnChange: boolean) => {
-            if(currentDirectoryObjectsList == list && onlyOnChange == true) return false;
-            currentDirectoryObjectsList = list;
-            return true;
+        scrollTo: (x: number, y: number) => {
+            mainContainer.scrollTo(x, y);
         },
-        setBreadcrumb: (b: breadCrumbItem[], onlyOnChange: boolean) => {
-            if(breadCrumb  == b && onlyOnChange == true) return false;
-            breadCrumb = b;
-            return true;
-        },
-
-        getDriveList:() => {return selectableDriveList;},
-        setDriveList:(list: Array<string>, onlyOnChange: boolean) => {
-            if(selectableDriveList == list && onlyOnChange == true) return false;
-            selectableDriveList = list;
-            return true;
-        },
-
-        getCurrentDrive: () => {return currentDrive;},
-        setCurrentDrive: (drive: string, onlyOnChange: boolean) => {
-            if(currentDrive == drive && onlyOnChange == true) return false;
-            currentDrive = drive;
-            return true;
-        },
-        
-        getCurrentDirectory: () => {return currentDirectory;},
-        setCurrentDirectory: (d: string, onlyOnChange: boolean) => {
-            if(currentDirectory == d && onlyOnChange == true) return false;
-            currentDirectory = d;
-            return true;
-        },
-        
-        getCurrentExtention: () => {return selectedExtention;},
-        setCurrentExtention: (ext: string, onlyOnChange: boolean) => {
-            if(selectedExtention == ext && onlyOnChange == true) return false;
-            selectedExtention = ext;
-            return true;
-        }
+        showSpinner: globalInterface.showSpinner,
+        emitAlert: globalInterface.emitAlert
     }
 
     let pathStringHandler: IPathStringHandler = new modelsAndHandlers.PathStringHandler();
@@ -87,47 +51,13 @@
         ),
         selectDirectory
     );
-    f7.dialog.preloader("Loading ...");
-    fileFinderPresenter.init(
-        initialDirectory
-    ).then(() => {
-        f7.dialog.close();
-    }).catch((error) => {
-        f7.dialog.close();
-        f7.dialog.alert(error, 'Failed to load a directory');
-    });
-    
-    let driveFirstLoad = true;
-    $: {
-        if(driveFirstLoad == false){
-            f7.dialog.preloader("Loading ...");
-            fileFinderPresenter.setCurrentDrive(currentDrive, true).then(() => {
-                f7.dialog.close();
-            }).catch((error) => {
-                f7.dialog.close();
-                f7.dialog.alert(error, 'Failed to select a drive');
-            });
-        }
-        driveFirstLoad = false;
-    }
-
-    let extFirstLoad = true;
-    $: {
-        if(extFirstLoad == false) fileFinderPresenter.setCurrentExtention(selectedExtention);
-        extFirstLoad = false;
-    }
 
     let mainContainer: HTMLDivElement;
 
     async function goToDirectory(directory: string){
-        f7.dialog.preloader("Loading ...");
         try {
             await fileFinderPresenter.setCurrentFullLocation(directory);
-            f7.dialog.close();
-            mainContainer.scrollTop = 0;
         } catch (error) {
-            f7.dialog.close();
-            f7.dialog.alert(error, 'Failed to select a directory');
         }
     }
 
@@ -137,6 +67,22 @@
         navbarTitle = "Select a directory";
         customtoolbarClass = "";
     }
+
+    let currentDirectoryObjectsList:IReadOnlyStore<objectRepresentation[]> = new LockedStore([]);
+    let breadCrumb: IReadOnlyStore<breadCrumbItem[]> = new LockedStore([]);
+    let driveList: IStore<string[]> = new LockedStore([]);
+    let currentExtenssion: IStore<string> = new LockedStore(selectableExtensionList[0]);
+    let currentDrive: IStore<string> = new LockedStore('');
+
+    onMount(async() => {
+        await fileFinderPresenter.init(initialDirectory);
+        currentDirectoryObjectsList = fileFinderPresenter.currentDirectoryObjectsList;
+        breadCrumb = fileFinderPresenter.breadCrumb;
+        driveList = fileFinderPresenter.driveList;
+        currentExtenssion = fileFinderPresenter.currentExtenssion;
+        currentExtenssion.set(selectableExtensionList[0]);
+        currentDrive = fileFinderPresenter.currentDrive;
+    });
 
     let listArguments: any = {
         ul: false
@@ -185,7 +131,7 @@
         <Subnavbar>
             <div class="breadcrumbs-container">
                 <span class="breadcrumbs">
-                    {#each breadCrumb as bc (bc)}
+                    {#each $breadCrumb as bc (bc)}
                         <Link
                             on:click={async() => {
                                 await goToDirectory(bc.completePath);
@@ -202,21 +148,21 @@
             <ListGroup>
                 <ListItem groupTitle title="Disk drive"></ListItem>
                 <ListItem title="Drive" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
-                    <select name="Drive" bind:value={currentDrive}>
-                        {#each selectableDriveList as drive}
+                    <select name="Drive" bind:value={$currentDrive}>
+                        {#each $driveList as drive}
                             <option value={drive}>{drive}</option>
                         {/each}
-                        {#if !selectableDriveList.includes(currentDrive)}
-                            <option value={currentDrive}>{currentDrive}</option>
+                        {#if !$driveList.includes($currentDrive)}
+                            <option value={$currentDrive}>{$currentDrive}</option>
                         {/if}
                     </select>
-                    <span slot="after">{currentDrive}</span>
+                    <span slot="after">{$currentDrive}</span>
                     <i slot="media" class="f7-icons">house</i>
                 </ListItem>
             </ListGroup>
             <ListGroup>
                 <ListItem groupTitle title="Files"></ListItem>
-                {#each currentDirectoryObjectsList as dItem (dItem)}
+                {#each $currentDirectoryObjectsList as dItem (dItem)}
                     {#if dItem.isDirectory}
                         <ListItem link="#"
                             on:click={async() => {
@@ -227,7 +173,7 @@
                         </ListItem>
                     {/if}
                 {/each}
-                {#each currentDirectoryObjectsList as dItem (dItem)}
+                {#each $currentDirectoryObjectsList as dItem (dItem)}
                     {#if dItem.isFile}
                         <ListItem link="#"
                             on:click={() => {
@@ -260,8 +206,8 @@
                 />
             {:else}
                 <List>
-                    <ListItem title="{extensionLabels[selectedExtention]}" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
-                        <select name="Extension" bind:value={selectedExtention}>
+                    <ListItem title="{extensionLabels[$currentExtenssion]}" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
+                        <select name="Extension" bind:value={$currentExtenssion}>
                             {#each selectableExtensionList as ext}
                                 <option value={ext}>
                                     {#if extensionLabels[ext]}
@@ -271,7 +217,7 @@
                                 </option>
                             {/each}
                         </select>
-                        <span slot="after">{selectedExtention}</span>
+                        <span slot="after">{$currentExtenssion}</span>
                     </ListItem>
                 </List>
             {/if}
