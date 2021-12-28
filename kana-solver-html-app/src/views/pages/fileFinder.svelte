@@ -31,7 +31,7 @@
     //ONLY MODIFY VARIABLES THAT HAVE REACTIVE CODE TO CALL THE HELPERS ON THE PRESENTER
     //OR THAT ARE NOT USED BY THE PRESENTER
     //Visible lists
-    let selectableExtensionList: string[] = [...extensionList, "*.*"];
+    
     
     //Selected items
     let externalInterface: IFileFinderView = {
@@ -49,7 +49,7 @@
             pathStringHandler,
             new modelsAndHandlers.FileSystemHandler(pathStringHandler)
         ),
-        selectDirectory
+        selectDirectory, extensionList
     );
 
     let mainContainer: HTMLDivElement;
@@ -71,8 +71,9 @@
     let currentDirectoryObjectsList:IReadOnlyStore<objectRepresentation[]> = new LockedStore([]);
     let breadCrumb: IReadOnlyStore<breadCrumbItem[]> = new LockedStore([]);
     let driveList: IStore<string[]> = new LockedStore([]);
-    let currentExtenssion: IStore<string> = new LockedStore(selectableExtensionList[0]);
+    let currentExtenssion: IStore<string> = new LockedStore("*.*");
     let currentDrive: IStore<string> = new LockedStore('');
+    let selectableExtensionList: IReadOnlyStore<string[]> = new LockedStore(["*.*"]);
 
     onMount(async() => {
         await fileFinderPresenter.init(initialDirectory);
@@ -80,8 +81,8 @@
         breadCrumb = fileFinderPresenter.breadCrumb;
         driveList = fileFinderPresenter.driveList;
         currentExtenssion = fileFinderPresenter.currentExtenssion;
-        currentExtenssion.set(selectableExtensionList[0]);
         currentDrive = fileFinderPresenter.currentDrive;
+        selectableExtensionList = fileFinderPresenter.selectableExtensionList;
     });
 
     let listArguments: any = {
@@ -208,7 +209,7 @@
                 <List>
                     <ListItem title="{extensionLabels[$currentExtenssion]}" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
                         <select name="Extension" bind:value={$currentExtenssion}>
-                            {#each selectableExtensionList as ext}
+                            {#each $selectableExtensionList as ext}
                                 <option value={ext}>
                                     {#if extensionLabels[ext]}
                                         {extensionLabels[ext]} 

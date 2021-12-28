@@ -30,7 +30,6 @@ export class FileFinderPresenter{
     //Initialization
     private _view: IFileFinderView;
     private _model: IFileFinderModel;
-    private _currentUnfilteredDirectoryObjectList: objectRepresentation[];
     private selectDirectory: boolean;
 
     private _currentDirectoryObjectsList: Store<objectRepresentation[]>;
@@ -57,18 +56,23 @@ export class FileFinderPresenter{
     public get currentDrive(): AsyncStoreInterceptor<string> {
         return this._currentDrive;
     }
-    //currentExtention
+    private _selectableExtensionList: Store<string[]>;
+    public get selectableExtensionList(): IReadOnlyStore<string[]> {
+        return this._selectableExtensionList;
+    }
+    private _currentUnfilteredDirectoryObjectList: Store<objectRepresentation[]>;
     
-    constructor(view: IFileFinderView, model: IFileFinderModel, _selectDirectory: boolean){
+    constructor(view: IFileFinderView, model: IFileFinderModel, _selectDirectory: boolean, extensionList: string[]){
         this.selectDirectory = _selectDirectory;
         this._view = view;
-        this._currentUnfilteredDirectoryObjectList = [];//Unfiltered list of files on the current directory
+        this._currentUnfilteredDirectoryObjectList = new Store([]);//Unfiltered list of files on the current directory
         this._model = model;
 
         this._currentDirectoryObjectsList = new Store([]);
         this._breadCrumb = new Store([]);
         this._driveList = new Store([]);
-        this._currentExtenssion = new Store("");
+        this._selectableExtensionList = new Store([...extensionList, "*.*"]);
+        this._currentExtenssion = new Store(this.selectableExtensionList.get()[0]);
         this._currentDirectory = new AsyncStoreInterceptor("", true, async(ov: string, nv: string) => {
             let fullDestination = this.model.psh.joinPath(this.currentDrive.get(), nv);
             let directoryList: objectRepresentation[] = await this.model.fsh.getAllFilesOnDirectory(fullDestination);
@@ -82,7 +86,7 @@ export class FileFinderPresenter{
                 directoryList = [parent, ...directoryList];
             }
             this._breadCrumb.set(this.processBreadCrumbs(this.currentDrive.get(), nv));
-            this.setcurrentUnfilteredDirectoryObjectList(directoryList);
+            this._currentUnfilteredDirectoryObjectList.set(directoryList);
             this.view.scrollTo(0, 0);
             return {
                 valid: true,
@@ -112,6 +116,10 @@ export class FileFinderPresenter{
                     newValue: ov
                 }
             }
+        });
+
+        this._currentUnfilteredDirectoryObjectList.subscribe(() => {
+            this.updateFileList();
         });
         
         this._currentExtenssion.subscribe((nv: string) => {
@@ -147,13 +155,6 @@ export class FileFinderPresenter{
     }
     public get model(): IFileFinderModel {
         return this._model;
-    }
-    private get currentUnfilteredDirectoryObjectList(): objectRepresentation[] {
-        return this._currentUnfilteredDirectoryObjectList;
-    }
-    private setcurrentUnfilteredDirectoryObjectList(value: objectRepresentation[]) {
-        this._currentUnfilteredDirectoryObjectList = value;
-        this.updateFileList();
     }
     public getCurrentFullPath(): string{
         return this.model.psh.joinPath(this.currentDrive.get(), this.currentDirectory.get());
@@ -222,9 +223,9 @@ export class FileFinderPresenter{
     //Updates the visible files list
     private updateFileList(){
         let toSet:objectRepresentation[] = [];
-        for(let i = 0; i < this.currentUnfilteredDirectoryObjectList.length; i++){
-            if(this.displayCurrenfFile(this.currentUnfilteredDirectoryObjectList[i])){
-                toSet.push(this.currentUnfilteredDirectoryObjectList[i]);
+        for(let i = 0; i < this._currentUnfilteredDirectoryObjectList.get().length; i++){
+            if(this.displayCurrenfFile(this._currentUnfilteredDirectoryObjectList.get()[i])){
+                toSet.push(this._currentUnfilteredDirectoryObjectList.get()[i]);
             }
         }
         this._currentDirectoryObjectsList.set(toSet);
