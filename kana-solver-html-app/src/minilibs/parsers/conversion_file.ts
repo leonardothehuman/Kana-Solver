@@ -6,7 +6,7 @@ import type IStore from '../IStore';
 import type { unsubscriber } from '../IReadOnlyStore';
 import type IPathStringHandler from '../../handlers/IPathStringshandler';
 
-type aliasConversionMode = "prefix"|"suffix"|"center"|"all";
+type aliasConversionMode = "prefix"|"suffix"|"center"|"all"|"edges";
 
 type SeparatedNameAndExtension = {name: string, ext: string};
 
@@ -254,7 +254,7 @@ export class ConversionFile{
         await fsh.saveTextFile(fileName, 'utf8', JSON.stringify(toSave, null, '\t'));
         this.getWasModifiedRW().set(stillModified);
     }
-    //TODO: Manage this on a different class
+    //ODOT: Manage this on a different class
     public resetFileHistory(){
         this.fileHistory = {};
     }
@@ -287,14 +287,14 @@ export class ConversionFile{
     public generateReplacedFilePath(toReplace: string, psh: IPathStringHandler): string{
         let toReplaceArray = psh.pathToArray(toReplace);
         for(let i = 0; i < toReplaceArray.length - 1; i++){
-            toReplaceArray[i] = this.generateReplacedFileName(toReplaceArray[i], false);
+            toReplaceArray[i] = this.generateReplacedFileName(psh, toReplaceArray[i], false);
         }
         toReplaceArray[toReplaceArray.length - 1] =
-            this.generateReplacedFileName(toReplaceArray[toReplaceArray.length - 1], true);
+            this.generateReplacedFileName(psh, toReplaceArray[toReplaceArray.length - 1], true);
 
         return psh.joinPath(...toReplaceArray);
     }
-    public generateReplacedFileName(toReplace: string, separateExtension: boolean = true){
+    public generateReplacedFileName(psh: IPathStringHandler, toReplace: string, separateExtension: boolean = true){
         if(toReplace == "") return "";
         let elements: SeparatedNameAndExtension = {
             name: toReplace,
@@ -306,7 +306,7 @@ export class ConversionFile{
         let replaced = "";
         let nextAttachement = "";
         while(true){
-            replaced = this.generateReplacedString(elements.name) + nextAttachement;
+            replaced = psh.removeWin32ForbiddenChars(this.generateReplacedString(elements.name)) + nextAttachement;
             
             if(this.fileHistory[replaced.toLowerCase()] == elements.name) break;
             if(this.fileHistory[replaced.toLowerCase()] == undefined) break;
@@ -354,6 +354,12 @@ export class ConversionFile{
             let elements = this.separateAliasElements(toReplace);
             return  this.generateReplacedAlias(elements.prefix, "prefix", deduplicate) + 
                     this.generateReplacedAlias(elements.center, "center", deduplicate) + 
+                    this.generateReplacedAlias(elements.suffix, "suffix", deduplicate)
+        }
+        if(mode == "edges"){
+            let elements = this.separateAliasElements(toReplace);
+            return  this.generateReplacedAlias(elements.prefix, "prefix", deduplicate) + 
+                    elements.center + 
                     this.generateReplacedAlias(elements.suffix, "suffix", deduplicate)
         }
         if(mode == "prefix" && this.prefixList.indexOf(toReplace) < 0){

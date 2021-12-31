@@ -60,6 +60,7 @@
     let renameFiles: IStore<boolean> = new LockedStore(false);
     let renameAliases: IStore<boolean> = new LockedStore(false);
     let truncateDecimals: IStore<boolean> = new LockedStore(false);
+    let keepAlias: IStore<boolean> = new LockedStore(false);
     let conversionItem: IStore<ConversionItem | null> = new LockedStore(null);
     let deduplicateAlias: IStore<deduplicateOptions> = new LockedStore("false");
 
@@ -73,6 +74,7 @@
         conversionItem = presenter.conversionItem;
         deduplicateAlias = presenter.deduplicateAlias;
         truncateDecimals = presenter.truncateDecimals;
+        keepAlias = presenter.keepAlias;
     });
 
     let rootNameInput:HTMLInputElement;
@@ -170,11 +172,12 @@
             ></ListItem>
         </List>
         <BlockTitle>Other options</BlockTitle>
-        <BlockHeader>You should leave everything here enabled unless you know what you are doing</BlockHeader>
+        <BlockHeader>You should leave everything here as is unless you know what you are doing</BlockHeader>
         <List inlineLabels>
             <ListItem checkbox title="Rename File Names" name="conversion-options" bind:checked={$renameFiles}></ListItem>
             <ListItem checkbox title="Rename Aliases" name="conversion-options" bind:checked={$renameAliases}></ListItem>
             <ListItem checkbox title="Truncate Decimal Timings" name="conversion-options" bind:checked={$truncateDecimals}></ListItem>
+            <ListItem checkbox title="Keep a copy of original aliases" name="conversion-options" bind:checked={$keepAlias}></ListItem>
             <ListButton
                 on:click={() => {presenter.convert()}}
                 title="Convert !!!" color="deeppurple" >

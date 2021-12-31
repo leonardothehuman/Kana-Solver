@@ -1,5 +1,5 @@
-//TODO: Everything here should be async
-//TODO: This file is incomplete and should not be used
+//ODOT: Everything here should be async
+//ODOT: This file is incomplete and should not be used
 export type asyncEventSubscriber<E, S> = (sender: S, event: E) => Promise<void>;
 export type eventSubscriber<E, S> = (sender: S, event: E) => void;
 

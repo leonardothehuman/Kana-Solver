@@ -70,7 +70,7 @@ export class CharacterTxt implements ITransformableParser{
         });
     }
 
-    public transformAlias(rules: ConversionFile, deduplicate: boolean){};
+    public transformAlias(rules: ConversionFile, deduplicate: boolean, keepOriginal: boolean){};
 
     public async save(_path: string, fsh: IFileSystemHandler){
         let toSave: Array<string> = [];

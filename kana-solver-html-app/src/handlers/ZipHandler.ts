@@ -177,7 +177,7 @@ export default class ZipHandler implements IZipHandler{
                                 }
                                 resolve(true);
                             });
-                            //TODO: Allow chosing encoding
+                            //ODOT: Allow chosing encoding
                             readStream.on("error", function(e) {
                                 ws.end();
                                 reject(e);

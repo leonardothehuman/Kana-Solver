@@ -130,6 +130,27 @@ export default class PathStringHandler implements IPathStringHandler{
         }
         return false;
     }
+    public removeWin32ForbiddenChars(f: string): string{
+        var newName = "";
+        for(let i = 0; i < f.length; i++){
+            let newChar = f.charAt(i);
+            if(
+                f.charAt(i) == '\\' || 
+                f.charAt(i) == '/' || 
+                f.charAt(i) == ':' || 
+                f.charAt(i) == '*' || 
+                f.charAt(i) == '?' || 
+                f.charAt(i) == '"' || 
+                f.charAt(i) == '<' || 
+                f.charAt(i) == '>' || 
+                f.charAt(i) == '|' 
+            ) {
+                newChar = "_";
+            }
+            newName += newChar;
+        }
+        return newName;
+    }
     public getRelativePath(source: string, destination:string): string{
         return path.relative(source, destination);
     }

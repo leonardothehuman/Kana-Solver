@@ -84,7 +84,7 @@ export class InstallTxt implements ITransformableParser{
     public transformFileNames(rules: ConversionFile, psh: IPathStringHandler){
         throw new Error("Not implemented ...");
     }
-    public transformAlias(rules: ConversionFile, deduplicate: boolean){
+    public transformAlias(rules: ConversionFile, deduplicate: boolean, keepOriginal: boolean){
         throw new Error("Not implemented ...");
     };
     public async save(_path: string, fsh: IFileSystemHandler){

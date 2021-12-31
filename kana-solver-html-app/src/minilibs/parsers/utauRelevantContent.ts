@@ -20,10 +20,11 @@ export type conversionOptions = {
     renameAliases: boolean,
     renameFiles: boolean,
     deduplicateAlias: boolean,
-    truncateDecimals: boolean
+    truncateDecimals: boolean,
+    keepOriginalAliasCopy: boolean,
 }
 
-//TODO: move this class to installedUtauHandler and remove this class
+//ODOT: move this class to installedUtauHandler and remove this class
 export class UtauRelevantContent{
     private renamableBlobs: nestedObjectRepresentation[];
     private characterTxts: toTransformCollection<CharacterTxt>;
@@ -127,7 +128,7 @@ export class UtauRelevantContent{
             if(options.renameFiles)
                 toTransform[i].obj.transformFileNames(rules, this.psh);
             if(options.renameAliases)
-                toTransform[i].obj.transformAlias(rules, options.deduplicateAlias);
+                toTransform[i].obj.transformAlias(rules, options.deduplicateAlias, options.keepOriginalAliasCopy);
 
             await toTransform[i].obj.save(
                 toTransform[i].file.completePath,
@@ -216,7 +217,7 @@ export class UtauRelevantContent{
             let destinationPathArray: string[] = [...originalPathArray];
 
             destinationPathArray[destinationPathArray.length -1] =
-                rules.generateReplacedFileName(destinationPathArray[destinationPathArray.length -1], !sorted[i].isDirectory);
+                rules.generateReplacedFileName(this.psh, destinationPathArray[destinationPathArray.length -1], !sorted[i].isDirectory);
 
             reversionFile.addRename(
                 this.psh.joinPath(...originalPathArray),

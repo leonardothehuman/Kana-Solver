@@ -4,7 +4,6 @@ import type IFileSystemHandler from "../handlers/IFileSystemHandler";
 import type IPathStringHandler from "../handlers/IPathStringshandler";
 import type { IUstConversorModel } from "../presenters/ustConversorPresenter";
 
-//TODO: verify if everything here is used
 export default class UstConversorModel implements IUstConversorModel{
     private _psh: IPathStringHandler;
     public get psh(): IPathStringHandler {

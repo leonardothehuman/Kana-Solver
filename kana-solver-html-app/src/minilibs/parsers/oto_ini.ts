@@ -58,7 +58,7 @@ export class OtoIni implements ITransformableParser{
         console.log(this._otoEntries);
     }
 
-    //TODO: Alert if the line is not complete
+    //ODOT: Alert if the line is not complete
     public transformFileNames(rules: ConversionFile, psh: IPathStringHandler){
         for(let i = 0; i < this._otoEntries.length; i++){
             let currentOto = this._otoEntries[i];
@@ -67,13 +67,30 @@ export class OtoIni implements ITransformableParser{
             currentOto.rawLine = currentOto.wavFile + "=" + currentOto.alias + ',' + currentOto.otherParams;
         }
     }
-    //TODO: Keep original alias
-    public transformAlias(rules: ConversionFile, deduplicate: boolean){
+    
+    public transformAlias(rules: ConversionFile, deduplicate: boolean, keepOriginal: boolean){
+        var aliasCopy: otoEntry[] = [];
         for(let i = 0; i < this._otoEntries.length; i++){
             let currentOto = this._otoEntries[i];
+            aliasCopy.push({
+                wavFile: currentOto.wavFile,
+                alias: currentOto.alias,
+                otherParams: currentOto.otherParams,
+                rawLine: currentOto.rawLine,
+                complete: currentOto.complete
+            });
             if(currentOto.complete == false) continue;
             currentOto.alias = rules.generateReplacedAlias(currentOto.alias, "all", deduplicate);
             currentOto.rawLine = currentOto.wavFile + "=" + currentOto.alias + ',' + currentOto.otherParams;
+        }
+        if(keepOriginal == true){
+            for(let i = 0; i < aliasCopy.length; i++){
+                let currentOto = aliasCopy[i];
+                if(currentOto.complete == false) continue;
+                currentOto.alias = rules.generateReplacedAlias(currentOto.alias, "edges", deduplicate);
+                currentOto.rawLine = currentOto.wavFile + "=" + currentOto.alias + ',' + currentOto.otherParams;
+            }
+            this._otoEntries = [...this._otoEntries, ...aliasCopy];
         }
     };
 

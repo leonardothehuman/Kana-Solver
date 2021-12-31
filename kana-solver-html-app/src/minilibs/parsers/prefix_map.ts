@@ -47,8 +47,8 @@ export class PrefixMap implements ITransformableParser{
         console.log(this._pfixEntries);
     }
 
-    //TODO: Alert if the line is not complete
-    public transformAlias(rules: ConversionFile, deduplicate: boolean){
+    //ODOT: Alert if the line is not complete
+    public transformAlias(rules: ConversionFile, deduplicate: boolean, keepOriginal: boolean){
         for(let i = 0; i < this._pfixEntries.length; i++){
             let currentPFix = this._pfixEntries[i];
             if(currentPFix.complete == false) continue;
