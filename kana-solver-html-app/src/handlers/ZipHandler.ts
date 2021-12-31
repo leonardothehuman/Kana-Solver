@@ -1,7 +1,7 @@
 //This file is licensed under GNU GPL v3.0 only license
 
 import type IZipHandler from "./IZipHandler";
-import type { ExploreZipCallback, UtauZipInfo, ZipExtractProgressCallback } from "./IZipHandler";
+import type { CorruptionReport, ExploreZipCallback, UtauZipInfo, ZipExtractProgressCallback } from "./IZipHandler";
 import {InstallTxt} from '../minilibs/parsers/install_txt';
 import yauzl from 'yauzl';
 import type {ZipFile} from 'yauzl';
@@ -10,6 +10,33 @@ import path from 'path';
 import fsp from 'fs/promises';
 import fs from 'fs';
 import type PathStringHandler from "./PathStringsHandler";
+import crc32 from 'buffer-crc32';
+import stream from 'stream';
+
+class Crc32StreamCalculator{
+    private _transformStream: stream.Transform;
+    public get transformStream(): stream.Transform {
+        return this._transformStream;
+    }
+    private partialCrc:Buffer|null;
+    public getCrc32(): number{
+        return parseInt(this.partialCrc.toString('hex'), 16);
+    }
+    constructor(){
+        this.partialCrc = null;
+        this._transformStream = new stream.Transform({
+            writableObjectMode: true,
+            transform: (chunk: any, encoding: BufferEncoding, callback: stream.TransformCallback) => {
+                if(this.partialCrc == null){
+                    this.partialCrc = crc32(chunk);
+                }else{
+                    this.partialCrc = crc32(chunk, this.partialCrc);
+                }
+                callback(null, chunk);
+            }
+        });
+    }
+}
 
 export default class ZipHandler implements IZipHandler{
     private psh: PathStringHandler;
@@ -27,6 +54,7 @@ export default class ZipHandler implements IZipHandler{
                     z.openReadStream(entry, function(err, readStream) {
                         if (err){
                             reject(err);
+                            return;
                         }
                         readStream.on("end", function() {
                             var buf = Buffer.concat(content);
@@ -74,8 +102,9 @@ export default class ZipHandler implements IZipHandler{
         destinationOnInstallDir: string,//normalized
         progressCallback: ZipExtractProgressCallback,
         failIfFileExists: boolean
-    ){
+    ): Promise<CorruptionReport[]>{
         const outputDir = path.join(installDir, destinationOnInstallDir);
+        var toReturn: CorruptionReport[] = [];
         await this.exploreZipFile(zipFile, (entry: any, decodedPath: string, isDirectory: boolean, z: ZipFile) => {
             const promise = new Promise<boolean>((resolve, reject) => {
                 var sourceZipDirectoryAmmount = sourceZipDirectory.split('/').length;
@@ -124,9 +153,14 @@ export default class ZipHandler implements IZipHandler{
                             await fsp.mkdir(path.dirname(destinationFile),{recursive: true});
                         } catch (error) {
                             reject(error);
+                            return;
                         }
                         z.openReadStream(entry, function(err, readStream) {
-                            if (err){reject(err);}
+                            var crcCalculator = new Crc32StreamCalculator();
+                            if (err){
+                                reject(err);
+                                return;
+                            }
                             var flag = "w";
                             if(failIfFileExists) flag = "wx";
                             var ws = fs.createWriteStream(destinationFile,{
@@ -134,9 +168,15 @@ export default class ZipHandler implements IZipHandler{
                             });
                             readStream.on("end", function() {
                                 ws.end();
+                                if(crcCalculator.getCrc32().toString(16) != entry.crc32.toString(16)){
+                                    toReturn.push({
+                                        completePath: sourceFile,
+                                        expectedCRC: entry.crc32.toString(16),
+                                        realCRC: crcCalculator.getCrc32().toString(16)
+                                    });
+                                }
                                 resolve(true);
                             });
-                            //TODO: verify crc32
                             //TODO: Allow chosing encoding
                             readStream.on("error", function(e) {
                                 ws.end();
@@ -145,13 +185,14 @@ export default class ZipHandler implements IZipHandler{
                             ws.on("error", function(e) {
                                 reject(e);
                             });
-                            readStream.pipe(ws);
+                            readStream.pipe(crcCalculator.transformStream).pipe(ws);
                         });
                     })();
                 }
             });
             return promise;
         });
+        return toReturn;
     }
     public exploreZipFile(zipFile: string, cb:ExploreZipCallback): Promise<string>{
         var that = this;
@@ -159,11 +200,15 @@ export default class ZipHandler implements IZipHandler{
             const zipOptions = {
                 lazyEntries: true, 
                 decodeStrings: false, 
-                strictFileNames: false
+                strictFileNames: false,
+                validateEntrySizes: false
             }
     
             yauzl.open(zipFile, zipOptions, function(err, zipfile) {
-                if (err){ reject(err); }
+                if (err){
+                    reject(err);
+                    return;
+                }
                 zipfile.on("entry", async function(entry) {
                     try {
                         let decodedPath = that.psh.normalizeSlash(iconv.decode(entry.fileName, 'Shift_JIS'));

@@ -15,7 +15,9 @@ const config = {
     'util': 'commonjs2 util',
     'assert': 'commonjs2 assert',
     'child_process': 'commonjs2 child_process',
-    'nw.gui': 'commonjs2 nw.gui'
+    'nw.gui': 'commonjs2 nw.gui',
+    'stream': 'commonjs2 stream',
+    'buffer': 'commonjs2 buffer'
   },
   entry: './src/index.ts',
   output: {

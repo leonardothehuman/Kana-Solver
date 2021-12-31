@@ -5,6 +5,7 @@ import type IPathStringHandler from "../handlers/IPathStringshandler";
 import type ISettingsHandler from "../handlers/ISettingsHandler";
 import type { UtauZipInfo } from "../handlers/IZipHandler";
 import type IZipHandler from "../handlers/IZipHandler";
+import { htmlEntities } from "../minilibs/helpers";
 import type IReadOnlyStore from "../minilibs/IReadOnlyStore";
 import type IStore from "../minilibs/IStore";
 import Store from "../minilibs/Store";
@@ -22,6 +23,7 @@ export interface IExtractDetailsView{
     askConfirmation: (text: string, title: string) => Promise<boolean>;
     createProgressProcess: (title: string, initialProgress: number) => IProgressProcess;
     informExtractionSuccess: () => void;
+    popup: (text: string, title: string) => Promise<void>;
 }
 
 export type UtauDestinationType = "users"|"utau"|"other";
@@ -204,7 +206,7 @@ export class ExtractDetailsPresenter{
         try {
             var dialog = this.view.createProgressProcess("Extracting archive ...", 0);
             dialog.setText('Extracting files');
-            await this.model.zh.extractUtau(
+            var corruptedList = await this.model.zh.extractUtau(
                 this.fileToExtract, destDir, 
                 this.sourceType.get() == "custom" ? this.zipProperties.sourceOnZip : "",
                 destinationOnInstallDir,
@@ -215,6 +217,13 @@ export class ExtractDetailsPresenter{
                 this.destinationType.get() == "other"
             );
             dialog.close();
+            if(corruptedList.length > 0){
+                let toWarn = "<h3>Some files on this extraction were corrupt ...</h3>";
+                for(let i = 0; i < corruptedList.length; i++){
+                    toWarn += `<p>The expected CRC32 of the file "${htmlEntities(corruptedList[i].completePath)}" was "${htmlEntities(corruptedList[i].expectedCRC)}" but we got "${htmlEntities(corruptedList[i].realCRC)}" instead.</p>`
+                }
+                this.view.popup(toWarn, "Warning");
+            }
             this.view.informExtractionSuccess();
         } catch (error) {
             dialog.close();

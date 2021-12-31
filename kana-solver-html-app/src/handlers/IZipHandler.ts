@@ -1,6 +1,12 @@
 import type { ZipFile } from 'yauzl';
 import type {InstallTxt} from '../minilibs/parsers/install_txt';
 
+export type CorruptionReport = {
+    completePath: string,
+    expectedCRC: string,
+    realCRC: string
+}
+
 export type ZipExtractProgressInfo = {
     totalEntries: number,
     currentEntry: number,
@@ -26,5 +32,5 @@ export default interface IZipHandler{
         destinationOnInstallDir: string,//normalized
         progressCallback: ZipExtractProgressCallback,
         failIfFileExists: boolean
-    ) => Promise<void>;
+    ) => Promise<CorruptionReport[]>;
 }

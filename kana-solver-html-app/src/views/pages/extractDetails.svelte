@@ -38,6 +38,7 @@
         emitAlert: globalInterface.emitAlert,
         askConfirmation: globalInterface.askConfirmation,
         createProgressProcess: globalInterface.createProgressProcess,
+        popup: globalInterface.popup
     }
 
     let pathStringHandler: IPathStringHandler = new modelsAndHandlers.PathStringHandler();
