@@ -11,10 +11,12 @@ import type { objectRepresentation } from "../handlers/IFileSystemHandler";
 import type IStore from "../minilibs/IStore";
 import { ConversionFile } from "../minilibs/parsers/conversion_file";
 import SyncEvent from "../minilibs/SyncEvent";
+import type IPathHandler from "../handlers/IPathHandler";
 
 export interface IConversionFileSelectorModel{
     readonly psh: IPathStringHandler;
     readonly fsh: IFileSystemHandler;
+    readonly ph: IPathHandler;
 }
 
 export interface IConversionFileSelectorView{
@@ -154,16 +156,10 @@ export class ConversionFileSelectorPresenter{
         }
         let builtInConversionFiles: objectRepresentation[] =
             await this.model.fsh.getAllFilesOnDirectory(
-                this.model.psh.joinPath(
-                    this.model.psh.goToParentDirectory(process.execPath),
-                    "package.nw\\presets"
-                )
+                this.model.ph.SystemConversionFilesDirectory.get()
             );
 
-        let conversionFileDirectory: string = this.model.psh.joinPath(
-            this.model.fsh.homeDirectory(),
-            "kanasolver_files\\conversion_files"
-        );
+        let conversionFileDirectory: string = this.model.ph.UserConversionFilesDirectory.get();
 
         //TODO: Verify the entire path
         if(await this.model.fsh.existAndIsFile(conversionFileDirectory) == true){

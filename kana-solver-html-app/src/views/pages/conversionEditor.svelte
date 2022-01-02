@@ -22,7 +22,8 @@
     import type {leaveConfirmators} from "../../routes";
     import ConversionFileSelector from "../components/conversionFileSelector.svelte";
     import type { ConversionItem, selectChangeInterceptedEventArgs } from "../../presenters/conversionFileSelectorPresenter";
-import type { GlobalInterface } from "../../App";
+    import type { GlobalInterface } from "../../App";
+    import type IPathHandler from "../../handlers/IPathHandler";
     
     var nw = require('nw.gui');
     var win = nw.Window.get();
@@ -66,6 +67,7 @@ import type { GlobalInterface } from "../../App";
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let installedConversionFiles: conversionFileRepresentation[] = [];
     let globalInterface: GlobalInterface = getContext(keys.globalInterface);
+    let pathHandler: IPathHandler = getContext(keys.pathHandler);
     
     let externalInterface: IConversionEditorView = {
         setInstalledConversionFiles: (icf: conversionFileRepresentation[], onlyOnChange: boolean) => {
@@ -94,7 +96,8 @@ import type { GlobalInterface } from "../../App";
         externalInterface,
         new modelsAndHandlers.ConversionEditorModel(
             pathStringHandler,
-            new modelsAndHandlers.FileSystemHandler(pathStringHandler)
+            new modelsAndHandlers.FileSystemHandler(pathStringHandler),
+            pathHandler
         )
     );
     

@@ -17,12 +17,14 @@
     import type { Router } from "framework7/types";
     import type ISettingsHandler from "../../handlers/ISettingsHandler";
     import type { GlobalInterface } from "../../App";
+    import type IPathHandler from "../../handlers/IPathHandler";
 
     export let f7router: Router.Router;
 
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let settingsHandler: ISettingsHandler = getContext(keys.settingsHandler);
     let globalInterface: GlobalInterface = getContext(keys.globalInterface);
+    let pathHandler: IPathHandler = getContext(keys.pathHandler);
 
     let externalInterface: IUtauConversorView = {
         goToConversionPage: (props: UtauConversorDetailsProps) => {
@@ -40,10 +42,9 @@
     let presenter = new UtauConversorPresenter(
         externalInterface,
         new modelsAndHandlers.UtauConversorModel(
-            pathStringHandler,
-            fileSystemHandler,
+            pathStringHandler, fileSystemHandler,
             new modelsAndHandlers.InstalledUtauHandler(fileSystemHandler, pathStringHandler),
-            settingsHandler
+            settingsHandler, pathHandler
         )
     );
     

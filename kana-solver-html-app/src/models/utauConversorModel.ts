@@ -2,6 +2,7 @@
 
 import type IFileSystemHandler from "../handlers/IFileSystemHandler";
 import type IInstalledUtauHandler from "../handlers/IInstalledUtauHandler";
+import type IPathHandler from "../handlers/IPathHandler";
 import type IPathStringHandler from "../handlers/IPathStringshandler";
 import type ISettingsHandler from "../handlers/ISettingsHandler";
 import type { IUtauConversorModel } from "../presenters/utauConversorPresenter";
@@ -23,10 +24,21 @@ export default class UtauConversorModel implements IUtauConversorModel{
     public get iuh(): IInstalledUtauHandler {
         return this._iuh;
     }
-    constructor(psh: IPathStringHandler, fsh: IFileSystemHandler, iuh: IInstalledUtauHandler, sth: ISettingsHandler){
+    private _ph: IPathHandler;
+    public get ph(): IPathHandler {
+        return this._ph;
+    }
+    constructor(
+        psh: IPathStringHandler, 
+        fsh: IFileSystemHandler, 
+        iuh: IInstalledUtauHandler, 
+        sth: ISettingsHandler, 
+        ph: IPathHandler
+    ){
         this._psh = psh;
         this._fsh = fsh;
         this._iuh = iuh;
         this._sth = sth;
+        this._ph = ph;
     }
 }

@@ -14,12 +14,14 @@ import type { IInstalledUtau } from "../handlers/IInstalledUtauHandler";
 import type { UtauConversorDetailsProps } from "../views/pages/utauConversorDetails";
 import { UtauRelevantContent } from "../minilibs/parsers/utauRelevantContent";
 import type ISettingsHandler from "../handlers/ISettingsHandler";
+import type IPathHandler from "../handlers/IPathHandler";
 
 export interface IUtauConversorModel{
     readonly psh: IPathStringHandler;
     readonly fsh: IFileSystemHandler;
     readonly iuh: IInstalledUtauHandler;
     readonly sth: ISettingsHandler;
+    readonly ph: IPathHandler;
 }
 
 export interface IUtauConversorView{
@@ -61,7 +63,7 @@ export class UtauConversorPresenter{
             //TODO: Create a function that sets the required directories
             this._usersUtau.set(
                 await this.model.iuh.getUtauListFromDirectory(
-                    this.model.psh.joinPath(process.env.APPDATA, "UTAU\\voice")
+                    this.model.ph.UserVoiceDirectory.get()
                 )
             );
         } catch (error) {
@@ -81,7 +83,7 @@ export class UtauConversorPresenter{
         try {
             this._systemUtau.set(
                 await this.model.iuh.getUtauListFromDirectory(
-                    this.model.psh.joinPath(this.model.sth.UTAUInstallationDirectory.get(), "voice")
+                    this.model.ph.SystemVoiceDirectory.get()
                 )
             );
         } catch (error) {

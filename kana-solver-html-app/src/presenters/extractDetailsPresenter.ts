@@ -1,6 +1,7 @@
 //This file is licensed under GNU GPL v3.0 only license
 
 import type IFileSystemHandler from "../handlers/IFileSystemHandler";
+import type IPathHandler from "../handlers/IPathHandler";
 import type IPathStringHandler from "../handlers/IPathStringshandler";
 import type ISettingsHandler from "../handlers/ISettingsHandler";
 import type { UtauZipInfo } from "../handlers/IZipHandler";
@@ -16,6 +17,7 @@ export interface IExtractDetailsModel{
     readonly fsh: IFileSystemHandler;
     readonly zh: IZipHandler;
     readonly sth: ISettingsHandler;
+    readonly ph: IPathHandler;
 }
 
 export interface IExtractDetailsView{
@@ -140,10 +142,10 @@ export class ExtractDetailsPresenter{
     public async installUtau(){
         let destDir = this.extractionDirectory.get();
         if(this.destinationType.get() == "users"){
-            destDir = this.model.psh.joinPath(process.env.APPDATA, "UTAU\\voice")
+            destDir = this.model.ph.UserVoiceDirectory.get();
         }
         if(this.destinationType.get() == "utau"){
-            destDir = this.model.psh.joinPath(this.model.sth.UTAUInstallationDirectory.get(), "voice");
+            destDir = this.model.ph.SystemVoiceDirectory.get();
         }
         
         let destinationOnInstallDir = this.sourceType.get() == "custom" ? this.zipProperties.relativeDestination : "";

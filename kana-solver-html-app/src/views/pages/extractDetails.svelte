@@ -18,6 +18,7 @@
     import type { GlobalInterface } from "../../App";
     import type IStore from "../../minilibs/IStore";
     import LockedStore from "../../minilibs/LockedStore";
+    import type IPathHandler from "../../handlers/IPathHandler";
     
     export let fileToExtract: string;
     export let zipProperties: UtauZipInfo;
@@ -26,6 +27,7 @@
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let settingsHandler: ISettingsHandler = getContext(keys.settingsHandler);
     let globalInterface: GlobalInterface = getContext(keys.globalInterface);
+    let pathHandler: IPathHandler = getContext(keys.pathHandler);
 
     let radiomanager: RadioManager = new RadioManager();
     
@@ -48,7 +50,8 @@
             pathStringHandler,
             new modelsAndHandlers.FileSystemHandler(pathStringHandler),
             new modelsAndHandlers.ZipHandler(pathStringHandler),
-            settingsHandler
+            settingsHandler,
+            pathHandler
         ),
         zipProperties,
         fileToExtract

@@ -1,6 +1,7 @@
 //This file is licensed under GNU GPL v3.0 only license
 
 import type IFileSystemHandler from "../handlers/IFileSystemHandler";
+import type IPathHandler from "../handlers/IPathHandler";
 import type IPathStringHandler from "../handlers/IPathStringshandler";
 import type ISettingsHandler from "../handlers/ISettingsHandler";
 import type IZipHandler from "../handlers/IZipHandler";
@@ -23,10 +24,21 @@ export default class ExtractDetailsModel implements IExtractDetailsModel{
     public get zh(): IZipHandler {
         return this._zh;
     }
-    constructor(psh: IPathStringHandler, fsh: IFileSystemHandler, zh: IZipHandler, sth: ISettingsHandler){
+    private _ph: IPathHandler;
+    public get ph(): IPathHandler {
+        return this._ph;
+    }
+    constructor(
+        psh: IPathStringHandler, 
+        fsh: IFileSystemHandler, 
+        zh: IZipHandler, 
+        sth: ISettingsHandler,
+        ph: IPathHandler
+    ){
         this._psh = psh;
         this._fsh = fsh;
         this._zh = zh;
         this._sth = sth;
+        this._ph = ph;
     }
 }

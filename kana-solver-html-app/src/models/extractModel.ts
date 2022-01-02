@@ -1,5 +1,6 @@
 import type IFileSystemHandler from "../handlers/IFileSystemHandler";
 import type IInstalledUtauHandler from "../handlers/IInstalledUtauHandler";
+import type IPathHandler from "../handlers/IPathHandler";
 import type IPathStringHandler from "../handlers/IPathStringshandler";
 import type ISettingsHandler from "../handlers/ISettingsHandler";
 import type IZipHandler from "../handlers/IZipHandler";
@@ -26,18 +27,24 @@ export default class ExtractModel implements IExtractModel{
     public get fsh(): IFileSystemHandler {
         return this._fsh;
     }
+    private _ph: IPathHandler;
+    public get ph(): IPathHandler {
+        return this._ph;
+    }
 
     constructor(
         psh: IPathStringHandler, 
         iuh: IInstalledUtauHandler, 
         fsh:IFileSystemHandler, 
         zh: IZipHandler,
-        sth: ISettingsHandler
+        sth: ISettingsHandler,
+        ph: IPathHandler
     ){
         this._psh = psh;
         this._iuh = iuh;
         this._fsh = fsh;
         this._zh = zh;
         this._sth = sth;
+        this._ph = ph;
     }
 }

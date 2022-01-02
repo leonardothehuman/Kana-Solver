@@ -18,12 +18,14 @@
     import LockedStore from "../../minilibs/LockedStore";
     import type IReadOnlyStore from "../../minilibs/IReadOnlyStore";
     import type IStore from "../../minilibs/IStore";
+    import type IPathHandler from "../../handlers/IPathHandler";
 
     export let f7router: Router.Router;
 
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let settingsHandler: ISettingsHandler = getContext(keys.settingsHandler);
     let globalInterface: GlobalInterface = getContext(keys.globalInterface);
+    let pathHandler: IPathHandler = getContext(keys.pathHandler);
 
     let externalInterface: IExtractView = {
         goToExtractPage: (props: ExtractDetailsProps) => {
@@ -39,11 +41,8 @@
     let installedUtauHandler = new modelsAndHandlers.InstalledUtauHandler(fileSystemHandler, pathStringHandler);
     let zipHandler = new modelsAndHandlers.ZipHandler(pathStringHandler);
     let extractModel = new modelsAndHandlers.ExtractModel(
-        pathStringHandler,
-        installedUtauHandler,
-        fileSystemHandler,
-        zipHandler,
-        settingsHandler
+        pathStringHandler, installedUtauHandler, fileSystemHandler,
+        zipHandler, settingsHandler, pathHandler
     );
     let extractPresenter = new ExtractPresenter(externalInterface, extractModel);
 

@@ -10,6 +10,7 @@ import type ISettingsHandler from "../handlers/ISettingsHandler";
 import Store from "../minilibs/Store";
 import type IReadOnlyStore from "../minilibs/IReadOnlyStore";
 import type IStore from "../minilibs/IStore";
+import type IPathHandler from "../handlers/IPathHandler";
 
 export interface IExtractView{
     emitAlert: (text: string, title: string) => Promise<void>;
@@ -24,6 +25,7 @@ export interface IExtractModel{
     readonly zh: IZipHandler;
     readonly fsh: IFileSystemHandler;
     readonly sth: ISettingsHandler;
+    readonly ph: IPathHandler;
 }
 
 //Some getters and setters are only wrappers to modify the view
@@ -67,7 +69,7 @@ export class ExtractPresenter{
         try {
             this._usersUtau.set(
                 await this.model.iuh.getUtauListFromDirectory(
-                    this.model.psh.joinPath(process.env.APPDATA, "UTAU\\voice")
+                    this.model.ph.UserVoiceDirectory.get()
                 )
             );
         } catch (error) {
@@ -85,11 +87,11 @@ export class ExtractPresenter{
         try {
             this._systemUtau.set(
                 await this.model.iuh.getUtauListFromDirectory(
-                    this.model.psh.joinPath(this.model.sth.UTAUInstallationDirectory.get(), "voice")
+                    this.model.ph.SystemVoiceDirectory.get()
                 )
             );
         } catch (error) {
-            //TODO: let user see this error
+            //TODO: let user see this error and tell everywhere to configure the correct directory
             console.log(error);
             this._systemUtau.set([]);
         }

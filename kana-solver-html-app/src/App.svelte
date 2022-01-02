@@ -14,12 +14,17 @@
 	import type { GlobalInterface } from './App';
 	import { f7ConfirmPromisse, f7ConfirmYNPromisse } from './minilibs/f7extender';
 	import ProgressProcess from './views/commonImplementations/progressProcess';
+	import PathHandler from './handlers/PathHandler';
 	var routeCollection = generateRoutes();
 
 	setContext(keys.kanaSolverAppModelsAndHandlers, ModelsAndHandlers);
 	setContext(keys.pageLeaveConfirmators, routeCollection.getPageLeaveConfirmators());
 	let sh = new SettingsHandler();
 	setContext(keys.settingsHandler, sh);
+
+	let psh = new ModelsAndHandlers.PathStringHandler();
+	let ph = new PathHandler(psh, new ModelsAndHandlers.FileSystemHandler(psh), sh);
+	setContext(keys.pathHandler, ph);
 
 	let globalInterface: GlobalInterface = {
 		showSpinner: async(title: string) => {
@@ -97,7 +102,8 @@
 
 	var body = document.body;
 	let unsubscriber = function(){};
-	let initing = sh.init().then(() => {
+	let initing = sh.init().then(async() => {
+		await ph.init();
 		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
 			if(sh.ColorScheme.get() == "light") return;
 			if(sh.ColorScheme.get() == "dark") return;

@@ -10,6 +10,7 @@ import type ISpinnerManipulator from "./commonInterfaces/ISpinnerManipulator";
 import type { unsubscriber } from "../minilibs/IReadOnlyStore";
 import type { ConversionItem, fileDeletedEventArgs, fileSavedAsEventArgs, newFileEventArgs } from "./conversionFileSelectorPresenter";
 import AsyncEvent from "../minilibs/AsyncEvent";
+import type IPathHandler from "../handlers/IPathHandler";
 
 export type conversionFileRepresentation = objectRepresentation & {
     nameWithoutExtension: string;
@@ -20,6 +21,7 @@ export type conversionFileRepresentation = objectRepresentation & {
 export interface IConversionEditorModel{
     readonly psh: IPathStringHandler;
     readonly fsh: IFileSystemHandler;
+    readonly ph: IPathHandler;
 }
 
 export interface IConversionEditorView{
@@ -137,10 +139,7 @@ export class ConversionEditorPresenter{
     }
 
     public openUserDirectory(){
-        let directory = this.model.psh.joinPath(
-            this.model.fsh.homeDirectory(),
-            "kanasolver_files\\conversion_files" //TODO: Centralize directories
-        );
+        let directory = this.model.ph.UserConversionFilesDirectory.get();
         this.model.fsh.openOnFileExplorer(directory);
     }
 
@@ -183,8 +182,7 @@ export class ConversionEditorPresenter{
                 await this.view.emitAlert('The file name must not contain one of the following characters: "\\/:*?\"<>|"', "Alert ...");
             }else{
                 toSave = this.model.psh.joinPath(
-                    this.model.fsh.homeDirectory(),
-                    "kanasolver_files\\conversion_files",
+                    this.model.ph.UserConversionFilesDirectory.get(),
                     typedName + ".json"
                 );
                 sp = await this.view.showSpinner("Loading ...");

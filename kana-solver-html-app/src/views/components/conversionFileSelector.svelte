@@ -18,6 +18,7 @@
     import type { asyncEventSubscriber } from "../../minilibs/AsyncEvent";
     import type { eventSubscriber } from "../../minilibs/SyncEvent";
     import type { GlobalInterface } from "../../App";
+    import type IPathHandler from "../../handlers/IPathHandler";
 
     export let listEmpty: boolean = true;
     export let conversionItemStore: IReadOnlyStore<ConversionItem | null>;
@@ -32,6 +33,7 @@
     let modelsAndHandlers:typeof ModelsAndHandlers = getContext(keys.kanaSolverAppModelsAndHandlers);
     let installedConversionFileRepresentations: conversionFileRepresentation[] = [];
     let globalInterface: GlobalInterface = getContext(keys.globalInterface);
+    let pathHandler: IPathHandler = getContext(keys.pathHandler);
     
     let externalInterface: IConversionFileSelectorView = {
         setInstalledConversionFileRepresentations: (icf: conversionFileRepresentation[], onlyOnChange: boolean) => {
@@ -56,7 +58,8 @@
         externalInterface,
         new modelsAndHandlers.ConversionFileSelectorModel(
             pathStringHandler,
-            fileSystemHandler
+            fileSystemHandler,
+            pathHandler
         )
     );
 
