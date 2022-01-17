@@ -23,6 +23,10 @@ export interface IFileFinderView{
     showSpinner: (text: string) => Promise<ISpinnerManipulator>;
     emitAlert: (text: string, title: string) => Promise<void>;
     scrollTo: (x: number, y: number) => void;
+    prompt: (title: string, text: string, defaultValue: string) => Promise<{
+        text: string,
+        ok: boolean
+    }>;
 }
 
 //Some getters and setters are only wrappers to modify the view
@@ -175,6 +179,42 @@ export class FileFinderPresenter{
             }
         }
         return breadCrumb;
+    }
+
+    public async createNewDirectory(){
+        let ndir = await this.view.prompt("New Directory", "Type a name for the new directory", "");
+        if(ndir.ok == false) return;
+        if(this.model.psh.hasWin32ForbiddenChars(ndir.text)){
+            await this.view.emitAlert('The file name must not contain one of the following characters: "\\/:*?\"<>|"', "Alert ...");
+            return;
+        }
+        if(ndir.text.trim() == ""){
+            await this.view.emitAlert('Directory name is empty', "Alert ...");
+            return;
+        }
+        let newPath = this.model.psh.joinPath(this.getCurrentFullPath(), ndir.text.trim());
+        try {
+            if(await this.model.fsh.existAndIsFile(newPath)){
+                await this.view.emitAlert('This selected path already exists and is a file ...', "Alert ...");
+                return;
+            }
+            if(await this.model.fsh.existAndIsDirectory(newPath)){
+                await this.view.emitAlert('This directory already exists ...', "Alert ...");
+                return;
+            }
+        } catch (error) {
+            this.view.emitAlert(error.message, 'Error ...');
+            return;
+        }
+        let sp = await this.view.showSpinner("Creating directory ...");
+        try {
+            await this.model.fsh.createDirectory(newPath);
+            await this._setCurrentFullLocation(newPath);
+            sp.close();
+        } catch (error) {
+            sp.close();
+            await this.view.emitAlert(error.message, 'Error ...');
+        }
     }
     
     public async setCurrentFullLocation(_location: string){

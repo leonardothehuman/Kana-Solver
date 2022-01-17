@@ -39,7 +39,8 @@
             mainContainer.scrollTo(x, y);
         },
         showSpinner: globalInterface.showSpinner,
-        emitAlert: globalInterface.emitAlert
+        emitAlert: globalInterface.emitAlert,
+        prompt: globalInterface.prompt
     }
 
     let pathStringHandler: IPathStringHandler = new modelsAndHandlers.PathStringHandler();
@@ -194,8 +195,13 @@
 
     <Toolbar position="bottom" inner={false}>
         <div class="toolbar-inner {customtoolbarClass}">
-            <Link></Link>
             {#if selectDirectory}
+                <Link iconF7="folder_badge_plus"
+                    on:click={() => {
+                        fileFinderPresenter.createNewDirectory()
+                    }}
+                    text="New Directory"
+                ></Link>
                 <Link iconF7="square_arrow_right"
                     on:click={() => {
                         selectCallback({
@@ -206,6 +212,7 @@
                     text="Select Directory"
                 />
             {:else}
+                <Link></Link>
                 <List>
                     <ListItem title="{extensionLabels[$currentExtenssion]}" smartSelect smartSelectParams={{openIn: 'popover', closeOnSelect: true, setValueText: false}}>
                         <select name="Extension" bind:value={$currentExtenssion}>
