@@ -161,15 +161,6 @@ export class ConversionFileSelectorPresenter{
 
         let conversionFileDirectory: string = this.model.ph.UserConversionFilesDirectory.get();
 
-        //TODO: Verify the entire path
-        if(await this.model.fsh.existAndIsFile(conversionFileDirectory) == true){
-            throw new Error(`"${conversionFileDirectory}" is a file, but it's supposed to be a directory ...`);
-        }
-
-        if(await this.model.fsh.existAndIsDirectory(conversionFileDirectory) == false){
-            await this.model.fsh.createDirectory(conversionFileDirectory);
-        }
-
         let userConversionFiles: objectRepresentation[] =
             await this.model.fsh.getAllFilesOnDirectory(
                 conversionFileDirectory

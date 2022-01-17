@@ -63,7 +63,7 @@ export class ExtractPresenter{
         return this._model;
     }
     
-    //TODO: join with similar functions
+    //ODOT: join with similar functions
     public async loadUtauList(): Promise<void>{
         let spinner = await this.view.showSpinner("Loading ...");
         try {
@@ -73,9 +73,10 @@ export class ExtractPresenter{
                 )
             );
         } catch (error) {
-            //TODO: let user see this error
-            console.log(error);
+            spinner.close();
+            await this.view.emitAlert(error.message, 'Error');
             this._usersUtau.set([]);
+            spinner = await this.view.showSpinner("Loading ...");
         }
 
         if(!this.model.psh.isCompleteWinPath(this.model.sth.UTAUInstallationDirectory.get())){
@@ -91,9 +92,10 @@ export class ExtractPresenter{
                 )
             );
         } catch (error) {
-            //TODO: let user see this error and tell everywhere to configure the correct directory
-            console.log(error);
+            spinner.close();
+            await this.view.emitAlert(error.message, 'Error');
             this._systemUtau.set([]);
+            spinner = await this.view.showSpinner("Loading ...");
         }
         spinner.close();
     }

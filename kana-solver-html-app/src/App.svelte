@@ -1,9 +1,9 @@
 <script lang="ts">
 	//This file is licensed under GNU GPL v3.0 only license
-	import {onDestroy, onMount, setContext} from 'svelte';
+	import {onDestroy, onMount, setContext, tick} from 'svelte';
 	import ModelsAndHandlers from './modelsAndHandlers';
 	import keys from './keys';
-	import {App, View} from 'framework7-svelte';
+	import {App, View, Page, Navbar, BlockTitle, Block} from 'framework7-svelte';
 	import {generateRoutes} from './routes';
 	import {masterRoute, masterDetailBreakpoint} from './generated/config/config';
 	import SettingsHandler from './handlers/SettingsHandler';
@@ -102,40 +102,80 @@
 
 	var body = document.body;
 	let unsubscriber = function(){};
-	let initing = sh.init().then(async() => {
-		await ph.init();
-		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-			if(sh.ColorScheme.get() == "light") return;
-			if(sh.ColorScheme.get() == "dark") return;
-			if(e.matches == true){
-				body.classList.add("theme-dark");
-			}else{
-				body.classList.remove("theme-dark");
-			}
-		});
-		unsubscriber = sh.ColorScheme.subscribe((value: colorSchemeOptions) => {
-			if(value == "dark"){
-				body.classList.add("theme-dark");
-			}else if(value == "light"){
-				body.classList.remove("theme-dark");
-			}else{
-				if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+	let initing = true;
+	let initializationError = "";
+	onMount(async() => {
+		let spinner = await globalInterface.showSpinner("Kana Solver v3 is initializing ...");
+		try {
+			await sh.init();
+			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+				if(sh.ColorScheme.get() == "light") return;
+				if(sh.ColorScheme.get() == "dark") return;
+				if(e.matches == true){
 					body.classList.add("theme-dark");
 				}else{
 					body.classList.remove("theme-dark");
 				}
-			}
-		});
+			});
+			unsubscriber = sh.ColorScheme.subscribe((value: colorSchemeOptions) => {
+				if(value == "dark"){
+					body.classList.add("theme-dark");
+				}else if(value == "light"){
+					body.classList.remove("theme-dark");
+				}else{
+					if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+						body.classList.add("theme-dark");
+					}else{
+						body.classList.remove("theme-dark");
+					}
+				}
+			});
+			await ph.init();
+			spinner.close();
+			initing = false;
+		} catch (error) {
+			spinner.close();
+			initializationError = error.message;
+			await globalInterface.emitAlert(error.message, "Fatal initialization error");
+		}
 	});
 	onDestroy(() => {
 		unsubscriber();
 	});
 </script>
 
-{#await initing}
-	<p>Loading ...</p>
-{:then}
-	<App theme="aurora" name="Kana Solver" id="com.github.leonardothehuman.kanaSolver" routes={routeCollection.getRoutes()}>
+<App theme="aurora" name="Kana Solver" id="com.github.leonardothehuman.kanaSolver" routes={routeCollection.getRoutes()}>
+	{#if initing}
+		<View main>
+			<Page>
+			<Navbar title="Kana Solver v3" />
+			{#if initializationError != ""}
+				<BlockTitle>Fatal initialization error</BlockTitle>
+				<Block>
+					<p style="color: red">{initializationError}</p>
+				</Block>
+			{/if}
+			</Page>
+		</View>
+	{:else}
 		<View main url={masterRoute} class="safe-areas" masterDetailBreakpoint={masterDetailBreakpoint} />
-	</App>
-{/await}
+	{/if}
+</App>
+
+<!-- {#await initing} -->
+	<!-- <App>
+		<View main>
+			<Page>
+			<Navbar title="Kana Solver v3" />
+			
+			</Page>
+		</View>
+  	</App> -->
+<!-- {:then} -->
+	<!-- <App theme="aurora" name="Kana Solver" id="com.github.leonardothehuman.kanaSolver" routes={routeCollection.getRoutes()}>
+		<View main url={masterRoute} class="safe-areas" masterDetailBreakpoint={masterDetailBreakpoint} />
+	</App> -->
+<!-- {:catch error} -->
+
+	<!-- <p style="color: red">{error.message}</p> -->
+<!-- {/await} -->

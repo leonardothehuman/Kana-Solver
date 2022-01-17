@@ -7,6 +7,7 @@ import type ISettingsHandler from "./ISettingsHandler";
 
 
 export default class PathHandler implements IPathHandler{
+    private fsh: IFileSystemHandler;
     private _UserConversionFilesDirectory: Store<string>;
     public get UserConversionFilesDirectory(): IReadOnlyStore<string> {
         return this._UserConversionFilesDirectory;
@@ -24,6 +25,7 @@ export default class PathHandler implements IPathHandler{
         return this._SystemVoiceDirectory;
     }
     constructor(psh: IPathStringHandler, fsh: IFileSystemHandler, sth: ISettingsHandler){
+        this.fsh = fsh;
         this._UserConversionFilesDirectory = new Store(psh.joinPath(
             fsh.homeDirectory(),
             "kanasolver_files\\conversion_files"
@@ -44,6 +46,18 @@ export default class PathHandler implements IPathHandler{
     //It's not uncommon for filesystem to have async operations, so we will have
     //An async init function even if we never use it ...
     public async init(){
-        
+        if(await this.fsh.existAndIsFile(this.UserConversionFilesDirectory.get()) == true){
+            throw new Error(`"${this.UserConversionFilesDirectory.get()}" is a file, but it's supposed to be a directory ...`);
+        }
+        if(await this.fsh.existAndIsFile(this.UserVoiceDirectory.get()) == true){
+            throw new Error(`"${this.UserVoiceDirectory.get()}" is a file, but it's supposed to be a directory ...`);
+        }
+        //if(await this.fsh.existAndIsFile(this.UserConversionFilesDirectory.get()))
+        if(!await this.fsh.existAndIsDirectory(this.UserConversionFilesDirectory.get())){
+            await this.fsh.createDirectory(this.UserConversionFilesDirectory.get());
+        }
+        if(!await this.fsh.existAndIsDirectory(this.UserVoiceDirectory.get())){
+            await this.fsh.createDirectory(this.UserVoiceDirectory.get());
+        }
     }
 }

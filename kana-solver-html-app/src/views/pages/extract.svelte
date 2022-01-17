@@ -50,7 +50,6 @@
     let systemUtau: IReadOnlyStore<IInstalledUtau[]> = new LockedStore([]);
     let selectedVoicBank: IStore<string> = new LockedStore("");
     onMount(async () => {
-		//TODO: verify what happens if the utau installed location was never configured
         await extractPresenter.loadUtauList();
         usersUtau = extractPresenter.usersUtau;
         systemUtau = extractPresenter.systemUtau;
@@ -109,7 +108,7 @@
         </ListButton>
     </List>
 
-    <!-- TODO: Centralize this -->
+    <!-- ODOT: Centralize this -->
     {#if $usersUtau.length <= 0 && $systemUtau.length <= 0}
         <BlockTitle>No utau has been found</BlockTitle>
         <BlockHeader>Install a new utau or configure the correct installation path</BlockHeader>
