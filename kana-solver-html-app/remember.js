@@ -9,6 +9,9 @@ console.log("   |                                                               
 console.log("   |1. RUN \"npm run downloadNW\" TO DOWNLOAD AND EXTRACT THE SELECTED    |");
 console.log("   |   VERSION OF Nw.JS                                                 |");
 console.log("   |                                                                    |");
+console.log("   |   (optional) RUN \"npm run applyIcon\" TO CHANGE MAIN EXECUTABLE\'S   |");
+console.log("   |   ICON (requires \"ResourceHacker.exe\" on \"Utilities\" directory)    |");
+console.log("   |                                                                    |");
 console.log("   |2. RUN \"npm run regenerate\" TO GENERATE THE AUTO-GENERATED CODE     |");
 console.log("   |                                                                    |");
 console.log("   |3. RUN \"npm run build-dev\" TO BUILD THE DEVELOPMENT VERSION         |");

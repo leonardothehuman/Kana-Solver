@@ -4,3 +4,5 @@
 /copySrc/node_modules/
 /src/generated/
 /generatedCopySrc/
+/Utilities/*
+!/Utilities/.gitkeep

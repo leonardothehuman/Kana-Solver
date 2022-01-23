@@ -1,8 +1,9 @@
 {
-	"name": "Mukirana",
+	"name": "Kana Solver v3",
 	"main": "index.html",
 	"license": "(GPL-3.0-only OR MIT)",
 	"window": {
+		"icon": "main.png",
 		"toolbar": true,
 		"frame": true,
 		"width": 850,

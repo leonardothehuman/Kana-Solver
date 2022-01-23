@@ -10,6 +10,7 @@
     "downloadNW": "node installNW.cjs",
     "postinstall": "node remember.js",
     "regenerate": "node regenerate.cjs",
+    "applyIcon": "start Utilities\\ResourceHacker.exe -open dist\\nw.exe -save dist\\nw.exe -action addoverwrite -res copySrc\\main.ico -mask ICONGROUP,IDR_MAINFRAME,",
     "build-dev": "webpack --mode development",
     "run-nw": "start dist/nw",
     "build-prod": "webpack --mode production",
