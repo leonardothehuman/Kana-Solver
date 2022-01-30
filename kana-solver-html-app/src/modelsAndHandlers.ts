@@ -6,6 +6,7 @@ import PathStringHandler from "./handlers/PathStringsHandler";
 import FileSystemHandler from "./handlers/FileSystemHandler";
 import ZipHandler from "./handlers/ZipHandler";
 import InstalledUtauHandler from "./handlers/InstalledUtauHandler";
+import NetworkHandler from "./handlers/NetworkHandler";
 import ExtractModel from "./models/extractModel";
 import ConversionEditorModel from "./models/conversionEditorModel";
 import UtauConversorModel from "./models/utauConversorModel";
@@ -31,6 +32,7 @@ let toexport = {
     FileSystemHandler: FileSystemHandler,
     ZipHandler: ZipHandler,
     InstalledUtauHandler: InstalledUtauHandler,
+    NetworkHandler: NetworkHandler,
 }
 
 export default toexport;

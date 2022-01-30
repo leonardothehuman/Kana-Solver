@@ -24,6 +24,7 @@ OutputBaseFilename=Kana Solver v3 Setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+MinVersion=6.1.7600
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

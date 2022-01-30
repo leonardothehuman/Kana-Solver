@@ -5,7 +5,8 @@ let toexport = {
     pageLeaveConfirmators: {},
     settingsHandler: {},
     globalInterface: {},
-    pathHandler: {}
+    pathHandler: {},
+    updatesHandler: {}
 }
 
 export default toexport;

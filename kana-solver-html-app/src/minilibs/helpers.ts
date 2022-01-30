@@ -1,16 +1,44 @@
 //This file is licensed under MIT license
 
-export function isString(s: any){
+export function isArrayOfAdditionalInfoAray(s:any){
+  try {
+    if(!Array.isArray(s)) return false;
+    for(let i = 0; i < s.length; i++){
+      if(isArrayOfNestedStringWithMinimumLengthOfTwoAndTheFirstItemMustBeAString(s[i])) continue;
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function isArrayOfNestedStringWithMinimumLengthOfTwoAndTheFirstItemMustBeAString(s:any){
+  try {
+    if(!Array.isArray(s)) return false;
+    if(s.length < 2) return false;
+    for(let i = 0; i < s.length; i++){
+      if(isString(s[i])) continue;
+      if(i != 0 && isArrayOfNestedStringWithMinimumLengthOfTwoAndTheFirstItemMustBeAString(s[i])) continue;
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function isString(s: any): s is string{
   if (typeof s === 'string' || s instanceof String) return true;
   return false;
 }
 
-export function isNumber(s: any){
+export function isNumber(s: any):s is number{
   if (typeof s === 'number' || s instanceof Number) return true;
   return false;
 }
 
-export function isBoolean(s: any){
+export function isBoolean(s: any):s is boolean{
   if(typeof s === 'boolean' || s instanceof Boolean) return true;
   return false;
 }

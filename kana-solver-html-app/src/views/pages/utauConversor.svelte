@@ -1,14 +1,10 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
     import {Page, Navbar, BlockTitle, BlockHeader, List, ListGroup, ListItem} from "framework7-svelte";
-    import { getContext, onDestroy, onMount, tick } from "svelte";
-    import { f7 } from 'framework7-svelte';
+    import { getContext, onMount } from "svelte";
     import type ModelsAndHandlers from "../../modelsAndHandlers";
     import keys from "../../keys";
-    import { sleep } from "../../minilibs/helpers";
     import { IUtauConversorView, UtauConversorPresenter } from "../../presenters/utauConversorPresenter";
-    import SpinnerManipulator from "../commonImplementations/spinnerManipulator";
-    import {f7ConfirmPromisse, f7ConfirmYNPromisse} from "../../minilibs/f7extender";
     import type IReadOnlyStore from "../../minilibs/IReadOnlyStore";
     import LockedStore from "../../minilibs/LockedStore";
     import type { IInstalledUtau } from "../../handlers/IInstalledUtauHandler";

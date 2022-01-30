@@ -47,7 +47,7 @@
     let closeConfirmators: Set<() => Promise<boolean>> = new Set();
     let closeCallback = async function () {
         let hasFalse = false;
-        for (let cb of leaveConfirmators.values()){
+        for (let cb of closeConfirmators.values()){
             if(await cb() == false){
                 hasFalse = true;
             }

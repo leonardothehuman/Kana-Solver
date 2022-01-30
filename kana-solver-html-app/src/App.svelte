@@ -15,6 +15,8 @@
 	import { f7ConfirmPromisse, f7ConfirmYNPromisse } from './minilibs/f7extender';
 	import ProgressProcess from './views/commonImplementations/progressProcess';
 	import PathHandler from './handlers/PathHandler';
+	import UpdatesHandler from './handlers/UpdatesHandler';
+	import config from './config';
 	var routeCollection = generateRoutes();
 
 	setContext(keys.kanaSolverAppModelsAndHandlers, ModelsAndHandlers);
@@ -104,8 +106,16 @@
 	let unsubscriber = function(){};
 	let initing = true;
 	let initializationError = "";
+
+	let uh = new UpdatesHandler(
+		config.updateUrl, config.versionInteger,
+		sh, new ModelsAndHandlers.NetworkHandler()
+	);
+	
+	setContext(keys.updatesHandler, uh);
+
 	onMount(async() => {
-		let spinner = await globalInterface.showSpinner("Kana Solver v3 is initializing ...");
+		let spinner = await globalInterface.showSpinner(config.softwareName + " is initializing ...");
 		try {
 			await sh.init();
 			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
@@ -131,6 +141,7 @@
 				}
 			});
 			await ph.init();
+			uh.init();
 			spinner.close();
 			initing = false;
 		} catch (error) {
@@ -144,11 +155,15 @@
 	});
 </script>
 
+<svelte:head>
+	<title>{config.softwareName}</title>
+</svelte:head>
+
 <App theme="aurora" name="Kana Solver" id="com.github.leonardothehuman.kanaSolver" routes={routeCollection.getRoutes()}>
 	{#if initing}
 		<View main>
 			<Page>
-			<Navbar title="Kana Solver v3" />
+			<Navbar title={config.softwareName} />
 			{#if initializationError != ""}
 				<BlockTitle>Fatal initialization error</BlockTitle>
 				<Block>
@@ -166,7 +181,7 @@
 	<!-- <App>
 		<View main>
 			<Page>
-			<Navbar title="Kana Solver v3" />
+			<Navbar title={config.softwareName} />
 			
 			</Page>
 		</View>

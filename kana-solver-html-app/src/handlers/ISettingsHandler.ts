@@ -5,5 +5,7 @@ export default interface ISettingsHandler{
     //fun:(p: string) => boolean;
     UTAUInstallationDirectory: Store<string>;
     ColorScheme: Store<colorSchemeOptions>;
+    LastUpdateCheckTime: Store<number>;
+    LastUpdateObject: Store<string|null>;
     init:() => Promise<void>;
 }

@@ -11,6 +11,7 @@ import type { unsubscriber } from "../minilibs/IReadOnlyStore";
 import type { ConversionItem, fileDeletedEventArgs, fileSavedAsEventArgs, newFileEventArgs } from "./conversionFileSelectorPresenter";
 import AsyncEvent from "../minilibs/AsyncEvent";
 import type IPathHandler from "../handlers/IPathHandler";
+import config from '../config';
 
 export type conversionFileRepresentation = objectRepresentation & {
     nameWithoutExtension: string;
@@ -127,7 +128,7 @@ export class ConversionEditorPresenter{
         this.view.registerCloseConfirmationCallback(async() => {
             if(this.currentConversionFile.get().wasModified.get() == true){
                 return await this.view.askConfirmationYN(
-                    "Are you sure you want to leave Kana Solver v3 ? , all your current changes will be lost forever ...",
+                    "Are you sure you want to leave "+config.softwareName+" ? , all your current changes will be lost forever ...",
                     "Confirmation"
                 );
             }
