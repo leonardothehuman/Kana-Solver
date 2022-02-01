@@ -96,19 +96,29 @@ module.exports = {
                         // file entry
                         await fsp.mkdir(path.join(whereExtract, path.posix.dirname(splitDir.slice(1).join('/'))),{recursive: true});
                         zipfile.openReadStream(entry, function(err, readStream) {
-                            if (err) reject(err);
+                            var sStopFinishEvent = false;
+                            if (err){
+                                reject(err);
+                                return;
+                            }
                             var ws = fs.createWriteStream(path.join(whereExtract, splitDir.slice(1).join('/')));
-                            readStream.on("end", function() {
-                                ws.end();
+                            ws.on("finish", function() {
+                                if(sStopFinishEvent == true) return;
                                 zipfile.readEntry();
                             });
                             readStream.on("error", function(e) {
+                                sStopFinishEvent = true;
                                 ws.end();
                                 reject(e);
                             });
                             ws.on("error", function(e) {
+                                sStopFinishEvent = true;
                                 reject(e);
                             });
+                            if(entry.uncompressedSize <= 0){
+                                sStopFinishEvent = true;
+                                zipfile.readEntry();
+                            }
                             readStream.pipe(ws);
                         });
                     }

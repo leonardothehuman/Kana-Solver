@@ -157,6 +157,7 @@ export default class ZipHandler implements IZipHandler{
                         }
                         z.openReadStream(entry, function(err, readStream) {
                             var crcCalculator = new Crc32StreamCalculator();
+                            var sStopFinishEvent = false;
                             if (err){
                                 reject(err);
                                 return;
@@ -166,8 +167,8 @@ export default class ZipHandler implements IZipHandler{
                             var ws = fs.createWriteStream(destinationFile,{
                                 flags: flag
                             });
-                            readStream.on("end", function() {
-                                ws.end();
+                            ws.on("finish", function() {
+                                if(sStopFinishEvent == true) return;
                                 if(crcCalculator.getCrc32().toString(16) != entry.crc32.toString(16)){
                                     toReturn.push({
                                         completePath: sourceFile,
@@ -179,12 +180,18 @@ export default class ZipHandler implements IZipHandler{
                             });
                             //ODOT: Allow chosing encoding
                             readStream.on("error", function(e) {
+                                sStopFinishEvent = true;
                                 ws.end();
                                 reject(e);
                             });
                             ws.on("error", function(e) {
+                                sStopFinishEvent = true;
                                 reject(e);
                             });
+                            if(entry.uncompressedSize <= 0){
+                                sStopFinishEvent = true;
+                                resolve(true);
+                            }
                             readStream.pipe(crcCalculator.transformStream).pipe(ws);
                         });
                     })();
