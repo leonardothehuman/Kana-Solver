@@ -1,4 +1,4 @@
-//This file is licensed MIT license
+//This file is licensed under MIT license
 import {ManyItemsError} from "../views/components/pathSelectFieldT";
 import type {IPathSelectFieldHandler, ExtractedFile} from "../views/components/pathSelectFieldT";
 

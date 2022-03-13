@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 import type IPathStringHandler from "./IPathStringshandler";
 import path from "path";
 

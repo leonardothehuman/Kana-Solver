@@ -1,3 +1,5 @@
+<!-- This file is licensed under GNU GPL v3 license -->
+
 <style lang="less">
     h2, h3{
         text-align: center;

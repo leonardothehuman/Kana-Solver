@@ -1,3 +1,5 @@
+/*This file is licensed under GNU GPL v3.0 only license*/
+
 import type {CharacterTxt} from "../minilibs/parsers/character_txt";
 
 export interface IInstalledUtau{

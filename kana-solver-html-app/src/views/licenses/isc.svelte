@@ -1,3 +1,5 @@
+<!-- This file is licensed under ISC license -->
+
 <style lang="less">
     h2, h3{
         text-align: center;

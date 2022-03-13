@@ -1,4 +1,6 @@
 <script lang="ts">
+    // This file is licensed under MIT license
+    
     import {Input} from 'framework7-svelte';
     import type IStore from '../../minilibs/IStore';
     import LockedStore from '../../minilibs/LockedStore';

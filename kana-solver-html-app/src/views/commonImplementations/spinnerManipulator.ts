@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 import type { Dialog } from "framework7/types";
 import type ISpinnerManipulator from "../../presenters/commonInterfaces/ISpinnerManipulator";
 

@@ -1,3 +1,5 @@
+/*This file is licensed under GNU GPL v3.0 only license*/
+
 import {PrefixMap} from "../minilibs/parsers/prefix_map";
 import iconv from 'iconv-lite';
 import fs from "fs";

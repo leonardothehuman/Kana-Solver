@@ -1,3 +1,5 @@
+/*This file is licensed under GNU GPL v3.0 only license*/
+
 import {php_explode, returnDefaultIfUndefined} from '../helpers';
 import type IFileSystemHandler from '../../handlers/IFileSystemHandler';
 import type {nestedObjectRepresentation, objectRepresentation} from '../../handlers/IFileSystemHandler';

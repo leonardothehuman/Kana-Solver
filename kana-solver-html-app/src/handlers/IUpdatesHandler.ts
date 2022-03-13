@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 import type IReadOnlyStore from "../minilibs/IReadOnlyStore";
 
 export default interface IUpdatesHandler{

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Kana Solver v3"
-#define MyAppVersion "1.0.0-RC1"
+#define MyAppVersion "3.0.0-RC1"
 #define MyAppPublisher "Leonardo The Human"
 #define MyAppExeName "nw.exe"
 

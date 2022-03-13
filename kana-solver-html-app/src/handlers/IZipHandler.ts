@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 import type { ZipFile } from 'yauzl';
 import type {InstallTxt} from '../minilibs/parsers/install_txt';
 

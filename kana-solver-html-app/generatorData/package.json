@@ -1,5 +1,5 @@
 {
-	"name": "Kana Solver v3",
+	"name": "com.leonardothehuman.kana_solver",
 	"main": "index.html",
 	"license": "(GPL-3.0-only OR MIT)",
 	"window": {

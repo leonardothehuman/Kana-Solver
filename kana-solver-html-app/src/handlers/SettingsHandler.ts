@@ -1,4 +1,5 @@
-import { sleep } from "../minilibs/helpers";
+/*This file is licensed under GNU GPL v3.0 only license*/
+
 import Store from "../minilibs/Store";
 import type { colorSchemeOptions } from "./ISettingsHandler";
 import type ISettingsHandler from "./ISettingsHandler";

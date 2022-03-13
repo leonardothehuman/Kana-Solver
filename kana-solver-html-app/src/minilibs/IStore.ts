@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 //We don't want the presenter and models to be dependent on svelte
 //So we will write our own store
 //And we can do some tricks with that ...

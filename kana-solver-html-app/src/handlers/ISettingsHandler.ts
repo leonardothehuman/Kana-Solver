@@ -1,3 +1,5 @@
+/*This file is licensed under GNU GPL v3.0 only license*/
+
 import type Store from "../minilibs/Store";
 
 export type colorSchemeOptions = "light" | "dark" | "system";

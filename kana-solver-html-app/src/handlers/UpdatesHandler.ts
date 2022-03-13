@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 import { isArrayOfAdditionalInfoAray, isNumber, isString } from "../minilibs/helpers";
 import type IReadOnlyStore from "../minilibs/IReadOnlyStore";
 import Store from "../minilibs/Store";

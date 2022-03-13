@@ -1,5 +1,6 @@
 <script lang="ts">
     //This file is licensed MIT license
+    
     import {ListInput, Input, Button, Row, Col, ListItem, List} from "framework7-svelte";
     import {tick, getContext} from "svelte";
     import FileFinder from "../pages/fileFinder.svelte";

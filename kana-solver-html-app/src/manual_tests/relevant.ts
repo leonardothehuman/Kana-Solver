@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 import FileSystemHandler from "../handlers/FileSystemHandler";
 import PathStringHandler from '../handlers/PathStringsHandler';
 import {UtauRelevantContent} from '../minilibs/parsers/utauRelevantContent';

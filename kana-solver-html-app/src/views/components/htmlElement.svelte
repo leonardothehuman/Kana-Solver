@@ -1,5 +1,5 @@
 <script lang="ts">
-    //This file is licensed under GNU GPL v3.0 only license
+    // This file is licensed under MIT license
     import type { AdditionalInfoAray } from "../../handlers/UpdatesHandler";
     import Title from "./htmlElements/TITLE.svelte";
     import Subtitle from "./htmlElements/SUBTITLE.svelte";

@@ -1,3 +1,5 @@
+/*This file is licensed under GNU GPL v3.0 only license*/
+
 import {OtoIni} from "../minilibs/parsers/oto_ini";
 import iconv from 'iconv-lite';
 import fs from "fs";

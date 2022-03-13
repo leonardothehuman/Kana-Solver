@@ -1,3 +1,5 @@
+/*This file is licensed under GNU GPL v3.0 only license*/
+
 import {isNumber, isString} from '../helpers'
 import Store from '../../minilibs/Store';
 import type IFileSystemHandler from '../../handlers/IFileSystemHandler';

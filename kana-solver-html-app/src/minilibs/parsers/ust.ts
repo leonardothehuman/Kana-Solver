@@ -1,3 +1,5 @@
+/*This file is licensed under GNU GPL v3.0 only license*/
+
 import type IFileSystemHandler from '../../handlers/IFileSystemHandler';
 import {php_explode, isNumeric, isNumber} from '../helpers'
 import type { ConversionFile } from './conversion_file';

@@ -1,4 +1,6 @@
 <script lang="ts">
+    //This file is licensed under GNU GPL v3.0 only license
+    
     import {ListItem, Button} from "framework7-svelte";
     import type { IInstalledUtau } from "../../../handlers/IInstalledUtauHandler";
 

@@ -1,4 +1,5 @@
 const nodeDiskInfo = require("node-disk-info");
+//This file is licensed under MIT license
 //import nodeDiskInfo from "node-disk-info";
 import type IFileSystemHandler from "./IFileSystemHandler";
 import type { nestedObjectRepresentation, objectRepresentation } from "./IFileSystemHandler";

@@ -1,5 +1,6 @@
 <script lang="ts">
     //This file is licensed under GNU GPL v3.0 only license
+    
     import {Page, Navbar, List, ListItem, BlockTitle, BlockHeader, Block, Toolbar, Link, Tabs, Tab} from "framework7-svelte";
     import { getContext, onMount } from 'svelte';
     import type UpdatesHandler from "../../handlers/UpdatesHandler";
@@ -20,7 +21,7 @@
         ["SUBTITLE", config.softwareName],
 		["STRONGBLOCK",
             ["PARAGRAPH","Version: "+config.versionString],
-			["PARAGRAPH","This software was created by LeonardoTheHuman and is licensed under gnu gpl v3, check licenses page for more details"],
+			["PARAGRAPH","This software was created by Leonardo The Human and is licensed under GNU GPL v3, check licenses page for more details"],
 			["PARAGRAPH", config.softwareName+" was created with ❤️, but if you think this software is useful, you can support by giving a star on github, reporting a bug, sharing with your friends or making a donation"]
 		],
     ]

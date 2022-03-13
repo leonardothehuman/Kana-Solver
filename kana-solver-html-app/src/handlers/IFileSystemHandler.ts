@@ -1,3 +1,4 @@
+//This file is licensed under MIT license
 export type objectRepresentation = {
     completePath: string,
     name: string,

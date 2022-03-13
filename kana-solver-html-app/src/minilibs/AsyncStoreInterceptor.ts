@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 //Like a store, but when the value changes, be a bit more interactive
 //Useful when a change on a select box may cause an error that must revert the store
 //In this class, the subscribe function should be invoked only with callback that exclusively updates the ui

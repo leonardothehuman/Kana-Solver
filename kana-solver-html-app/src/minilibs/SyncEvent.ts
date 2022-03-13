@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 export type eventSubscriber<E, S> = (sender: S, event: E) => void;
 
 export default class SyncEvent<S, E>{

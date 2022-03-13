@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 var nw = require('nw.gui');
 import type INetworkHandler from "./INetworkHandler";
 

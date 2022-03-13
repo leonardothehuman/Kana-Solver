@@ -1,4 +1,5 @@
-//This file is licensed under MIT license
+//This file is licensed under GNU GPL v3.0 only license
+
 import type IPathStringHandler from "../handlers/IPathStringshandler";
 import type IInstalledUtauHandler from "../handlers/IInstalledUtauHandler";
 import type { IInstalledUtau } from "../handlers/IInstalledUtauHandler";

@@ -1,4 +1,4 @@
-//This file is licensed under GNU GPL v3.0 only license
+//This file is licensed under MIT license
 
 import type IZipHandler from "./IZipHandler";
 import type { CorruptionReport, ExploreZipCallback, UtauZipInfo, ZipExtractProgressCallback } from "./IZipHandler";

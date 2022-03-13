@@ -1,3 +1,5 @@
+//This file is licensed under GNU GPL v3.0 only license
+
 import type IProgressProcess from "./presenters/commonInterfaces/IProgressProcess";
 import type ISpinnerManipulator from "./presenters/commonInterfaces/ISpinnerManipulator";
 

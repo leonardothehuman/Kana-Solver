@@ -1,4 +1,4 @@
 Point update server
-Change id
-Update version on installer
-Update licenses
+# Change id
+# Update version on installer
+# Update licenses

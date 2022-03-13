@@ -5,8 +5,8 @@
 ### Features:
 - Extract and install japanese encoded utau zip files without changing the system locale
 - Create your own rules to convert japanese characters to a romanized version
-- Convert UST file from - to CV <-> VCV (Not implemented yet)
-- Convert Japanese file from - to romaji (Not implemented yet)
+- Convert UST file from - to CV <-> VCV
+- Convert Japanese file from - to romaji
 
 ### Screenshots
 
@@ -40,5 +40,4 @@
 
 ## License
 This project is licensed under GNU GPL v3, some files that may be used in other projects are licensed under MIT license, please refeer to the file header to know it's specific license ...
-
-If the file don't have a header, just wait a little OK, I will add a header on all files soon :-)
+All binaries are licensed under GNU GPL v3

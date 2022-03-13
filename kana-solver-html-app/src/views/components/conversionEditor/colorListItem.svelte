@@ -1,4 +1,6 @@
 <script lang="ts">
+    //This file is licensed under MIT license
+    
     import {onMount} from 'svelte';
     import type IStore from '../../../minilibs/IStore';
     import LockedStore from '../../../minilibs/LockedStore';

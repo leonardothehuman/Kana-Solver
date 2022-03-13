@@ -1,3 +1,5 @@
+<!-- This file is licensed under MIT license -->
+
 <script lang="ts">
     import { getContext } from "svelte";
 

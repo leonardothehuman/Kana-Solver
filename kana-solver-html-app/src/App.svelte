@@ -159,7 +159,7 @@
 	<title>{config.softwareName}</title>
 </svelte:head>
 
-<App theme="aurora" name="Kana Solver" id="com.github.leonardothehuman.kanaSolver" routes={routeCollection.getRoutes()}>
+<App theme="aurora" name="Kana Solver" id="com.leonardothehuman.kana_solver" routes={routeCollection.getRoutes()}>
 	{#if initing}
 		<View main>
 			<Page>

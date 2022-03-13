@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 export default interface IPathStringHandler{
     pathIsAbsolute:(p: string) => boolean;
     getPathWithoutDrive: (p: string) => string;

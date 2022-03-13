@@ -1,3 +1,5 @@
+/*This file is licensed under GNU GPL v3.0 only license*/
+
 import { CharacterTxt } from "../minilibs/parsers/character_txt";
 import type IFileSystemHandler from "./IFileSystemHandler";
 import type { IInstalledUtau } from "./IInstalledUtauHandler";

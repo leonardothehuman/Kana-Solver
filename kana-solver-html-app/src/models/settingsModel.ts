@@ -1,4 +1,4 @@
-//This file is licensed under MIT license
+//This file is licensed under GNU GPL v3.0 only license
 
 import type ISettingsHandler from "../handlers/ISettingsHandler";
 import type { ISettingsModel } from "../presenters/settingsPresenter";

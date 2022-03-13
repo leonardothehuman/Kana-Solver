@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 import PathStringsHandler from "../handlers/PathStringsHandler";
 let psh = new PathStringsHandler();
 let zipNormalize = psh.zipNormalize;

@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 import type { subscriber, unsubscriber } from "./IReadOnlyStore";
 import type IStore from "./IStore";
 import type {updater } from "./IStore";

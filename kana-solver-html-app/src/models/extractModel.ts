@@ -1,3 +1,5 @@
+//This file is licensed under GNU GPL v3.0 only license
+
 import type IFileSystemHandler from "../handlers/IFileSystemHandler";
 import type IInstalledUtauHandler from "../handlers/IInstalledUtauHandler";
 import type IPathHandler from "../handlers/IPathHandler";

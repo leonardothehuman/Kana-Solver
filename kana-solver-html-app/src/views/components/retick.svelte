@@ -1,4 +1,6 @@
 <script lang="ts">
+    // This file is licensed under MIT license
+    
     //Workaround to fix a memory leak that happens when you put framework7's ListItem inside a foreach
     import { tick } from "svelte";
 

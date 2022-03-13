@@ -1,3 +1,5 @@
+/*This file is licensed under GNU GPL v3.0 only license*/
+
 import ZipHandler from "../handlers/ZipHandler";
 import PathStringHandler from "../handlers/PathStringsHandler";
 import iconv from 'iconv-lite';

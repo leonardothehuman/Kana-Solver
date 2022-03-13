@@ -1,3 +1,5 @@
+//This file is licensed under MIT license
+
 export type asyncEventSubscriber<E, S> = (sender: S, event: E) => Promise<void>;
 
 export default class AsyncEvent<S, E>{
