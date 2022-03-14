@@ -1,7 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-//const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const config = {
   externals: {
@@ -31,7 +31,7 @@ const config = {
         loader: 'svelte-loader',
         options: {
           preprocess:  require('svelte-preprocess')({}),
-//          emitCss: true,
+          emitCss: true,
         }
       },
       {
@@ -41,25 +41,25 @@ const config = {
           fullySpecified: false
         }
       },
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader'
-        ]
-      },
       // {
       //   test: /\.css$/,
       //   use: [
-      //     MiniCssExtractPlugin.loader,
-      //     {
-      //       loader: 'css-loader',
-      //       options: {
-      //         esModule: false
-      //       }
-      //     }
+      //     'style-loader',
+      //     'css-loader'
       //   ]
       // },
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              esModule: false
+            }
+          }
+        ]
+      },
       {
         test: /\.ts(x)?$/,
         loader: 'ts-loader',
@@ -121,7 +121,7 @@ const config = {
         }
       ],
     }),
-    //new MiniCssExtractPlugin()
+    new MiniCssExtractPlugin()
   ]
 };
 
