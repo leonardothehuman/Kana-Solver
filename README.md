@@ -12,10 +12,11 @@
 
 [![File Browser](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/1-FileBrowser.png)]()
 [![Conversion Rules Editor](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/2-ConversionEditor.png)]()
+[![Uninstaller](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/6-Dark-Mode.png)]()
+[![Avoid losing changes](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/2-ConversionEditor2.png)]()
 [![Utau Picker](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/3-UtauPicker.png)]()
 [![Conversion Options](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/4-ConversionOptions.png)]()
 [![Extractor](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/5-Extractor.png)]()
-[![Uninstaller](https://raw.githubusercontent.com/leonardothehuman/Kana-Solver/main/screenshots/6-Uninstall.png)]()
 
 ## Useful links
 [Utau Official Page](http://utau2008.xrea.jp/)
@@ -40,4 +41,5 @@
 
 ## License
 This project is licensed under GNU GPL v3, some files that may be used in other projects are licensed under MIT license, please refeer to the file header to know it's specific license ...
+
 All binaries are licensed under GNU GPL v3
